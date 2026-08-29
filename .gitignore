@@ -1,5 +1,5 @@
 Cockpit/Scripts/dumps
 Cockpit/Scripts/inspect.lua
-Scripts/Hooks/Utils
+# Scripts/Hooks/Utils
 # temporarily excluded
 Scripts/Hooks/DCSContactSource.lua
