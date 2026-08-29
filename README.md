@@ -30,9 +30,9 @@ DataLink Overlay is a cockpit modification that displays a customizable overlay 
    - Default location: `C:\Users\[YourUsername]\Saved Games\DCS\`
 
 2. **Copy the mod files:**
-   - Copy the entire `DataLink` folder to:
+   - Copy all files from repository to:
      ```
-     %USERPROFILE%\Saved Games\DCS\Mods\tech
+     %USERPROFILE%\Saved Games\DCS\Mods\tech\DataLink
      ```
    - Copy the hook file Scripts\Hooks\DataLink.lua to:
      ```

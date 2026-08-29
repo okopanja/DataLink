@@ -20,7 +20,7 @@ print_message_to_user("Username: "..get_aircraft_property("MY_PROPERTY"))
 require("terrain")
 -- require("net")
 local dev = GetSelf()
-make_default_activity(0.5)
+make_default_activity(0.1)
 
 local ARGS_PER_CTX = 5
 local DL_COMMAND_ID = 123456
