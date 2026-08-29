@@ -32,11 +32,11 @@ DataLink Overlay is a cockpit modification that displays a customizable overlay 
 2. **Copy the mod files:**
    - Copy the entire `DataLink` folder to:
      ```
-     Saved Games\DCS\Mods\tech
+     %USERPROFILE%\Saved Games\DCS\Mods\tech
      ```
    - Copy the hook file Scripts\Hooks\DataLink.lua to:
      ```
-     Saved Games\DCS\Scripts\Hooks
+     %USERPROFILE%\Saved Games\DCS\Scripts\Hooks
      ```
 3. **Verify installation:**
    - Launch DCS World
@@ -49,7 +49,7 @@ To remove the DataLink Overlay mod:
 
 1. **Navigate to your DCS Mods folder:**
    ```
-   Saved Games\DCS\Mods\tech\
+   %USERPROFILE%\Saved Games\DCS\Mods\tech\
    ```
 
 2. **Delete the DataLink folder:**
@@ -57,7 +57,7 @@ To remove the DataLink Overlay mod:
      
 3. **Navigate to your DCS Scripts folder:**
    ```
-   Saved Games\DCS\Scripts\Hooks
+   %USERPROFILE%\Saved Games\DCS\Scripts\Hooks
    ```
 
 4. **Delete the hook file:**
