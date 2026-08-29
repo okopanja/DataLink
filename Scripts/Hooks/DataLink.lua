@@ -1,7 +1,7 @@
 package.path = package.path .. lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\?.lua;]]
 local Logging = require("Utils.Logging").new("DataLink.log")
 local ScriptedEWRContactSource = require("ScriptedEWRContactSource")
-local DCSContactSource = require("DCSContactSource")
+-- local DCSContactSource = require("DCSContactSource")
 local DataLinkDeviceConnector = require("DataLinkDeviceConnector")
 
 local dataLinkDeviceConnector = DataLinkDeviceConnector:new()
