@@ -18,6 +18,8 @@ function Aircraft:new(o)
 	o.heading = nil
 	o.range = nil
 	o.speed = nil
+	o.side = nil
+	o.type = nil
 	return o
 end
 
@@ -57,6 +59,24 @@ function Aircraft:getRangeToAircraft(other_aircraft)
 	local dz = other_aircraft.position.z - self.position.z
 	local distance = math.sqrt((dx * dx) + (dz * dz))
 	return distance / 1000 -- convert to kilometers
+end
+
+
+-- Calculates the radial speed of another aircraft relative to this aircraft.
+-- it utilizes the bearing to the other aircraft to determine the radial component of the other aircaft's speed.
+function Aircraft:getRadialSpeedOfAircraft(other_aircraft)
+	if not self.position or not other_aircraft.position then
+		Logging:info("getRadialSpeed: one of the aircrafts has no position. self.position="..tostring(self.position)..", other_aircraft.position="..tostring(other_aircraft.position))
+		return nil
+	end
+	local bearing_to_other = self:getBearingToAircraft(other_aircraft)
+	if not bearing_to_other then
+		Logging:info("getRadialSpeed: could not calculate bearing to other aircraft.")
+		return nil
+	end
+	local relative_bearing = (bearing_to_other - self.heading + 360) % 360
+	local radial_speed = other_aircraft:getSpeed() * math.cos(math.rad(relative_bearing))
+	return radial_speed
 end
 
 function Aircraft:hasLineOfSightToAircraft(other_aircraft)
@@ -99,6 +119,22 @@ end
 function Aircraft:setAltitude(altitude)
 	self:ensurePosition()
 	self.position.alt = altitude
+end
+
+function Aircraft:getSide()
+	return self.side
+end
+
+function Aircraft:setSide(side)
+	self.side = side
+end
+
+function Aircraft:getType()
+	return self.type
+end
+
+function Aircraft:setType(type)
+	self.type = type
 end
 
 function Aircraft:getPreviousPosition()

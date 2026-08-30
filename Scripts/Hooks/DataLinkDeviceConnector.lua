@@ -28,7 +28,7 @@ function DataLinkDeviceConnector:new(o)
 end
 
 function DataLinkDeviceConnector:initialize()
-  Logging:info("DataLinkDeviceSink:initialize: Initializing DataLinkDeviceSink")
+  Logging:info("DataLinkDeviceConnector:initialize: Initializing DataLinkDeviceSink")
   -- register callbacks which will pass the the events to the object method handlers
   DCS.setUserCallbacks({
     onNetMissionChanged = function(missionName)
@@ -41,12 +41,12 @@ function DataLinkDeviceConnector:initialize()
 end
 
 function DataLinkDeviceConnector:onNetMissionChanged(missionName)
-  Logging:info("DataLinkDeviceSink:onNetMissionChanged: "..missionName)
+  Logging:info("DataLinkDeviceConnector:onNetMissionChanged: "..missionName)
   -- Handle mission change logic here
 end
 
 function DataLinkDeviceConnector:onPlayerChangeSlot(playerID)
-  Logging:info("DataLinkDeviceSink:onPlayerChangeSlot: "..playerID)
+  Logging:info("DataLinkDeviceConnector:onPlayerChangeSlot: "..playerID)
   if net.get_my_player_id() == playerID then
     Logging:info("Player changed slot to "..playerID)    
     self.datalink_device = self:findDataLinkDevice()
