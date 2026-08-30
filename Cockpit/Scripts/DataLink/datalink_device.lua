@@ -20,7 +20,8 @@ print_message_to_user("Username: "..get_aircraft_property("MY_PROPERTY"))
 require("terrain")
 -- require("net")
 local dev = GetSelf()
-make_default_activity(0.1)
+local UPDATE_INTERVAL = 0.1
+make_default_activity(UPDATE_INTERVAL)
 
 local ARGS_PER_CTX = 5
 local DL_COMMAND_ID = 123456
@@ -49,6 +50,14 @@ local iCommandPlayerToPlayer = 1001;
 local last_mode = iCommandPlaneModeNAV
 local DEFAULT_ZOOM_LEVEL = 4
 local zoom_level = DEFAULT_ZOOM_LEVEL
+local DEVICE_STATES = {
+  	NO_CONTACTS = 0,
+  	RECEIVING_CONTACTS = 1,
+	EXTRAPOLATING_CONTACTS = 2,
+}
+
+local device_state = DEVICE_STATES.NO_CONTACTS
+
 
 print_message_to_user("DataLink: "..tostring(DEBUG))
 
@@ -113,9 +122,56 @@ end
 
 local true_heading_handle = get_param_handle(CommonParameterNames.TRUE_HEADING)
 local full_circle_radian = 2 * math.pi
+
+
+function extrapolate_contacts(own_heading_rad, own_velocity)
+  	log.info("Own_heading: "..tostring(own_heading_rad))
+  	log.info("Own_velocity: "..tostring(own_velocity))
+	local dt = UPDATE_INTERVAL -- perhaps use a timer to get the actual elapsed time since last update, but for now we assume it's constant
+	local own_speed_mps = own_velocity / 3.6 -- km/h to m/s
+	local own_distance_moved = own_speed_mps * dt
+	local own_dx = own_distance_moved * math.sin(own_heading_rad)
+	local own_dy = own_distance_moved * math.cos(own_heading_rad)
+
+	for i, contact in ipairs(received_contacts) do
+		if contact.BEARING and contact.RANGE and contact.ALTITUDE and contact.SPEED and contact.HEADING then
+		log.info("Extrapolating contact "..tostring(i).." with initial state: BRG="..tostring(contact.BEARING).." RNG="..tostring(contact.RANGE).." ALT="..tostring(contact.ALTITUDE).." SPD="..tostring(contact.SPEED).." HDG="..tostring(contact.HEADING))
+		local bearing_rad = math.rad(contact.BEARING)
+		local contact_x = contact.RANGE * 1000 * math.sin(bearing_rad) -- convert km to meters
+		local contact_y = contact.RANGE * 1000 * math.cos(bearing_rad) -- convert km to meters
+
+		local contact_speed_mps = contact.SPEED / 3.6 -- km/h to m/s
+		local contact_distance_moved = contact_speed_mps * dt
+		local contact_heading_rad = math.rad(contact.HEADING)
+		local contact_dx = contact_distance_moved * math.sin(contact_heading_rad)
+		local contact_dy = contact_distance_moved * math.cos(contact_heading_rad)
+
+		local contact_x_new = contact_x + contact_dx - own_dx -- calculate new position and move coordinate relative to own aircraft
+		local contact_y_new = contact_y + contact_dy - own_dy -- calculate new position and move coordinate relative to own aircraft
+
+		log.info("Contact "..tostring(i).." moved dx="..tostring(contact_dx).." dy="..tostring(contact_dy).." meters in dt="..tostring(dt).." seconds.")
+
+		-- Convert the relative movement in meters to a change in range and bearing.
+		local range_change = math.sqrt(contact_x_new^2 + contact_y_new^2)
+		local bearing_change = math.deg(math.atan2(contact_x_new, contact_y_new))
+
+		contact.RANGE = range_change / 1000 -- convert meters to kilometers
+		contact.BEARING = (bearing_change) % 360
+		end
+	end
+end
+
 function update()
-	local heading = base_data:getHeading()
-	true_heading_handle:set(full_circle_radian - heading)
+	local own_heading_rad = full_circle_radian - base_data:getHeading()
+	true_heading_handle:set(own_heading_rad)
+	-- extrapolate contacts based on our own speed and heading and the contact's speed and heading to update the cockpit parameters
+	
+	if device_state == DEVICE_STATES.EXTRAPOLATING_CONTACTS then
+		-- local own_velocity = base_data:getSelfVelocity()
+		local own_velocity = base_data:getTrueAirSpeed()
+		extrapolate_contacts(own_heading_rad, own_velocity)
+		update_contacts(received_contacts)
+	end
 end
 
 function update_contacts(contacts)
@@ -214,6 +270,7 @@ function SetCommand(command, value)
 		return last_seq
 	elseif command == DL_COMMAND_COUNT then
 		log.info("Number of contacts to be received: "..tostring(value))
+		device_state = DEVICE_STATES.RECEIVING_CONTACTS
 		new_contacts = {}
 		for i = 1, value do
 			new_contacts[i] = {}
@@ -248,6 +305,7 @@ function SetCommand(command, value)
 			last_seq = last_seq + 1
 			received_contacts = new_contacts
 			update_contacts(received_contacts)
+			device_state = DEVICE_STATES.EXTRAPOLATING_CONTACTS
 		end
 	elseif command == DL_COMMAND_ID - 1 then
 		log.info("DataLink: received command 123559 with value "..tostring(value))
