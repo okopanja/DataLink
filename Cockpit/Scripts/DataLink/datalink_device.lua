@@ -101,6 +101,7 @@ end
 local last_seq  = -1
 local new_contacts = {} -- contacts being received
 local received_contacts  = {}   -- current picture: list of {brg, rng, alt, spd, hdg}
+local last_update_time = 0
 
 -- ── Update loop ───────────────────────────────────────────────────────
 
@@ -124,10 +125,9 @@ local true_heading_handle = get_param_handle(CommonParameterNames.TRUE_HEADING)
 local full_circle_radian = 2 * math.pi
 
 
-function extrapolate_contacts(own_heading_rad, own_velocity)
+function extrapolate_contacts(own_heading_rad, own_velocity, dt)
   	log.info("Own_heading: "..tostring(own_heading_rad))
   	log.info("Own_velocity: "..tostring(own_velocity))
-	local dt = UPDATE_INTERVAL -- perhaps use a timer to get the actual elapsed time since last update, but for now we assume it's constant
 	local own_speed_mps = own_velocity / 3.6 -- km/h to m/s
 	local own_distance_moved = own_speed_mps * dt
 	local own_dx = own_distance_moved * math.sin(own_heading_rad)
@@ -169,7 +169,10 @@ function update()
 	if device_state == DEVICE_STATES.EXTRAPOLATING_CONTACTS then
 		-- local own_velocity = base_data:getSelfVelocity()
 		local own_velocity = base_data:getTrueAirSpeed()
-		extrapolate_contacts(own_heading_rad, own_velocity)
+		local current_model_time = get_model_time()
+		local dt = current_model_time - last_update_time
+		last_update_time = current_model_time
+		extrapolate_contacts(own_heading_rad, own_velocity, dt)
 		update_contacts(received_contacts)
 	end
 end
@@ -306,6 +309,7 @@ function SetCommand(command, value)
 			received_contacts = new_contacts
 			update_contacts(received_contacts)
 			device_state = DEVICE_STATES.EXTRAPOLATING_CONTACTS
+			last_update_time = get_model_time()
 		end
 	elseif command == DL_COMMAND_ID - 1 then
 		log.info("DataLink: received command 123559 with value "..tostring(value))
