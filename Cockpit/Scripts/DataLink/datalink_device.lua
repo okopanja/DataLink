@@ -383,6 +383,8 @@ if DEBUG then
 	saveInspect("list_indication", list_indication())
 	saveInspect("RPC", RPC)
 	saveInspect("get_base_data", get_base_data())
+	saveInspect("get_based_data-getSelfVelocity", get_base_data().getSelfVelocity())
+	saveInspect("get_based_data-getTrueAirSpeed", get_base_data().getTrueAirSpeed())
 end
 
 -- must be false in order to receive updates.

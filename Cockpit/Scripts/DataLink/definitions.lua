@@ -1,5 +1,5 @@
-MAX_CONTACTS = 80
 
+MAX_CONTACTS = 80
 local count = 512 - 1
 local function counter()
 	count = count + 1
@@ -12,6 +12,7 @@ CommonArguments = {
 	ACTIVE     = counter(),
 }
 
+-- Potential data transfer method do be tested in future, currently not used.
 count = 10000
 TARGET_COUNT = counter()
 TARGET_ARGS = {
@@ -28,6 +29,7 @@ TARGET_ARGS = {
 	TARGET_10 = counter(),
 }
 
+-- HDD scale definitions, expressed in km. This is how much the reference scale at lower right corner is worth in km, depending on the current HDD zoom level.
 HDDScales = {
 	[1] = 1,
 	[2] = 2,
@@ -38,6 +40,7 @@ HDDScales = {
 	[7] = 100,
 }
 
+-- All known events that could be in theory sent to device.
 EVENTS = {
 	-- Rearm/Refuel events
 	WeaponRearmComplete = "WeaponRearmComplete",
@@ -90,11 +93,13 @@ EVENTS = {
 	OnNewNetPlane = "OnNewNetPlane",
 }
 
+-- Common parameter names that are used in multiple places, so they are defined here to avoid typos and inconsistencies.
 CommonParameterNames = {}
 CommonParameterNames["DATALINK_TOGGLE_VISIBILITY"] = "DATALINK_TOGGLE_VISIBILITY"
 CommonParameterNames["DATALINK_SCALE"] = "DATALINK_SCALE"
 CommonParameterNames["TRUE_HEADING"] = "TRUE_HEADING"
 
+-- Definition of enemy contact parameter names, used to draw the contact on HDD within DATALINK_page.lua
 EnemyContactParameterNames = {}
 for i = 1, MAX_CONTACTS do
   EnemyContactParameterNames[i] = {
