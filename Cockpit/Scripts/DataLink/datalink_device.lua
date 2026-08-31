@@ -125,10 +125,9 @@ local true_heading_handle = get_param_handle(CommonParameterNames.TRUE_HEADING)
 local full_circle_radian = 2 * math.pi
 
 
-function extrapolate_contacts(own_heading_rad, own_velocity, dt)
-  	log.info("Own_heading: "..tostring(own_heading_rad))
-  	log.info("Own_velocity: "..tostring(own_velocity))
-	local own_speed_mps = own_velocity / 3.6 -- km/h to m/s
+function extrapolate_contacts(own_heading_rad, own_speed_mps, dt)
+  	-- log.info("Own_heading: "..tostring(own_heading_rad))
+  	-- log.info("Own_velocity: "..tostring(own_velocity))
 	local own_distance_moved = own_speed_mps * dt
 	local own_dx = own_distance_moved * math.sin(own_heading_rad)
 	local own_dy = own_distance_moved * math.cos(own_heading_rad)
@@ -167,13 +166,21 @@ function update()
 	-- extrapolate contacts based on our own speed and heading and the contact's speed and heading to update the cockpit parameters
 	
 	if device_state == DEVICE_STATES.EXTRAPOLATING_CONTACTS then
-		-- local own_velocity = base_data:getSelfVelocity()
-		local own_velocity = base_data:getTrueAirSpeed()
+		local own_velocity = base_data:getTrueAirSpeed() -- already in m/s
 		local current_model_time = get_model_time()
 		local dt = current_model_time - last_update_time
 		last_update_time = current_model_time
 		extrapolate_contacts(own_heading_rad, own_velocity, dt)
 		update_contacts(received_contacts)
+	end
+
+	if DEBUG then
+		saveInspect("get_based_data-getSelfVelocity", get_base_data().getSelfVelocity())
+		saveInspect("get_based_data-getTrueAirSpeed", get_base_data().getTrueAirSpeed())
+		saveInspect("get_based_data-getSelfAirspeed", get_base_data().getSelfAirspeed())
+		saveInspect("get_based_data-getVerticalAcceleration", get_base_data().getVerticalAcceleration())
+		saveInspect("get_based_data-getVerticalVelocity", get_base_data().getVerticalVelocity())
+		saveInspect("get_based_data-getSelfCoordinates", get_base_data().getSelfCoordinates())
 	end
 end
 
@@ -383,8 +390,6 @@ if DEBUG then
 	saveInspect("list_indication", list_indication())
 	saveInspect("RPC", RPC)
 	saveInspect("get_base_data", get_base_data())
-	saveInspect("get_based_data-getSelfVelocity", get_base_data().getSelfVelocity())
-	saveInspect("get_based_data-getTrueAirSpeed", get_base_data().getTrueAirSpeed())
 end
 
 -- must be false in order to receive updates.
