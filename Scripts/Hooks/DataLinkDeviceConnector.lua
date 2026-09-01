@@ -28,7 +28,7 @@ function DataLinkDeviceConnector:new(o)
 end
 
 function DataLinkDeviceConnector:initialize()
-  Logging:info("DataLinkDeviceConnector:initialize: Initializing DataLinkDeviceSink")
+  Logging:info("Initializing DataLinkDeviceConnector")
   -- register callbacks which will pass the the events to the object method handlers
   DCS.setUserCallbacks({
     onNetMissionChanged = function(missionName)
