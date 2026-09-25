@@ -42,11 +42,18 @@ function ScriptedEWRContactSource:initialize()
       self:onNetMissionChanged(missionName)
     end,
     onTriggerMessage = function(message, clearView)
-      self:onTriggerMessage(message, clearView)
+      if self:getActive() then
+        self:onTriggerMessage(message, clearView)
+      end
     end,
     onPlayerChangeSlot = function(playerID)
       self:onPlayerChangeSlot(playerID)
     end,
+    onActivatePlane = function(airplaneID)
+      Logging:info("onActivatePlane called with airplaneID: " .. tostring(airplaneID))
+      self:updateOwnPlayerAircraft()
+    end,
+
   })
 end
 
@@ -71,12 +78,15 @@ end
 function ScriptedEWRContactSource:onPlayerChangeSlot(playerID)
   if playerID == nil then return end
   -- Ignore own slot changes, but reset datalink device and sequence counter
-  if net.get_my_player_id() == playerID then return end
+  if net.get_my_player_id() == playerID then
+    self:updateOwnPlayerAircraft(playerID)
+    return 
+  end
   -- Create a new Player object for the player who changed slots
   Logging:info("ScriptedEWRContactSource:onPlayerChangeSlot: playerID="..tostring(playerID))
   local player_info = net.get_player_info(playerID)
   if not player_info then
-	Logging:info("onPlayerChangeSlot: no player info found for playerID="..tostring(playerID))
+	  Logging:info("onPlayerChangeSlot: no player info found for playerID="..tostring(playerID))
 	return
   end
   local player = Player:new(player_info)
@@ -179,6 +189,8 @@ function ScriptedEWRContactSource:parseEWR_SPS(msg)
       aircraft:setAltitude(alt)
       aircraft:setSpeed(spd)
       aircraft:setHeading(tonumber(hdg))
+      aircraft:setDonor("SPS")
+      aircraft:setContactSource("ScriptedEWRContactSource")
 
       contacts[#contacts + 1] = aircraft
 

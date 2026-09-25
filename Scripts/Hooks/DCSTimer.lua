@@ -23,6 +23,10 @@ function DCSTimer:intervalHasElapsed()
 	return false, elapsed_time
 end
 
+function DCSTimer:getLastTime()
+	return self.last_time
+end
+
 function DCSTimer:reset()
 	self.last_time = DCS.getModelTime()
 end
