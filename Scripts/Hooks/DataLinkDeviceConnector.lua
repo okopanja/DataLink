@@ -1,4 +1,6 @@
 local Logging = require("Utils.Logging").new("DataLink.log")
+local Table = require("Utils.Table")
+dofile(lfs.writedir() .. [[Mods\tech\DataLink\Cockpit\Scripts\common.lua]])
 
 local DataLinkDeviceConnector = {}
 
@@ -48,12 +50,16 @@ end
 function DataLinkDeviceConnector:onPlayerChangeSlot(playerID)
   Logging:info("DataLinkDeviceConnector:onPlayerChangeSlot: "..playerID)
   if net.get_my_player_id() == playerID then
-    Logging:info("Player changed slot to "..playerID)    
-    self.datalink_device = self:findDataLinkDevice()
-    if self.datalink_device then
-      Logging:info("DataLink device found and initialized.")
-    else
-      Logging:info("DataLink device not found.")
+    Logging:info("Player changed slot to "..playerID)
+    local selfData = Export.LoGetSelfData()
+    local shouldSearchDevice = (selfData ~= nil) and Table.is_in_keys(SUPPORTED_AIRCRAFT, selfData.Name)
+    if shouldSearchDevice then
+      self.datalink_device = self:findDataLinkDevice()
+      if self.datalink_device then
+        Logging:info("DataLink device found and initialized.")
+      else
+        Logging:info("DataLink device not found.")
+      end
     end
   end
 end

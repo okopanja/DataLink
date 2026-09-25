@@ -44,28 +44,28 @@ end
 function Logger:warning(message)
   -- self:ensureInitialized()
   if self.verbosity.value >= LOG_LEVELS.WARNING.value then
-    log(LOG_LEVELS.WARNING, message)
+    self:log(LOG_LEVELS.WARNING, message)
   end
 end
 
 function Logger:error(message)
   -- self:ensureInitialized()
   if self.verbosity.value >= LOG_LEVELS.ERROR.value then
-    log(LOG_LEVELS.ERROR, message)
+    self:log(LOG_LEVELS.ERROR, message)
   end
 end
 
 function Logger:debug(message)
   -- self:ensureInitialized()
   if self.verbosity.value >= LOG_LEVELS.DEBUG.value then
-    log(LOG_LEVELS.DEBUG, message)
+    self:log(LOG_LEVELS.DEBUG, message)
   end
 end
 
 function Logger:setLogLevel(logLevel)
   -- self:ensureInitialized()
-  info("Changing log level to: "..logLevel.name)
-  verbosity = logLevel
+  self:info("Changing log level to: "..logLevel.name)
+  self.verbosity = logLevel
 end
 
 function Logger:updateVerbosity(option, logLevelName)

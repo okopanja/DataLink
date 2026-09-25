@@ -1,6 +1,6 @@
 local DCSTimer = require("DCSTimer")
 local Logging = require("Utils.Logging").new("DataLink.log")
-local MAXIMAL_ALLOWED_CALCULATION_TIME = 20
+local MAXIMAL_ALLOWED_AGE = 20
 
 local Aircraft = {}
 
@@ -9,7 +9,7 @@ function Aircraft:new(o)
 	setmetatable(o, self)
 	self.__index = self
 	o.id = o.id
-	o.timer = DCSTimer:new(MAXIMAL_ALLOWED_CALCULATION_TIME)
+	o.age = DCSTimer:new(MAXIMAL_ALLOWED_AGE)
 	o.x = nil
 	o.z = nil
 	o.alt = nil
@@ -18,8 +18,11 @@ function Aircraft:new(o)
 	o.heading = nil
 	o.range = nil
 	o.speed = nil
-	o.side = nil
+	o.side = nil	
 	o.type = nil
+	o.donor = nil
+	o.contact_source = nil
+	o.flags = 0
 	return o
 end
 
@@ -37,54 +40,6 @@ end
 
 function Aircraft:setBearing(bearing)
 	self.bearing = bearing
-end
-
-function Aircraft:getBearingToAircraft(other_aircraft)
-	if not self.position or not other_aircraft.position then
-		Logging:info("getBearingToAircraft: one of the aircrafts has no position. self.position="..tostring(self.position)..", other_aircraft.position="..tostring(other_aircraft.position))
-		return nil
-	end
-	local dx = other_aircraft.position.x - self.position.x
-	local dz = other_aircraft.position.z - self.position.z
-	local bearing = math.deg(math.atan2(dz, dx)) % 360
-	return bearing
-end
-
-function Aircraft:getRangeToAircraft(other_aircraft)
-	if not self.position or not other_aircraft.position then
-		Logging:info("getRangeToAircraft: one of the aircrafts has no position. self.position="..tostring(self.position)..", other_aircraft.position="..tostring(other_aircraft.position))
-		return nil
-	end
-	local dx = other_aircraft.position.x - self.position.x
-	local dz = other_aircraft.position.z - self.position.z
-	local distance = math.sqrt((dx * dx) + (dz * dz))
-	return distance / 1000 -- convert to kilometers
-end
-
-
--- Calculates the radial speed of another aircraft relative to this aircraft.
--- it utilizes the bearing to the other aircraft to determine the radial component of the other aircaft's speed.
-function Aircraft:getRadialSpeedOfAircraft(other_aircraft)
-	if not self.position or not other_aircraft.position then
-		Logging:info("getRadialSpeed: one of the aircrafts has no position. self.position="..tostring(self.position)..", other_aircraft.position="..tostring(other_aircraft.position))
-		return nil
-	end
-	local bearing_to_other = self:getBearingToAircraft(other_aircraft)
-	if not bearing_to_other then
-		Logging:info("getRadialSpeed: could not calculate bearing to other aircraft.")
-		return nil
-	end
-	local relative_bearing = (bearing_to_other - self.heading + 360) % 360
-	local radial_speed = other_aircraft:getSpeed() * math.cos(math.rad(relative_bearing))
-	return radial_speed
-end
-
-function Aircraft:hasLineOfSightToAircraft(other_aircraft)
-	if not self.position or not other_aircraft.position then
-		return false
-	end
-	-- check with terraing function if there is a line of sight between the two aircrafts using terrain.isVisible()
-	return terrain.isVisible(self.position.x, self.position.alt, self.position.z, other_aircraft.position.x, other_aircraft.position.alt, other_aircraft.position.z)
 end
 
 function Aircraft:getRange()
@@ -121,6 +76,21 @@ function Aircraft:setAltitude(altitude)
 	self.position.alt = altitude
 end
 
+function Aircraft:getX()
+	self:ensurePosition()
+	return self.position.x
+end
+
+function Aircraft:getAlt()
+	self:ensurePosition()
+	return self.position.alt
+end
+
+function Aircraft:getZ()
+	self:ensurePosition()
+	return self.position.z
+end
+
 function Aircraft:getSide()
 	return self.side
 end
@@ -137,12 +107,48 @@ function Aircraft:setType(type)
 	self.type = type
 end
 
+function Aircraft:getID()
+	return self.id
+end
+
+function Aircraft:setID(id)
+	self.id = id
+end
+
+function Aircraft:getDonor()
+	return self.donor
+end
+
+function Aircraft:setDonor(donor)
+	self.donor = donor
+end
+
+function Aircraft:getFlags()
+	return self.flags
+end
+
+function Aircraft:setFlags(flags)
+	self.flags = flags
+end
+
 function Aircraft:getPreviousPosition()
 	return self.previous_position
 end
 
 function Aircraft:getMaximalSpeedInKMH()
 	return 2700
+end
+
+function Aircraft:setContactSource(contact_source)
+	self.contact_source = contact_source
+end
+
+function Aircraft:getContactSource()
+	return self.contact_source
+end
+
+function Aircraft:getAge()
+	return self.age:getElapsedTime()
 end
 
 function Aircraft:ensurePosition()
@@ -165,7 +171,7 @@ end
 -- 4. if speed does not exceed the maximum speed of the aircraft.
 -- Failures of conditions 3 and 4 results in previous position being invalidated, it this case speed and heading are not updated
 function Aircraft:updatePosition(new_position)
-	local elapsed_time = self.timer:getElapsedTime()
+	local elapsed_time = self.age:getElapsedTime()
 
 	-- Only calculate speed/heading if we have a previous position to compare against
 	if self.previous_position and (self.previous_position.x ~= new_position.x or self.previous_position.z ~= new_position.z) then
@@ -194,7 +200,54 @@ function Aircraft:updatePosition(new_position)
 		self.previous_position = self.position
 	end
 	self.position = new_position
-	self.timer:reset()
+	self.age:reset()
+end
+
+function Aircraft:getBearingToAircraft(other_aircraft)
+	if not self.position or not other_aircraft.position then
+		Logging:info("getBearingToAircraft: one of the aircrafts has no position. self.position="..tostring(self.position)..", other_aircraft.position="..tostring(other_aircraft.position))
+		return nil
+	end
+	local dx = other_aircraft.position.x - self.position.x
+	local dz = other_aircraft.position.z - self.position.z
+	local bearing = math.deg(math.atan2(dz, dx)) % 360
+	return bearing
+end
+
+function Aircraft:getRangeToAircraft(other_aircraft)
+	if not self.position or not other_aircraft.position then
+		Logging:info("getRangeToAircraft: one of the aircrafts has no position. self.position="..tostring(self.position)..", other_aircraft.position="..tostring(other_aircraft.position))
+		return nil
+	end
+	local dx = other_aircraft.position.x - self.position.x
+	local dz = other_aircraft.position.z - self.position.z
+	local distance = math.sqrt((dx * dx) + (dz * dz))
+	return distance / 1000 -- convert to kilometers
+end
+
+-- Calculates the radial speed of another aircraft relative to this aircraft.
+-- it utilizes the bearing to the other aircraft to determine the radial component of the other aircaft's speed.
+function Aircraft:getRadialSpeedOfAircraft(other_aircraft)
+	if not self.position or not other_aircraft.position then
+		Logging:info("getRadialSpeed: one of the aircrafts has no position. self.position="..tostring(self.position)..", other_aircraft.position="..tostring(other_aircraft.position))
+		return nil
+	end
+	local bearing_to_other = self:getBearingToAircraft(other_aircraft)
+	if not bearing_to_other then
+		Logging:info("getRadialSpeed: could not calculate bearing to other aircraft.")
+		return nil
+	end
+	local relative_bearing = (bearing_to_other - self.heading + 360) % 360
+	local radial_speed = other_aircraft:getSpeed() * math.cos(math.rad(relative_bearing))
+	return radial_speed
+end
+
+function Aircraft:hasLineOfSightToAircraft(other_aircraft)
+	if not self.position or not other_aircraft.position then
+		return false
+	end
+	-- check with terraing function if there is a line of sight between the two aircrafts using terrain.isVisible()
+	return terrain.isVisible(self.position.x, self.position.alt, self.position.z, other_aircraft.position.x, other_aircraft.position.alt, other_aircraft.position.z)
 end
 
 return Aircraft

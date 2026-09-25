@@ -134,7 +134,7 @@ function extrapolate_contacts(own_heading_rad, own_speed_mps, dt)
 
 	for i, contact in ipairs(received_contacts) do
 		if contact.BEARING and contact.RANGE and contact.ALTITUDE and contact.SPEED and contact.HEADING then
-		log.info("Extrapolating contact "..tostring(i).." with initial state: BRG="..tostring(contact.BEARING).." RNG="..tostring(contact.RANGE).." ALT="..tostring(contact.ALTITUDE).." SPD="..tostring(contact.SPEED).." HDG="..tostring(contact.HEADING))
+		log.debug("Extrapolating contact "..tostring(i).." with initial state: BRG="..tostring(contact.BEARING).." RNG="..tostring(contact.RANGE).." ALT="..tostring(contact.ALTITUDE).." SPD="..tostring(contact.SPEED).." HDG="..tostring(contact.HEADING))
 		local bearing_rad = math.rad(contact.BEARING)
 		local contact_x = contact.RANGE * 1000 * math.sin(bearing_rad) -- convert km to meters
 		local contact_y = contact.RANGE * 1000 * math.cos(bearing_rad) -- convert km to meters
@@ -148,7 +148,7 @@ function extrapolate_contacts(own_heading_rad, own_speed_mps, dt)
 		local contact_x_new = contact_x + contact_dx - own_dx -- calculate new position and move coordinate relative to own aircraft
 		local contact_y_new = contact_y + contact_dy - own_dy -- calculate new position and move coordinate relative to own aircraft
 
-		log.info("Contact "..tostring(i).." moved dx="..tostring(contact_dx).." dy="..tostring(contact_dy).." meters in dt="..tostring(dt).." seconds.")
+		log.debug("Contact "..tostring(i).." moved dx="..tostring(contact_dx).." dy="..tostring(contact_dy).." meters in dt="..tostring(dt).." seconds.")
 
 		-- Convert the relative movement in meters to a change in range and bearing.
 		local range_change = math.sqrt(contact_x_new^2 + contact_y_new^2)

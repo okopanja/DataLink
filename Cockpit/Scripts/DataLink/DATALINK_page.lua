@@ -89,8 +89,8 @@ local MAT_SEPARATOR = MakeMaterial("", {  0, 180,   0, 255})
 -- local MAT_CROSS     = MakeMaterial("", {  0, 210,   0, 180})
 local MAT_CROSS     = MakeMaterial("", { 210, 0,   0, 180})
 local MAT_CROSS_2     = MakeMaterial("", { 0, 0,   255, 255})
--- local MAT_ENEMY       = MakeMaterial("", {210, 0,     0, 255})  -- enemy contact
-local MAT_ENEMY       = MakeMaterial("", {0, 210,     0, 255})  -- enemy contact
+local MAT_ENEMY       = MakeMaterial("", {210, 0,     0, 255})  -- enemy contact
+-- local MAT_ENEMY       = MakeMaterial("", {0, 210,     0, 255})  -- enemy contact
 
 -- ── Helper: solid-colour filled quad, child of anchor ─────────────────
 local function solid_quad(parent, name_, x1, y1, x2, y2, mat, level_)
