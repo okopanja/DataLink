@@ -31,7 +31,7 @@ function ContactProcessor:onRadarContactsUpdate(contacts)
 		end
 	end
 	contacts = blueContacts
-	-- transmit contacts to other players@J
+	-- transmit contacts to other players
 	self.dataLinkTransiever:transfer(contacts)
 	-- -- TODO: remove the self-feed used for testing purposes
 	-- self.dataLinkConnector:transfer(contacts)

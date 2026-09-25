@@ -208,37 +208,6 @@ function DataLinkTransiever:handleIncomingMessage(message)
     self:dispatchEvent(self.EventTypes.ContactsReceived, aircrafts)
 end
 
-function DataLinkTransiever:getExistingContact(contact)
-    for i, current_contact in ipairs(self.contacts) do
-        if current_contact.id == contact.id then
-            return current_contact
-        end
-    end
-    return nil
-end
-
-function DataLinkTransiever:updateOwnContacts(contacts)
-    -- iterate through the provided contacts and update the local contact list
-    for i, contact in ipairs(contacts) do
-        local existing_contact = self:getExistingContact(contact)
-        if existing_contact then
-            -- update existing contact
-            for key, value in pairs(contact) do
-                existing_contact[key] = value
-            end
-        else
-            -- add new contact
-            self.contacts[#self.contacts + 1] = contact
-        end
-    end
-    
-    -- check which contacts have expired, against the timer property
-    
-
-    -- at the end transfer own commands to others
-    self:transfer(contacts)
-end
-
 function DataLinkTransiever:transfer(contacts)
     if self.connection_status ~= CONNECTION_STATUS.CONNECTED then
         Logging:warning("Cannot transfer contacts, not connected to NATS server.")
