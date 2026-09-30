@@ -1,9 +1,12 @@
 local Logging = require("Utils.Logging").new("DataLink.log")
+local Table = require("Utils.Table")
+local UnitData = require("UnitData")
+dofile(lfs.writedir() .. [[Mods\tech\DataLink\Cockpit\Scripts\common.lua]])
 
 local DataLinkDeviceConnector = {}
 
 local MAX_CONTACTS = 20
-local ARGS_PER_CTX = 5
+local ARGS_PER_CTX = 6
 local DL_COMMAND_ID = 123456
 local DL_COMMAND_ARG = 123456
 local ARG_SEQ      = DL_COMMAND_ID + 1
@@ -48,12 +51,16 @@ end
 function DataLinkDeviceConnector:onPlayerChangeSlot(playerID)
   Logging:info("DataLinkDeviceConnector:onPlayerChangeSlot: "..playerID)
   if net.get_my_player_id() == playerID then
-    Logging:info("Player changed slot to "..playerID)    
-    self.datalink_device = self:findDataLinkDevice()
-    if self.datalink_device then
-      Logging:info("DataLink device found and initialized.")
-    else
-      Logging:info("DataLink device not found.")
+    Logging:info("Player changed slot to "..playerID)
+    local selfData = Export.LoGetSelfData()
+    local shouldSearchDevice = (selfData ~= nil) and Table.is_in_keys(SUPPORTED_AIRCRAFT, selfData.Name)
+    if shouldSearchDevice then
+      self.datalink_device = self:findDataLinkDevice()
+      if self.datalink_device then
+        Logging:info("DataLink device found and initialized.")
+      else
+        Logging:info("DataLink device not found.")
+      end
     end
   end
 end
@@ -90,14 +97,15 @@ function DataLinkDeviceConnector:transfer(contacts)
   Logging:info("Transferring "..#contacts.." contacts to DataLink device")
   self.datalink_device:SetCommand(ARG_COUNT, #contacts)
   Logging:info("Looping through contacts to set arguments")
-  for i, aircraft in ipairs(contacts) do
-    Logging:info("Transferring contact "..i..": brg="..tostring(aircraft:getBearing()).." rng="..tostring(aircraft:getRange()).." alt="..tostring(aircraft:getAltitude()).." spd="..tostring(aircraft:getSpeed()).." hdg="..tostring(aircraft:getHeading()))
+  for i, contact in ipairs(contacts) do
+    Logging:info("Transferring contact "..i..": brg="..tostring(contact:getBearing()).." rng="..tostring(contact:getRange()).." alt="..tostring(contact:getAltitude()).." spd="..tostring(contact:getSpeed()).." hdg="..tostring(contact:getHeading()))
     local b = ARG_BASE + (i - 1) * ARGS_PER_CTX
-    self.datalink_device:SetCommand(b + 0, aircraft:getBearing())
-    self.datalink_device:SetCommand(b + 1, aircraft:getRange())
-    self.datalink_device:SetCommand(b + 2, aircraft:getAltitude())
-    self.datalink_device:SetCommand(b + 3, aircraft:getSpeed())
-    self.datalink_device:SetCommand(b + 4, aircraft:getHeading())
+    self.datalink_device:SetCommand(b + 0, contact:getBearing())
+    self.datalink_device:SetCommand(b + 1, contact:getRange())
+    self.datalink_device:SetCommand(b + 2, contact:getAltitude())
+    self.datalink_device:SetCommand(b + 3, contact:getSpeed())
+    self.datalink_device:SetCommand(b + 4, contact:getHeading())
+    self.datalink_device:SetCommand(b + 5, contact:getIFF())
   end
 
   -- Write sequence counter LAST so the device/page sees a consistent snapshot
