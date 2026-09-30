@@ -2,6 +2,7 @@ local Logging = require("Utils.Logging").new("DataLink.log")
 local BaseContactSource = require("BaseContactSource")
 local Player = require("Player")
 local Contact = require("Contact")
+local UnitData = require("UnitData")
 local ScriptedEWRContactSource = BaseContactSource:new()
 local net = require("net")
 
@@ -191,7 +192,7 @@ function ScriptedEWRContactSource:parseEWR_SPS(msg)
       contact:setHeading(tonumber(hdg))
       contact:setDonor("SPS")
       contact:setContactSource("ScriptedEWRContactSource")
-
+      contact:setIFF(UnitData.IFF.HOSTILE)
       contacts[#contacts + 1] = contact
 
 			-- if #contacts >= MAX_CONTACTS then break end
