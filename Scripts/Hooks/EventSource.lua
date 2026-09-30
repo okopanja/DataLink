@@ -29,16 +29,17 @@ end
 
 function EventSource:dispatchEvent(eventType, eventArg)
     for k, eventHandlerInfo in pairs(self.eventHandlers[eventType]) do
+        eventHandlerInfo.eventHandler(eventHandlerInfo.object, eventArg)
         -- any of the handlers may error out, and block the further dispatching of event to other handlers
-        local status, err = pcall(eventHandlerInfo.eventHandler, eventHandlerInfo.object, eventArg)
-        if not status then
-            Logging:error("Error dispatching event: " .. tostring(err) ..
-                " for event type: " .. tostring(eventType) ..
-                " for object: " .. tostring(eventHandlerInfo.object) ..
-                ":" .. tostring(type(eventHandlerInfo.object)) ..
-                " to event handler: " .. tostring(eventHandlerInfo.eventHandler)
-            )
-        end
+        -- local status, err = pcall(eventHandlerInfo.eventHandler, eventHandlerInfo.object, eventArg)
+        -- if not status then
+        --     Logging:error("Error dispatching event: " .. tostring(err) ..
+        --         " for event type: " .. tostring(eventType) ..
+        --         " for object: " .. tostring(eventHandlerInfo.object) ..
+        --         ":" .. tostring(type(eventHandlerInfo.object)) ..
+        --         " to event handler: " .. tostring(eventHandlerInfo.eventHandler)
+        --     )
+        -- end
     end
 end
 

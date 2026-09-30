@@ -22,8 +22,16 @@ local UNIT_PROPERTIES = {
 
 local Sides = {
   [0] = "spectators",
-  [1] = "blue",
-  [2] = "red",
+  [1] = "red",
+  [2] = "blue",
+  [3] = "neutral"
+}
+
+local IFF = {
+  FRIENDLY = 1,
+  NEUTRAL  = 2,
+  UNKNOWN  = 3,
+  HOSTILE  = 4,
 }
 
 -- define target flags as part of 32 bit bitfield
@@ -62,6 +70,11 @@ local TARGET_FLAGS = {
   UNKNOWN_29 = 0x80000000,    -- 31
 }
 
+CONTACT_SOURCES = {
+  RLPK_27 = "RLPK-27",
+  K_DLAE = "К-ДлАЭ",
+}
+
 local function sideID(sidename)
   for id, name in pairs(Sides) do
     if name == sidename then
@@ -77,4 +90,6 @@ return {
 	TARGET_FLAGS = TARGET_FLAGS,
 	Sides = Sides,
 	sideID = sideID,
+  IFF = IFF,
+	CONTACT_SOURCES = CONTACT_SOURCES,
 }

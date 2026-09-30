@@ -48,7 +48,7 @@ local CONTACT_ALT_MAX  = bh * 0.010  -- max altitude bar half-extent at maxAltit
 local CONTACT_ALT_MIN  = bh * 0.020  -- min altitude bar half-extent at minAltitude
 local CONTACT_TAIL_LEN = bw * 0.06  -- fixed rear tail line length
 local CONTACT_THICK    = 0.0025     -- line half-thickness
-
+local CONTACT_RADIUS = bw * 0.025  -- contact circle radius (panel units)
 
 -- -- If DEBUG is true, then we wish to skip the clipping rectangle so we can see the whole panel in the 3D cockpit.
 if not DEBUG then
@@ -89,8 +89,35 @@ local MAT_SEPARATOR = MakeMaterial("", {  0, 180,   0, 255})
 -- local MAT_CROSS     = MakeMaterial("", {  0, 210,   0, 180})
 local MAT_CROSS     = MakeMaterial("", { 210, 0,   0, 180})
 local MAT_CROSS_2     = MakeMaterial("", { 0, 0,   255, 255})
-local MAT_ENEMY       = MakeMaterial("", {210, 0,     0, 255})  -- enemy contact
+local MAT_DEFAULT    = MakeMaterial("", {  0, 255, 0, 255})  -- default contact is green
+-- local MAT_ENEMY       = MakeMaterial("", {210, 0,     0, 255})  -- enemy contact RED
+-- local MAT_FRIENDLY       = MakeMaterial("", {0, 0,     210, 255})  -- friendly contact BLUE
 -- local MAT_ENEMY       = MakeMaterial("", {0, 210,     0, 255})  -- enemy contact
+
+local function normalize_color(color)
+	return {color[1]/255, color[2]/255, color[3]/255}
+end
+
+local coalition_color_filters = {
+	FRIENDLY = {0, 210, 0, 255},
+	NEUTRAL = {210, 210, 210, 255},
+	UNKNOWN = {210, 210, 0, 255},
+	HOSTILE = {210, 0, 0, 255},
+}
+
+coalition_color_filters = {
+	FRIENDLY = {0, 210, 0, 255},
+	NEUTRAL = {0, 210, 0, 255},
+	UNKNOWN = {0, 210, 0, 255},
+	HOSTILE = {0, 210, 0, 255},
+}
+
+local normalized_coalition_color_filters = {
+	FRIENDLY = normalize_color(coalition_color_filters.FRIENDLY),
+	NEUTRAL = normalize_color(coalition_color_filters.NEUTRAL),
+	UNKNOWN = normalize_color(coalition_color_filters.UNKNOWN),
+	HOSTILE = normalize_color(coalition_color_filters.HOSTILE),
+}
 
 -- ── Helper: solid-colour filled quad, child of anchor ─────────────────
 local function solid_quad(parent, name_, x1, y1, x2, y2, mat, level_)
@@ -146,18 +173,19 @@ end
 -- Parameters:
 --   parent_elem  anchor element (typically 'ownship')
 --   name         unique string prefix for element names
---   args         one entry from EnemyContactArguments: {BEARING, RANGE, …}
+--   args         one entry from ContactArguments: {BEARING, RANGE, …}
 --   mat          material (colour)
 --   level        draw level
 -- Returns the root bearing-rotator ceSimple.
-local function create_enemy_contact(parent_elem, contact_parameters, mat, level)
+local function create_contact(parent_elem, contact_parameters, mat, level)
 	local DEG2RAD = math.rad(1)
 	local SPD2PAN = CONTACT_SPD_MAX / maxSpeed
 	local ALT2PAN = CONTACT_ALT_MAX / maxAltitude
-	local fx      = math.sin(math.rad(30)) * CONTACT_TAIL_LEN
-	local fy      = math.cos(math.rad(30)) * CONTACT_TAIL_LEN
+	local enemy_tail_x      = math.sin(math.rad(30)) * CONTACT_TAIL_LEN
+	local enemy_tail_y      = math.cos(math.rad(30)) * CONTACT_TAIL_LEN
 	local clip_relation = h_clip_relations.COMPARE  -- all contact elements are clipped by the parent (ownship) rectangle
 	
+	log.info("Creating contact: " .. contact_parameters.NAME)
 	-- 1. Bearing rotation - created as ceSimple (not visible)
 	local brg            = CreateElement "ceSimple"
 	brg.name			 = contact_parameters.NAME .. "_brg"
@@ -175,7 +203,7 @@ local function create_enemy_contact(parent_elem, contact_parameters, mat, level)
 		{"rotate_using_parameter", 2, 1},  -- rotate element by ownship true heading, so that contacts is displayed correctly on the screen
 	}
 	Add(brg)
-
+	log.info("Created bearing rotator for contact: " .. contact_parameters.NAME)
 
 	-- 2. Range arm - moves the contact along the bearing line by RANGE
 	-- RANGE is pre-scaled by the device (contact.RANGE / ZoomLevels[zoom_level]),
@@ -191,6 +219,7 @@ local function create_enemy_contact(parent_elem, contact_parameters, mat, level)
 	}
 	rng.controllers      = {{"move_up_down_using_parameter", 0, KM2PAN}} -- move along the bearing and scale km to panel units
 	Add(rng)
+	log.info("Created range arm for contact: " .. contact_parameters.NAME)
 
 	-- 3. Heading rotation of the contact itself
 	local sym            = CreateElement "ceSimple"
@@ -207,6 +236,7 @@ local function create_enemy_contact(parent_elem, contact_parameters, mat, level)
 		{"rotate_using_parameter", 1, -DEG2RAD},  -- −heading (applies heading)
 	}
 	Add(sym)
+	log.info("Created heading rotator for contact: " .. contact_parameters.NAME)
 
 	-- TODO: objects 5 and 6 should be refactored and merged into a single object.
 	-- 5. Speed bar — ceSimpleLineObject; point 0 fixed, point 1 is fixed.
@@ -223,6 +253,7 @@ local function create_enemy_contact(parent_elem, contact_parameters, mat, level)
 	-- min_spd_line.element_params  = {contact_parameters["SPEED"]}
 	-- min_spd_line.controllers     = {{"line_object_set_point_using_parameters", 1, 0, 0, 0, SPD2PAN}}
 	Add(min_spd_line)
+	log.info("Created minimum speed bar for contact: " .. contact_parameters.NAME)
 
 	-- 6. Speed bar — ceSimpleLineObject; point 0 fixed, point 1 scaled by SPEED parameter. The line is drawn along own heading.
 	local spd_line           = CreateElement "ceSimpleLineObject"
@@ -235,75 +266,105 @@ local function create_enemy_contact(parent_elem, contact_parameters, mat, level)
 	spd_line.parent_element  = sym.name
 	spd_line.h_clip_relation = clip_relation
 	spd_line.level           = level
-	spd_line.element_params  = {contact_parameters.SPEED}
-	spd_line.controllers     = {{"line_object_set_point_using_parameters", 1, 0, 0, 0, SPD2PAN}}
+	spd_line.element_params  = {
+		contact_parameters.SPEED
+		-- contact_parameters.IFF,
+	}
+	spd_line.controllers     = {
+		{"line_object_set_point_using_parameters", 1, 0, 0, 0, SPD2PAN} -- point number 1, param X, param Y, scale X, scale Y)
+		-- {"change_color_when_parameter_equal_to_number", 1, 1, normalized_coalition_color_filters.FRIENDLY[1], normalized_coalition_color_filters.FRIENDLY[2], normalized_coalition_color_filters.FRIENDLY[3]},
+		-- {"change_color_when_parameter_equal_to_number", 1, 2, normalized_coalition_color_filters.NEUTRAL[1], normalized_coalition_color_filters.NEUTRAL[2], normalized_coalition_color_filters.NEUTRAL[3]},
+		-- {"change_color_when_parameter_equal_to_number", 1, 3, normalized_coalition_color_filters.UNKNOWN[1], normalized_coalition_color_filters.UNKNOWN[2], normalized_coalition_color_filters.UNKNOWN[3]},
+		-- {"change_color_when_parameter_equal_to_number", 1, 4, normalized_coalition_color_filters.HOSTILE[1], normalized_coalition_color_filters.HOSTILE[2], normalized_coalition_color_filters.HOSTILE[3]}
+	}
 	Add(spd_line)
+	log.info("Created speed bar for contact: " .. contact_parameters.NAME)
 
+	-- 7. Altitude minimal bar
+	local min_alt_line              = CreateElement "ceSimpleLineObject"
+	min_alt_line.name               = contact_parameters.NAME .. "_min_alt"
+	min_alt_line.material           = mat
+	min_alt_line.init_pos           = {0, 0, 0}
+	min_alt_line.vertices           = {{CONTACT_ALT_MIN, 0}, {-CONTACT_ALT_MIN, 0}}
+	min_alt_line.indices            = {0, 1}
+	min_alt_line.width              = CONTACT_THICK
+	min_alt_line.parent_element     = sym.name
+	min_alt_line.h_clip_relation    = clip_relation
+	min_alt_line.level              = level
+	Add(min_alt_line)
+	log.info("Created minimum altitude bar for contact: " .. contact_parameters.NAME)
 
-	-- TODO: objects 7, 8, 9 and 10  should be refactored and merged into a single object.
-	-- 7. Altitude minimal bar ceSimpleLineObject arms, left
-	local min_alt_l              = CreateElement "ceSimpleLineObject"
-	min_alt_l.name               = contact_parameters.NAME .. "_min_alt_l"
-	min_alt_l.material           = mat
-	min_alt_l.init_pos           = {0, 0, 0}
-	min_alt_l.vertices           = {{0, 0}, {-CONTACT_ALT_MIN, 0}}
-	min_alt_l.indices            = {0, 1}
-	min_alt_l.width              = CONTACT_THICK
-	min_alt_l.parent_element     = sym.name
-	min_alt_l.h_clip_relation    = clip_relation
-	min_alt_l.level              = level
-	-- min_alt_l.element_params     = {contact_parameters.ALTITUDE}
-	-- min_alt_l.controllers        = {{"line_object_set_point_using_parameters", 1, 0, 0, -ALT2PAN, 0}}
-	Add(min_alt_l)
+	-- 8. Altitude bar
+	local alt_line              = CreateElement "ceSimpleLineObject"
+	alt_line.name               = contact_parameters.NAME .. "_alt"
+	alt_line.material           = mat
+	alt_line.init_pos           = {0, 0, 0}
+	alt_line.vertices           = {{CONTACT_ALT_MAX, 0}, {-CONTACT_ALT_MAX, 0}}
+	alt_line.indices            = {0, 1}
+	alt_line.width              = CONTACT_THICK
+	alt_line.parent_element     = sym.name
+	alt_line.h_clip_relation    = clip_relation
+	alt_line.level              = level
+	alt_line.element_params     = {contact_parameters.ALTITUDE}
+	alt_line.controllers        = {
+		{"line_object_set_point_using_parameters", 0, 0, 0, ALT2PAN, 0},
+		{"line_object_set_point_using_parameters", 1, 0, 0, -ALT2PAN, 0}
+	}
+	Add(alt_line)
+	log.info("Created altitude bar for contact: " .. contact_parameters.NAME)
 
-	-- 8. Altitude minimal bar ceSimpleLineObject arms, right
-	local min_alt_r              = CreateElement "ceSimpleLineObject"
-	min_alt_r.name               = contact_parameters.NAME .. "_min_alt_r"
-	min_alt_r.material           = mat
-	min_alt_r.init_pos           = {0, 0, 0}
-	min_alt_r.vertices           = {{0, 0}, {CONTACT_ALT_MIN, 0}}
-	min_alt_r.indices            = {0, 1}
-	min_alt_r.width              = CONTACT_THICK
-	min_alt_r.parent_element     = sym.name
-	min_alt_r.h_clip_relation    = clip_relation
-	min_alt_r.level              = level
-	-- min_alt_r.element_params     = {contact_parameters.ALTITUDE}
-	-- min_alt_r.controllers        = {{"line_object_set_point_using_parameters", 1, 0, 0, ALT2PAN, 0}}
-	Add(min_alt_r)
+	-- 9. Fins — fixed tail lines at +-30° toward rear of contact
 
-	-- 9. Altitude bar ceSimpleLineObject arms, left
-	local alt_l              = CreateElement "ceSimpleLineObject"
-	alt_l.name               = contact_parameters.NAME .. "_alt_l"
-	alt_l.material           = mat
-	alt_l.init_pos           = {0, 0, 0}
-	alt_l.vertices           = {{0, 0}, {-CONTACT_ALT_MAX, 0}}
-	alt_l.indices            = {0, 1}
-	alt_l.width              = CONTACT_THICK
-	alt_l.parent_element     = sym.name
-	alt_l.h_clip_relation    = clip_relation
-	alt_l.level              = level
-	alt_l.element_params     = {contact_parameters.ALTITUDE}
-	alt_l.controllers        = {{"line_object_set_point_using_parameters", 1, 0, 0, -ALT2PAN, 0}}
-	Add(alt_l)
+	local enemy_fins = CreateElement "ceSimple"
+	enemy_fins.name = contact_parameters.NAME .. "_enemy_fins"
+	enemy_fins.init_pos = {0, 0, 0}
+	enemy_fins.parent_element = sym.name
+	enemy_fins.element_params = {contact_parameters.IFF}
+	enemy_fins.controllers = {
+		{"parameter_in_range", 0, 3.5, 4.5}
+	}
+	Add(enemy_fins)
 
-	-- 10. Altitude bar ceSimpleLineObject arms, right
-	local alt_r              = CreateElement "ceSimpleLineObject"
-	alt_r.name               = contact_parameters.NAME .. "_alt_r"
-	alt_r.material           = mat
-	alt_r.init_pos           = {0, 0, 0}
-	alt_r.vertices           = {{0, 0}, {CONTACT_ALT_MAX, 0}}
-	alt_r.indices            = {0, 1}
-	alt_r.width              = CONTACT_THICK
-	alt_r.parent_element     = sym.name
-	alt_r.h_clip_relation    = clip_relation
-	alt_r.level              = level
-	alt_r.element_params     = {contact_parameters.ALTITUDE}
-	alt_r.controllers        = {{"line_object_set_point_using_parameters", 1, 0, 0, ALT2PAN, 0}}
-	Add(alt_r)
+	local enemy_fin_l          = CreateElement "ceSimpleLineObject"
+	enemy_fin_l.name               = contact_parameters.NAME .. "_enemy_fin_l"
+	enemy_fin_l.material           = mat
+	enemy_fin_l.init_pos           = {0, 0, 0}
+	enemy_fin_l.vertices           = {{0, 0}, {-enemy_tail_x, -enemy_tail_y}}
+	enemy_fin_l.indices            = {0, 1}
+	enemy_fin_l.width              = CONTACT_THICK
+	enemy_fin_l.parent_element     = enemy_fins.name
+	enemy_fin_l.h_clip_relation    = clip_relation
+	enemy_fin_l.level              = level
+	Add(enemy_fin_l)
+	log.info("Created left fin for enemy contact: " .. contact_parameters.NAME)
 
-	-- 11. Fins — fixed tail lines at +-30° toward read of contact
-	line_quad(sym, contact_parameters.NAME .. "_fin_l", 0, 0, -fx, -fy, CONTACT_THICK, mat, level)
-	line_quad(sym, contact_parameters.NAME .. "_fin_r", 0, 0,  fx, -fy, CONTACT_THICK, mat, level)
+	local enemy_fin_r          = CreateElement "ceSimpleLineObject"
+	enemy_fin_r.name               = contact_parameters.NAME .. "_enemy_fin_r"
+	enemy_fin_r.material           = mat
+	enemy_fin_r.init_pos           = {0, 0, 0}
+	enemy_fin_r.vertices           = {{0, 0}, {enemy_tail_x, -enemy_tail_y}}
+	enemy_fin_r.indices            = {0, 1}
+	enemy_fin_r.width              = CONTACT_THICK
+	enemy_fin_r.parent_element     = enemy_fins.name
+	enemy_fin_r.h_clip_relation    = clip_relation
+	enemy_fin_r.level              = level
+	Add(enemy_fin_r)
+	log.info("Created right fin for enemy contact: " .. contact_parameters.NAME)
+
+	-- -- 10. Friendly circle
+	local friendly_circle          = CreateElement "ceCircle"
+	friendly_circle.name               = contact_parameters.NAME .. "_friendly_circle"
+	friendly_circle.material           = mat
+	friendly_circle.init_pos           = {0, -CONTACT_RADIUS}
+	friendly_circle.radius             = {CONTACT_RADIUS - (2 * CONTACT_THICK), CONTACT_RADIUS}
+	friendly_circle.width              = CONTACT_THICK
+	friendly_circle.parent_element     = sym.name
+	friendly_circle.h_clip_relation    = clip_relation
+	friendly_circle.level              = level
+	friendly_circle.element_params     = {contact_parameters.IFF}
+	friendly_circle.controllers        = {{"parameter_in_range", 0, -0.5, 3.5}}
+	Add(friendly_circle)
+	log.info("Created friendly circle for contact: " .. contact_parameters.NAME)
 
 	return brg
 end
@@ -340,9 +401,10 @@ toggle_rect.element_params    = {CommonParameterNames.DATALINK_TOGGLE_VISIBILITY
 toggle_rect.controllers       = {{"parameter_in_range", 0, 0.5, 1.5}}
 Add(toggle_rect)
 
--- Create the enemy contact elements relative to the ownship elemnent
-for i = 1, #EnemyContactParameterNames do
-	create_enemy_contact(ownship, EnemyContactParameterNames[i], MAT_ENEMY, DEFAULT_LEVEL)
+-- Create the contact elements relative to the ownship elemnent
+for i = 1, #ContactParameterNames do
+	-- create contact and set material to default
+	create_contact(ownship, ContactParameterNames[i], MAT_DEFAULT, DEFAULT_LEVEL)
 end
 
 if DEBUG then

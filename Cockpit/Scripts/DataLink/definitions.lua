@@ -99,17 +99,18 @@ CommonParameterNames["DATALINK_TOGGLE_VISIBILITY"] = "DATALINK_TOGGLE_VISIBILITY
 CommonParameterNames["DATALINK_SCALE"] = "DATALINK_SCALE"
 CommonParameterNames["TRUE_HEADING"] = "TRUE_HEADING"
 
--- Definition of enemy contact parameter names, used to draw the contact on HDD within DATALINK_page.lua
-EnemyContactParameterNames = {}
+-- Definition of contact parameter names, used to draw the contact on HDD within DATALINK_page.lua
+ContactParameterNames = {}
 for i = 1, MAX_CONTACTS do
-  EnemyContactParameterNames[i] = {
-    NAME     = string.format("DATALINK_ENEMY_CONTACT_%02d", i),
-    BEARING  = string.format("DATALINK_ENEMY_CONTACT_%02d_BEARING", i),
-    RANGE    = string.format("DATALINK_ENEMY_CONTACT_%02d_RANGE", i),
-    ALTITUDE = string.format("DATALINK_ENEMY_CONTACT_%02d_ALTITUDE", i),
-    SPEED    = string.format("DATALINK_ENEMY_CONTACT_%02d_SPEED", i),
-    HEADING  = string.format("DATALINK_ENEMY_CONTACT_%02d_HEADING", i),
-    VISIBLE  = string.format("DATALINK_ENEMY_CONTACT_%02d_VISIBLE", i),
+  ContactParameterNames[i] = {
+    NAME     = string.format("DATALINK_CONTACT_%02d", i), -- does not count towards the passed number of arguments
+    BEARING  = string.format("DATALINK_CONTACT_%02d_BEARING", i),
+    RANGE    = string.format("DATALINK_CONTACT_%02d_RANGE", i),
+    ALTITUDE = string.format("DATALINK_CONTACT_%02d_ALTITUDE", i),
+    SPEED    = string.format("DATALINK_CONTACT_%02d_SPEED", i),
+    HEADING  = string.format("DATALINK_CONTACT_%02d_HEADING", i),
+	IFF 	 = string.format("DATALINK_CONTACT_%02d_IFF", i),
+    VISIBLE  = string.format("DATALINK_CONTACT_%02d_VISIBLE", i), -- does not count towards the passed number of arguments
   }
 end
 

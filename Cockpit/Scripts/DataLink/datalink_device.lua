@@ -7,11 +7,12 @@ dofile(LockOn_Options.script_path..[[Datalink\definitions.lua]])
 -- Argument layout (shared with DataLink_hook.lua and DATALINK_page.lua):
 --   arg[ARG_SEQ]             sequence counter — incremented by hook on each new picture
 --   arg[ARG_COUNT]           number of valid contacts in current picture
---   arg[ARG_BASE + i*5 + 0]  BRG  (degrees)
---   arg[ARG_BASE + i*5 + 1]  RNG  (km, float)
---   arg[ARG_BASE + i*5 + 2]  ALT  (meter)
---   arg[ARG_BASE + i*5 + 3]  SPD  (km/h)
---   arg[ARG_BASE + i*5 + 4]  HDG  (degrees)
+--   arg[ARG_BASE + i*6 + 0]  BRG  (degrees)
+--   arg[ARG_BASE + i*6 + 1]  RNG  (km, float)
+--   arg[ARG_BASE + i*6 + 2]  ALT  (meter)
+--   arg[ARG_BASE + i*6 + 3]  SPD  (km/h)
+--   arg[ARG_BASE + i*6 + 4]  HDG  (degrees)
+--   arg[ARG_BASE + i*6 + 5]  COALITION
 --   i = 0 .. MAX_CONTACTS-1
 -- ======================================================================
 
@@ -23,7 +24,7 @@ local dev = GetSelf()
 local UPDATE_INTERVAL = 0.1
 make_default_activity(UPDATE_INTERVAL)
 
-local ARGS_PER_CTX = 5
+local ARGS_PER_CTX = 6
 local DL_COMMAND_ID = 123456
 local DL_COMMAND_ARG = 123456
 local DL_COMMAND_SEQ      = DL_COMMAND_ID + 1
@@ -92,7 +93,7 @@ function post_initialize()
 	end
 	if DEBUG then
 		show_dummy_targets()
-		show_param_handles_list()		
+		show_param_handles_list()
 	end
 end
 
@@ -109,15 +110,16 @@ local toggle_visibility_handle = get_param_handle(CommonParameterNames.DATALINK_
 toggle_visibility_handle:set(0.0)
 
 local base_data = get_base_data()
-local EnemyContactParameterHandles = {}
-for i = 1, #EnemyContactParameterNames do
-  EnemyContactParameterHandles[i] = {
-    BEARING  = get_param_handle(EnemyContactParameterNames[i].BEARING),
-    RANGE    = get_param_handle(EnemyContactParameterNames[i].RANGE),
-    ALTITUDE = get_param_handle(EnemyContactParameterNames[i].ALTITUDE),
-    SPEED    = get_param_handle(EnemyContactParameterNames[i].SPEED),
-    HEADING  = get_param_handle(EnemyContactParameterNames[i].HEADING),
-    VISIBLE  = get_param_handle(EnemyContactParameterNames[i].VISIBLE),
+local ContactParameterHandles = {}
+for i = 1, #ContactParameterNames do
+  ContactParameterHandles[i] = {
+    BEARING  = get_param_handle(ContactParameterNames[i].BEARING),
+    RANGE    = get_param_handle(ContactParameterNames[i].RANGE),
+    ALTITUDE = get_param_handle(ContactParameterNames[i].ALTITUDE),
+    SPEED    = get_param_handle(ContactParameterNames[i].SPEED),
+    HEADING  = get_param_handle(ContactParameterNames[i].HEADING),
+    IFF 	 = get_param_handle(ContactParameterNames[i].IFF),
+    VISIBLE  = get_param_handle(ContactParameterNames[i].VISIBLE),
   }
 end
 
@@ -133,29 +135,30 @@ function extrapolate_contacts(own_heading_rad, own_speed_mps, dt)
 	local own_dy = own_distance_moved * math.cos(own_heading_rad)
 
 	for i, contact in ipairs(received_contacts) do
+		-- TODO: check if this condition is necessary
 		if contact.BEARING and contact.RANGE and contact.ALTITUDE and contact.SPEED and contact.HEADING then
-		log.debug("Extrapolating contact "..tostring(i).." with initial state: BRG="..tostring(contact.BEARING).." RNG="..tostring(contact.RANGE).." ALT="..tostring(contact.ALTITUDE).." SPD="..tostring(contact.SPEED).." HDG="..tostring(contact.HEADING))
-		local bearing_rad = math.rad(contact.BEARING)
-		local contact_x = contact.RANGE * 1000 * math.sin(bearing_rad) -- convert km to meters
-		local contact_y = contact.RANGE * 1000 * math.cos(bearing_rad) -- convert km to meters
+			log.debug("Extrapolating contact "..tostring(i).." with initial state: BRG="..tostring(contact.BEARING).." RNG="..tostring(contact.RANGE).." ALT="..tostring(contact.ALTITUDE).." SPD="..tostring(contact.SPEED).." HDG="..tostring(contact.HEADING))
+			local bearing_rad = math.rad(contact.BEARING)
+			local contact_x = contact.RANGE * 1000 * math.sin(bearing_rad) -- convert km to meters
+			local contact_y = contact.RANGE * 1000 * math.cos(bearing_rad) -- convert km to meters
 
-		local contact_speed_mps = contact.SPEED / 3.6 -- km/h to m/s
-		local contact_distance_moved = contact_speed_mps * dt
-		local contact_heading_rad = math.rad(contact.HEADING)
-		local contact_dx = contact_distance_moved * math.sin(contact_heading_rad)
-		local contact_dy = contact_distance_moved * math.cos(contact_heading_rad)
+			local contact_speed_mps = contact.SPEED / 3.6 -- km/h to m/s
+			local contact_distance_moved = contact_speed_mps * dt
+			local contact_heading_rad = math.rad(contact.HEADING)
+			local contact_dx = contact_distance_moved * math.sin(contact_heading_rad)
+			local contact_dy = contact_distance_moved * math.cos(contact_heading_rad)
 
-		local contact_x_new = contact_x + contact_dx - own_dx -- calculate new position and move coordinate relative to own aircraft
-		local contact_y_new = contact_y + contact_dy - own_dy -- calculate new position and move coordinate relative to own aircraft
+			local contact_x_new = contact_x + contact_dx - own_dx -- calculate new position and move coordinate relative to own aircraft
+			local contact_y_new = contact_y + contact_dy - own_dy -- calculate new position and move coordinate relative to own aircraft
 
-		log.debug("Contact "..tostring(i).." moved dx="..tostring(contact_dx).." dy="..tostring(contact_dy).." meters in dt="..tostring(dt).." seconds.")
+			log.debug("Contact "..tostring(i).." moved dx="..tostring(contact_dx).." dy="..tostring(contact_dy).." meters in dt="..tostring(dt).." seconds.")
 
-		-- Convert the relative movement in meters to a change in range and bearing.
-		local range_change = math.sqrt(contact_x_new^2 + contact_y_new^2)
-		local bearing_change = math.deg(math.atan2(contact_x_new, contact_y_new))
+			-- Convert the relative movement in meters to a change in range and bearing.
+			local range_change = math.sqrt(contact_x_new^2 + contact_y_new^2)
+			local bearing_change = math.deg(math.atan2(contact_x_new, contact_y_new))
 
-		contact.RANGE = range_change / 1000 -- convert meters to kilometers
-		contact.BEARING = (bearing_change) % 360
+			contact.RANGE = range_change / 1000 -- convert meters to kilometers
+			contact.BEARING = (bearing_change) % 360
 		end
 	end
 end
@@ -189,8 +192,8 @@ function update_contacts(contacts)
 	local scale = HDDScales[zoom_level]
 
 	for i, contact in ipairs(contacts) do	
-		if contact.BEARING and contact.RANGE and contact.ALTITUDE and contact.SPEED and contact.HEADING then
-			local contact_parameters = EnemyContactParameterHandles[i]
+		if contact.BEARING and contact.RANGE and contact.ALTITUDE and contact.SPEED and contact.HEADING and contact.IFF then
+			local contact_parameters = ContactParameterHandles[i]
 			for key, value in pairs(contact) do
 				if key == "RANGE" then
 					contact_parameters[key]:set(value / scale)
@@ -202,7 +205,7 @@ function update_contacts(contacts)
 		end
 	end
 	for i = #contacts + 1, MAX_CONTACTS do
-		local contact_parameters = EnemyContactParameterHandles[i]
+		local contact_parameters = ContactParameterHandles[i]
 		contact_parameters["VISIBLE"]:set(0.0)
 	end
 end
@@ -309,8 +312,11 @@ function SetCommand(command, value)
 		elseif field == 4 then
 			log.info("HDG: "..tostring(value))
 			contact.HEADING = value
+		elseif field == 5 then
+			log.info("IFF: "..tostring(value))
+			contact.IFF = value
 		end
-		if idx == #new_contacts and field == 4 then
+		if idx == #new_contacts and field == 5 then
 			log.info("All contacts received, updating last_seq")
 			last_seq = last_seq + 1
 			received_contacts = new_contacts
@@ -347,6 +353,7 @@ function show_dummy_targets()
 		ALTITUDE = 12500,
 		SPEED = 2588,
 		HEADING = 240,
+		IFF = 0,
 	}
 	received_contacts[2] =
 	{
@@ -355,6 +362,7 @@ function show_dummy_targets()
 		ALTITUDE = 0,
 		SPEED = 0,
 		HEADING = 240,
+		IFF = 1,
 	}
 	received_contacts[3] =
 	{
@@ -363,6 +371,7 @@ function show_dummy_targets()
 		ALTITUDE = 100,
 		SPEED = 250,
 		HEADING = 240,
+		IFF = 2,
 	}
 	received_contacts[4] =
 	{
@@ -371,6 +380,7 @@ function show_dummy_targets()
 		ALTITUDE = 100,
 		SPEED = 250,
 		HEADING = 240,
+		IFF = 3,
 	}
 	received_contacts[5] =
 	{
@@ -379,6 +389,7 @@ function show_dummy_targets()
 		ALTITUDE = 100,
 		SPEED = 250,
 		HEADING = 240,
+		IFF = 4,
 	}
 	update_contacts(received_contacts)
 end

@@ -3,9 +3,11 @@ local BaseContactSource = require("BaseContactSource")
 local DataLinkTransiever = BaseContactSource:new()
 local DCSTimer = require("DCSTimer")
 local UnitData = require("UnitData")
+local GlobalData = require("GlobalData")
 local JSON = require("JSON")
 local Player = require("Player")
 local uuid = require("uuid")
+local Aircraft = require("Aircraft")
 
 package.path = package.path .. lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\ssl\lua\?.lua]]
 package.cpath = package.cpath .. lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\ssl\dll\?.dll]]
@@ -44,7 +46,6 @@ function DataLinkTransiever:new()
     self.__index = self
     self.timer = DCSTimer:new(1) -- Set the timer interval to 1 second
     self.connection_status = CONNECTION_STATUS.NOT_CONNECTED
-    self.contacts = {}
     return obj
 end
 
@@ -201,44 +202,70 @@ function DataLinkTransiever:handleIncomingMessage(message)
     end
     Logging:info("Received message: " .. tostring(message) .. " from sender: " .. tostring(decodedMessage.sender))
 
-    local aircrafts = {}
-    for i, contact in ipairs(decodedMessage.contacts) do
-        aircrafts[#aircrafts + 1] = Aircraft:new(contact)
+    local contacts = {}
+    for i, raw_contact in ipairs(decodedMessage.contacts) do
+        Logging:info("Processing raw contact: " .. tostring(i))
+        local contact = Aircraft:new()
+        contact:unpack(raw_contact)
+        Logging:info("Created aircraft")
+        contact:setContactSource(CONTACT_SOURCES.K_DLAE) -- mark the contact as received from the К-ДлАЭ source
+        Logging:info("Set contact source")
+        contact:setDonor(decodedMessage.sender) -- mark the contact as received from the specified donor
+        Logging:info("Set donor")
+        contacts[#contacts + 1] = contact
+        Logging:info("Added contact to contacts list")
     end
-    self:dispatchEvent(self.EventTypes.ContactsReceived, aircrafts)
+
+    -- add sender as contact to the contacts by filling in all things from unpack
+    local sender_contact = Aircraft:new()
+    sender_contact:unpack({
+        id = sender_contact.sender,
+        x = decodedMessage.x,
+        alt = decodedMessage.alt,
+        z = decodedMessage.z,
+        heading = decodedMessage.heading,
+        speed = decodedMessage.speed,
+        -- flags = decodedMessage.flags,
+        lastSeen = decodedMessage.time,
+        side = decodedMessage.side,
+        -- iff = UnitData.IFF.FRIENDLY,
+        -- iff = decodedMessage.iff,
+    })
+    sender_contact:setDonor(decodedMessage.sender)
+    sender_contact:setContactSource(CONTACT_SOURCES.K_DLAE) -- mark the sender as received from the К-ДлАЭ source
+    contacts[#contacts + 1] = sender_contact
+
+    -- add sender information to the contacts before dispatching the event
+    for i, contact in ipairs(contacts) do
+        contact:setDonor(decodedMessage.sender)
+    end
+    Logging:info("Finished processing all raw contacts: "..tostring(#contacts))
+    self:dispatchEvent(self.EventTypes.ContactsReceived, contacts)
 end
 
 function DataLinkTransiever:transfer(contacts)
     if self.connection_status ~= CONNECTION_STATUS.CONNECTED then
         Logging:warning("Cannot transfer contacts, not connected to NATS server.")
         return
-    end    
+    end
+    self:updateOwnPlayerAircraft()
     Logging:info("Transmitting " .. tostring(#contacts) .. " contacts")
     local message = {
         sender = self.sender_uuid, -- used to filter out own messsages
         x = self.current_player_aircraft:getX(), -- TODO: is it wise to transmit own exact coordinatess?
         alt = self.current_player_aircraft:getAltitude(),
         z = self.current_player_aircraft:getZ(),
+        speed = self.current_player_aircraft:getSpeed(),
+        heading = self.current_player_aircraft:getHeading(),
+        -- iff = self.current_player_aircraft:getIFF(),
+        side = self.current_player_aircraft:getSide(),
         time = DCS.getModelTime(),
         contacts = {},
     }
 
     for i, contact in ipairs(contacts) do
         Logging:info("Preparing contact ID: " .. contact:getID() .. " for transmission")
-        message.contacts[#message.contacts + 1] = {
-            id = contact:getID(), -- is this id the same for different client DCS instances?
-            -- position
-            x = contact:getX(),
-            alt = contact:getAlt(),
-            z = contact:getZ(),
-            -- heading
-            heading = contact:getHeading(),
-            speed = contact:getSpeed(),
-            -- side
-            side = contact:getSide(),
-            -- flags
-            flags = contact:getFlags(),
-        }
+        message.contacts[#message.contacts + 1] = contact:pack()
     end
 
     local message_text = JSON:encode(message)

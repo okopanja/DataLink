@@ -4,7 +4,8 @@ local Table = require("Utils.Table")
 local Aircraft = require("Aircraft")
 dofile(lfs.writedir() .. [[Mods\tech\DataLink\Cockpit\Scripts\common.lua]])
 local ContactEventSource = EventSource:new()
-
+local UnitData = require("UnitData")
+local GlobalData = require("GlobalData")
 local EventTypes = {
     Activated = 1,
     Deactivated = 2,
@@ -50,13 +51,17 @@ function ContactEventSource:updateOwnPlayerAircraft(playerID)
         self:setActive(false)
         return
     end
-    self.current_player_aircraft:setSide(selfData.Coalition)
+    self.current_player_aircraft:setSide(GlobalData:getCoalitionByCountry(selfData.Country))
     self.current_player_aircraft:setPosition({
       x = selfData.Position.x,
       alt = selfData.Position.y,
       z = selfData.Position.z
     })
+    self.current_player_aircraft:setHeading(math.deg(selfData.Heading))
     self.current_player_aircraft:setType(selfData.name)
+    self.current_player_aircraft:setSpeed(Export.LoGetTrueAirSpeed() * 3.6)
+    self.current_player_aircraft:setIFF(UnitData.IFF.FRIENDLY)
+
     self:setActive(Table.is_in_keys(SUPPORTED_AIRCRAFT, selfData.Name))
     Logging:info("updateOwnPlayerAircraft: self.active = " .. tostring(self.active))
     Logging:info("selfData.name: "..tostring(selfData.Name))

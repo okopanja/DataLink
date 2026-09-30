@@ -4,6 +4,7 @@ local Player = require("Player")
 local Aircraft = require("Aircraft")
 local DCSTimer = require("DCSTimer")
 local UnitData = require("UnitData")
+local GlobalData = require("GlobalData")
 local bitops = require("External.bitops")
 local UNIT_PROPERTIES = UnitData.UNIT_PROPERTIES
 local TARGET_FLAGS = UnitData.TARGET_FLAGS
@@ -84,14 +85,6 @@ function RadarContactSource:onNetMissionChanged(missionName)
   self.timer:reset()
   self.currentMission = DCS.getCurrentMission().mission
   saveInspect("currentMission", self.currentMission, true)
-  -- Map country IDs to their respective coalitions
-  self.coalitions_by_country_id = {
-  }  
-  for coalition_name, coalition_countries in pairs(self.currentMission.coalitions) do
-    for i, country in ipairs(coalition_countries) do
-      self.coalitions_by_country_id[country] = coalition_name
-    end
-  end
   -- Handle mission change logic here
 end
 
@@ -118,10 +111,8 @@ function RadarContactSource:onSimulationFrame()
     self:updateOwnPlayerAircraft()
     for i, target in ipairs(targets) do
         local aircraft = Aircraft:new({id = target.ID})
-        -- TODO: these 2 method do not work with the ID I got, needs to process target country id (sigh...)
-        -- aircraft:setType(DCS.getUnitProperty(target.ID, UNIT_PROPERTIES.UNIT_TYPE))
-        -- aircraft:setSide(DCS.getUnitProperty(target.ID, UNIT_PROPERTIES.UNIT_COALITION))
-        aircraft:setSide(self.coalitions_by_country_id[target.country])
+        -- country in target is actually coalitionID!
+        aircraft:setSide(Sides[target.country])
         aircraft:setPosition({
           x = target.position.p.x,
           alt = target.position.p.y,
@@ -132,18 +123,19 @@ function RadarContactSource:onSimulationFrame()
           y = target.velocity.y,
           z = target.velocity.z
         }
-        -- calculate heading from velocity, by using x and z
-        local heading = math.atan2(velocity.x, velocity.z)
-        -- TODO: heading looks wrong
+        
+        local headingDegree = math.deg(math.atan2(velocity.z, velocity.x))
         -- calculated speed in km/h
         local trueAirSpeed = math.sqrt(velocity.x^2 + velocity.y^2 + velocity.z^2) * 3.6
         aircraft:setSpeed(trueAirSpeed)
-        aircraft:setHeading(heading)
+        aircraft:setHeading(headingDegree)
         aircraft:setRange(target.distance / 1000)
         aircraft:setBearing(self.current_player_aircraft:getBearingToAircraft(aircraft))
         aircraft:setFlags(target.flags)
+        aircraft:setContactSource(CONTACT_SOURCES.RLPK_27)
         Logging:info("Aircraft ID: " .. tostring(aircraft:getID()))
         Logging:info("Aircraft side: " .. tostring(aircraft:getSide()))
+        Logging:info("Aircraft country:"..tostring(target.country))
         Logging:info("Aircraft type: " .. tostring(aircraft:getType()))
         for key, value in pairs(TARGET_FLAGS) do
           local flag_is_set = bitops.bitand(value,target.flags) == value

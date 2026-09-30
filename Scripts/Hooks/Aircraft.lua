@@ -1,7 +1,7 @@
 local DCSTimer = require("DCSTimer")
 local Logging = require("Utils.Logging").new("DataLink.log")
 local MAXIMAL_ALLOWED_AGE = 20
-
+local UnitData = require("UnitData")
 local Aircraft = {}
 
 function Aircraft:new(o)
@@ -9,7 +9,7 @@ function Aircraft:new(o)
 	setmetatable(o, self)
 	self.__index = self
 	o.id = o.id
-	o.age = DCSTimer:new(MAXIMAL_ALLOWED_AGE)
+	o.age_timer = DCSTimer:new(MAXIMAL_ALLOWED_AGE)
 	o.x = nil
 	o.z = nil
 	o.alt = nil
@@ -23,6 +23,8 @@ function Aircraft:new(o)
 	o.donor = nil
 	o.contact_source = nil
 	o.flags = 0
+	o.iff = UnitData.IFF.UNKNOWN
+
 	return o
 end
 
@@ -115,6 +117,14 @@ function Aircraft:setID(id)
 	self.id = id
 end
 
+function Aircraft:getIFF()
+	return self.iff
+end
+
+function Aircraft:setIFF(iff)
+	self.iff = iff
+end
+
 function Aircraft:getDonor()
 	return self.donor
 end
@@ -131,9 +141,9 @@ function Aircraft:setFlags(flags)
 	self.flags = flags
 end
 
-function Aircraft:getPreviousPosition()
-	return self.previous_position
-end
+-- function Aircraft:getPreviousPosition()
+-- 	return self.previous_position
+-- end
 
 function Aircraft:getMaximalSpeedInKMH()
 	return 2700
@@ -147,8 +157,16 @@ function Aircraft:getContactSource()
 	return self.contact_source
 end
 
-function Aircraft:getAge()
-	return self.age:getElapsedTime()
+function Aircraft:getLastSeen()
+	return self.age_timer:getLastTime()
+end
+
+function Aircraft:setLastSeen(lastSeen)
+	self.age_timer:setLastTime(lastSeen)
+end
+
+function Aircraft:getAgeTimer()
+	return self.age_timer
 end
 
 function Aircraft:ensurePosition()
@@ -171,10 +189,10 @@ end
 -- 4. if speed does not exceed the maximum speed of the aircraft.
 -- Failures of conditions 3 and 4 results in previous position being invalidated, it this case speed and heading are not updated
 function Aircraft:updatePosition(new_position)
-	local elapsed_time = self.age:getElapsedTime()
+	local elapsed_time = self.age_timer:getElapsedTime()
 
 	-- Only calculate speed/heading if we have a previous position to compare against
-	if self.previous_position and (self.previous_position.x ~= new_position.x or self.previous_position.z ~= new_position.z) then
+	if self.previous_position and (self.previous_position.x ~= new_position.x and self.previous_position.z ~= new_position.z) then
 		if elapsed_time < MAXIMAL_ALLOWED_CALCULATION_TIME then
 			local dx = new_position.x - self.previous_position.x
 			local dz = new_position.z - self.previous_position.z
@@ -200,7 +218,7 @@ function Aircraft:updatePosition(new_position)
 		self.previous_position = self.position
 	end
 	self.position = new_position
-	self.age:reset()
+	self.age_timer:reset()
 end
 
 function Aircraft:getBearingToAircraft(other_aircraft)
@@ -248,6 +266,49 @@ function Aircraft:hasLineOfSightToAircraft(other_aircraft)
 	end
 	-- check with terraing function if there is a line of sight between the two aircrafts using terrain.isVisible()
 	return terrain.isVisible(self.position.x, self.position.alt, self.position.z, other_aircraft.position.x, other_aircraft.position.alt, other_aircraft.position.z)
+end
+
+function Aircraft:updateFrom(other_contact)
+	self:setID(other_contact:getID())
+	-- store the current position as the previous position before updating it
+	self.previous_position = self.position
+	-- TODO: consider performing extrapolation based on actual passed time
+	self.position = {
+		x = other_contact.position.x, 
+		alt = other_contact.position.alt, 
+		z = other_contact.position.z
+	}
+	self.heading = other_contact.heading
+	self.speed = other_contact.speed
+	self.side = other_contact.side
+	self.flags  = other_contact.flags
+	self.bearing = other_contact.bearing
+	self.range = other_contact.range
+	self:setLastSeen(other_contact:getLastSeen())
+end
+
+function Aircraft:pack()
+	return {
+		id = self:getID(),
+		x = self:getX(),
+		alt = self:getAlt(),
+		z = self:getZ(),
+		heading = self:getHeading(),
+		speed = self:getSpeed(),
+		side = self:getSide(),
+		flags = self:getFlags(),
+		lastSeen = self:getLastSeen(),
+	}
+end
+
+function Aircraft:unpack(data)
+	self.id = data.id
+	self.position = { x = data.x, alt = data.alt, z = data.z }
+	self.heading = data.heading
+	self.speed = data.speed
+	self.side = data.side
+	self.flags = data.flags
+	self:setLastSeen(data.lastSeen)
 end
 
 return Aircraft

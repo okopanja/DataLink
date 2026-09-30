@@ -1,11 +1,12 @@
 local Logging = require("Utils.Logging").new("DataLink.log")
 local Table = require("Utils.Table")
+local UnitData = require("UnitData")
 dofile(lfs.writedir() .. [[Mods\tech\DataLink\Cockpit\Scripts\common.lua]])
 
 local DataLinkDeviceConnector = {}
 
 local MAX_CONTACTS = 20
-local ARGS_PER_CTX = 5
+local ARGS_PER_CTX = 6
 local DL_COMMAND_ID = 123456
 local DL_COMMAND_ARG = 123456
 local ARG_SEQ      = DL_COMMAND_ID + 1
@@ -104,6 +105,7 @@ function DataLinkDeviceConnector:transfer(contacts)
     self.datalink_device:SetCommand(b + 2, aircraft:getAltitude())
     self.datalink_device:SetCommand(b + 3, aircraft:getSpeed())
     self.datalink_device:SetCommand(b + 4, aircraft:getHeading())
+    self.datalink_device:SetCommand(b + 5, aircraft:getIFF())
   end
 
   -- Write sequence counter LAST so the device/page sees a consistent snapshot

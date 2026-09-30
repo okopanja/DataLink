@@ -29,11 +29,13 @@ local contactProcessor = ContactProcessor:new()
 
 contactProcessor:setDataLinkConnector(dataLinkDeviceConnector)
 contactProcessor:setDataLinkTransiever(dataLinkTransiever)
+contactProcessor:setRadarContactSource(radarContactSource)
 
 ewrContactSource:addEventHandler(ewrContactSource.EventTypes.ContactsReceived, contactProcessor, contactProcessor.onEWRContactsUpdate)
 dataLinkTransiever:addEventHandler(dataLinkTransiever.EventTypes.ContactsReceived, contactProcessor, contactProcessor.onFigherToFighterContactsUpdate)
 radarContactSource:addEventHandler(radarContactSource.EventTypes.ContactsReceived, contactProcessor, contactProcessor.onRadarContactsUpdate)
 
+contactProcessor:initialize()
 dataLinkDeviceConnector:initialize()
 ewrContactSource:initialize()
 radarContactSource:initialize()
