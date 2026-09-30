@@ -7,7 +7,7 @@ local GlobalData = require("GlobalData")
 local JSON = require("JSON")
 local Player = require("Player")
 local uuid = require("uuid")
-local Aircraft = require("Aircraft")
+local Contact = require("Contact")
 
 package.path = package.path .. lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\ssl\lua\?.lua]]
 package.cpath = package.cpath .. lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\ssl\dll\?.dll]]
@@ -65,7 +65,7 @@ function DataLinkTransiever:initialize(host, port, tls)
         end,
         onActivatePlane = function(airplaneID)
           Logging:info("DataLinkTransiever:onActivatePlane called with airplaneID: " .. tostring(airplaneID))
-          self:updateOwnPlayerAircraft()
+          self:updateOwnPlayerContact()
         end,
         onNetDisconnect = function(arg1, arg2)
             if self.client then
@@ -134,7 +134,7 @@ function DataLinkTransiever:onPlayerChangeSlot(playerID)
     -- Handle player change slot logic here
     local player_info = net.get_player_info(playerID)
     self.player = Player:new(player_info)
-    self:updateOwnPlayerAircraft(playerID)
+    self:updateOwnPlayerContact(playerID)
 
     Logging:info("Subscribing to NATS subject: " .. self:getNATSSubject())
     self.subscription_id = self.client:subscribe(self:getNATSSubject(), 
@@ -205,9 +205,9 @@ function DataLinkTransiever:handleIncomingMessage(message)
     local contacts = {}
     for i, raw_contact in ipairs(decodedMessage.contacts) do
         Logging:info("Processing raw contact: " .. tostring(i))
-        local contact = Aircraft:new()
+        local contact = Contact:new()
         contact:unpack(raw_contact)
-        Logging:info("Created aircraft")
+        Logging:info("Created contact")
         contact:setContactSource(CONTACT_SOURCES.K_DLAE) -- mark the contact as received from the К-ДлАЭ source
         Logging:info("Set contact source")
         contact:setDonor(decodedMessage.sender) -- mark the contact as received from the specified donor
@@ -217,7 +217,7 @@ function DataLinkTransiever:handleIncomingMessage(message)
     end
 
     -- add sender as contact to the contacts by filling in all things from unpack
-    local sender_contact = Aircraft:new()
+    local sender_contact = Contact:new()
     sender_contact:unpack({
         id = sender_contact.sender,
         x = decodedMessage.x,
@@ -248,17 +248,17 @@ function DataLinkTransiever:transfer(contacts)
         Logging:warning("Cannot transfer contacts, not connected to NATS server.")
         return
     end
-    self:updateOwnPlayerAircraft()
+    self:updateOwnPlayerContact()
     Logging:info("Transmitting " .. tostring(#contacts) .. " contacts")
     local message = {
         sender = self.sender_uuid, -- used to filter out own messsages
-        x = self.current_player_aircraft:getX(), -- TODO: is it wise to transmit own exact coordinatess?
-        alt = self.current_player_aircraft:getAltitude(),
-        z = self.current_player_aircraft:getZ(),
-        speed = self.current_player_aircraft:getSpeed(),
-        heading = self.current_player_aircraft:getHeading(),
-        -- iff = self.current_player_aircraft:getIFF(),
-        side = self.current_player_aircraft:getSide(),
+        x = self.current_player_contact:getX(), -- TODO: is it wise to transmit own exact coordinatess?
+        alt = self.current_player_contact:getAltitude(),
+        z = self.current_player_contact:getZ(),
+        speed = self.current_player_contact:getSpeed(),
+        heading = self.current_player_contact:getHeading(),
+        -- iff = self.current_player_contact:getIFF(),
+        side = self.current_player_contact:getSide(),
         time = DCS.getModelTime(),
         contacts = {},
     }
@@ -281,7 +281,7 @@ function DataLinkTransiever:transfer(contacts)
 end
 
 function DataLinkTransiever:getNATSSubject()
-    -- return "DCSWorld.DataLink."..self.currentMissionName.."."..tostring(self.current_player_aircraft:getSide())
+    -- return "DCSWorld.DataLink."..self.currentMissionName.."."..tostring(self.current_player_contact:getSide())
     return "DCSWorld.DataLink."..self.currentMissionName
 end
 

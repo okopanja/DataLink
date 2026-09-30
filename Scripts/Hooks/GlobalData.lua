@@ -1,5 +1,5 @@
 local Logging = require("Utils.Logging").new("DataLink.log")
-local Aircraft = require("Aircraft")
+local Contact = require("Contact")
 local net = require("net")
 local UnitData = require("UnitData")
 

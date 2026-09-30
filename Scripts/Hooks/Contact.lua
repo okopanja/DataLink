@@ -2,9 +2,9 @@ local DCSTimer = require("DCSTimer")
 local Logging = require("Utils.Logging").new("DataLink.log")
 local MAXIMAL_ALLOWED_AGE = 20
 local UnitData = require("UnitData")
-local Aircraft = {}
+local Contact = {}
 
-function Aircraft:new(o)
+function Contact:new(o)
 	o = o or {}
 	setmetatable(o, self)
 	self.__index = self
@@ -28,148 +28,148 @@ function Aircraft:new(o)
 	return o
 end
 
-function Aircraft:getHeading()
+function Contact:getHeading()
 	return self.heading
 end
 
-function Aircraft:setHeading(heading)
+function Contact:setHeading(heading)
 	self.heading = heading
 end
 
-function Aircraft:getBearing()
+function Contact:getBearing()
 	return self.bearing
 end
 
-function Aircraft:setBearing(bearing)
+function Contact:setBearing(bearing)
 	self.bearing = bearing
 end
 
-function Aircraft:getRange()
+function Contact:getRange()
 	return self.range
 end
 
-function Aircraft:setRange(range)
+function Contact:setRange(range)
 	self.range = range
 end
 
-function Aircraft:getPosition()
+function Contact:getPosition()
 	return self.position
 end
 
-function Aircraft:setPosition(position)
+function Contact:setPosition(position)
 	self.position = position
 end
 
-function Aircraft:getSpeed()
+function Contact:getSpeed()
 	return self.speed
 end
 
-function Aircraft:setSpeed(speed)
+function Contact:setSpeed(speed)
 	self.speed = speed
 end
 
-function Aircraft:getAltitude()
+function Contact:getAltitude()
 	self:ensurePosition()
 	return self.position.alt
 end
 
-function Aircraft:setAltitude(altitude)
+function Contact:setAltitude(altitude)
 	self:ensurePosition()
 	self.position.alt = altitude
 end
 
-function Aircraft:getX()
+function Contact:getX()
 	self:ensurePosition()
 	return self.position.x
 end
 
-function Aircraft:getAlt()
+function Contact:getAlt()
 	self:ensurePosition()
 	return self.position.alt
 end
 
-function Aircraft:getZ()
+function Contact:getZ()
 	self:ensurePosition()
 	return self.position.z
 end
 
-function Aircraft:getSide()
+function Contact:getSide()
 	return self.side
 end
 
-function Aircraft:setSide(side)
+function Contact:setSide(side)
 	self.side = side
 end
 
-function Aircraft:getType()
+function Contact:getType()
 	return self.type
 end
 
-function Aircraft:setType(type)
+function Contact:setType(type)
 	self.type = type
 end
 
-function Aircraft:getID()
+function Contact:getID()
 	return self.id
 end
 
-function Aircraft:setID(id)
+function Contact:setID(id)
 	self.id = id
 end
 
-function Aircraft:getIFF()
+function Contact:getIFF()
 	return self.iff
 end
 
-function Aircraft:setIFF(iff)
+function Contact:setIFF(iff)
 	self.iff = iff
 end
 
-function Aircraft:getDonor()
+function Contact:getDonor()
 	return self.donor
 end
 
-function Aircraft:setDonor(donor)
+function Contact:setDonor(donor)
 	self.donor = donor
 end
 
-function Aircraft:getFlags()
+function Contact:getFlags()
 	return self.flags
 end
 
-function Aircraft:setFlags(flags)
+function Contact:setFlags(flags)
 	self.flags = flags
 end
 
--- function Aircraft:getPreviousPosition()
+-- function Contact:getPreviousPosition()
 -- 	return self.previous_position
 -- end
 
-function Aircraft:getMaximalSpeedInKMH()
+function Contact:getMaximalSpeedInKMH()
 	return 2700
 end
 
-function Aircraft:setContactSource(contact_source)
+function Contact:setContactSource(contact_source)
 	self.contact_source = contact_source
 end
 
-function Aircraft:getContactSource()
+function Contact:getContactSource()
 	return self.contact_source
 end
 
-function Aircraft:getLastSeen()
+function Contact:getLastSeen()
 	return self.age_timer:getLastTime()
 end
 
-function Aircraft:setLastSeen(lastSeen)
+function Contact:setLastSeen(lastSeen)
 	self.age_timer:setLastTime(lastSeen)
 end
 
-function Aircraft:getAgeTimer()
+function Contact:getAgeTimer()
 	return self.age_timer
 end
 
-function Aircraft:ensurePosition()
+function Contact:ensurePosition()
 	if self.position == nil then
 		self.position = {
 			x = 0,
@@ -179,16 +179,16 @@ function Aircraft:ensurePosition()
 	end
 end
 
---- Function updates the position of the aircraft
+--- Function updates the position of the contact
 -- it tracks the previous position as well, as well as it uses own timer (type: DCSTimer, methods intervalHasElapsed, reset) to track the elapsed time between position updates.
 -- if the position is updated and calculation conditions are met, it calculates the speed and heading based on the previous position and current position and elapsed time
 -- Conditions:
 -- 1. previous position is not nil
 -- 2. previous position is not equal to current position
 -- 3. elapsed time is lesser than maximal allowed time meassured between the previous position and current position update
--- 4. if speed does not exceed the maximum speed of the aircraft.
+-- 4. if speed does not exceed the maximum speed of the contact.
 -- Failures of conditions 3 and 4 results in previous position being invalidated, it this case speed and heading are not updated
-function Aircraft:updatePosition(new_position)
+function Contact:updatePosition(new_position)
 	local elapsed_time = self.age_timer:getElapsedTime()
 
 	-- Only calculate speed/heading if we have a previous position to compare against
@@ -202,16 +202,16 @@ function Aircraft:updatePosition(new_position)
 			self.speed = speed_mps * 3.6 -- convert to km/h
 			self.heading = math.deg(math.atan2(dz, dx)) % 360
 			if self.speed > self:getMaximalSpeedInKMH() then
-				Logging:info("Aircraft ID "..self.id.." exceeded maximal speed. Invalidating previous position.")
+				Logging:info("Contact ID "..self.id.." exceeded maximal speed. Invalidating previous position.")
 				self.previous_position = nil
 				self.speed = nil
 				self.heading = nil
 			else
-				Logging:info("Aircraft ID "..self.id.." updated position. Speed: "..tostring(self.speed).." km/h, Heading: "..tostring(self.heading).." degrees.")
+				Logging:info("Contact ID "..self.id.." updated position. Speed: "..tostring(self.speed).." km/h, Heading: "..tostring(self.heading).." degrees.")
 				self.previous_position = self.position
 			end
 		else
-			Logging:info("Aircraft ID "..self.id.." exceeded maximal allowed calculation time of "..MAXIMAL_ALLOWED_CALCULATION_TIME.." with elapsed time of "..elapsed_time..". Invalidating previous position.")
+			Logging:info("Contact ID "..self.id.." exceeded maximal allowed calculation time of "..MAXIMAL_ALLOWED_CALCULATION_TIME.." with elapsed time of "..elapsed_time..". Invalidating previous position.")
 			self.previous_position = nil
 		end
 	else
@@ -221,54 +221,54 @@ function Aircraft:updatePosition(new_position)
 	self.age_timer:reset()
 end
 
-function Aircraft:getBearingToAircraft(other_aircraft)
-	if not self.position or not other_aircraft.position then
-		Logging:info("getBearingToAircraft: one of the aircrafts has no position. self.position="..tostring(self.position)..", other_aircraft.position="..tostring(other_aircraft.position))
+function Contact:getBearingToContact(other_contact)
+	if not self.position or not other_contact.position then
+		Logging:info("getBearingToContact: one of the contacts has no position. self.position="..tostring(self.position)..", other_contact.position="..tostring(other_contact.position))
 		return nil
 	end
-	local dx = other_aircraft.position.x - self.position.x
-	local dz = other_aircraft.position.z - self.position.z
+	local dx = other_contact.position.x - self.position.x
+	local dz = other_contact.position.z - self.position.z
 	local bearing = math.deg(math.atan2(dz, dx)) % 360
 	return bearing
 end
 
-function Aircraft:getRangeToAircraft(other_aircraft)
-	if not self.position or not other_aircraft.position then
-		Logging:info("getRangeToAircraft: one of the aircrafts has no position. self.position="..tostring(self.position)..", other_aircraft.position="..tostring(other_aircraft.position))
+function Contact:getRangeToContact(other_contact)
+	if not self.position or not other_contact.position then
+		Logging:info("getRangeToContact: one of the contacts has no position. self.position="..tostring(self.position)..", other_contact.position="..tostring(other_contact.position))
 		return nil
 	end
-	local dx = other_aircraft.position.x - self.position.x
-	local dz = other_aircraft.position.z - self.position.z
+	local dx = other_contact.position.x - self.position.x
+	local dz = other_contact.position.z - self.position.z
 	local distance = math.sqrt((dx * dx) + (dz * dz))
 	return distance / 1000 -- convert to kilometers
 end
 
--- Calculates the radial speed of another aircraft relative to this aircraft.
--- it utilizes the bearing to the other aircraft to determine the radial component of the other aircaft's speed.
-function Aircraft:getRadialSpeedOfAircraft(other_aircraft)
-	if not self.position or not other_aircraft.position then
-		Logging:info("getRadialSpeed: one of the aircrafts has no position. self.position="..tostring(self.position)..", other_aircraft.position="..tostring(other_aircraft.position))
+-- Calculates the radial speed of another contact relative to this contact.
+-- it utilizes the bearing to the other contact to determine the radial component of the other aircaft's speed.
+function Contact:getRadialSpeedOfContact(other_contact)
+	if not self.position or not other_contact.position then
+		Logging:info("getRadialSpeed: one of the contacts has no position. self.position="..tostring(self.position)..", other_contact.position="..tostring(other_contact.position))
 		return nil
 	end
-	local bearing_to_other = self:getBearingToAircraft(other_aircraft)
+	local bearing_to_other = self:getBearingToContact(other_contact)
 	if not bearing_to_other then
-		Logging:info("getRadialSpeed: could not calculate bearing to other aircraft.")
+		Logging:info("getRadialSpeed: could not calculate bearing to other contact.")
 		return nil
 	end
 	local relative_bearing = (bearing_to_other - self.heading + 360) % 360
-	local radial_speed = other_aircraft:getSpeed() * math.cos(math.rad(relative_bearing))
+	local radial_speed = other_contact:getSpeed() * math.cos(math.rad(relative_bearing))
 	return radial_speed
 end
 
-function Aircraft:hasLineOfSightToAircraft(other_aircraft)
-	if not self.position or not other_aircraft.position then
+function Contact:hasLineOfSightToContact(other_contact)
+	if not self.position or not other_contact.position then
 		return false
 	end
-	-- check with terraing function if there is a line of sight between the two aircrafts using terrain.isVisible()
-	return terrain.isVisible(self.position.x, self.position.alt, self.position.z, other_aircraft.position.x, other_aircraft.position.alt, other_aircraft.position.z)
+	-- check with terraing function if there is a line of sight between the two contacts using terrain.isVisible()
+	return terrain.isVisible(self.position.x, self.position.alt, self.position.z, other_contact.position.x, other_contact.position.alt, other_contact.position.z)
 end
 
-function Aircraft:updateFrom(other_contact)
+function Contact:updateFrom(other_contact)
 	self:setID(other_contact:getID())
 	-- store the current position as the previous position before updating it
 	self.previous_position = self.position
@@ -287,7 +287,7 @@ function Aircraft:updateFrom(other_contact)
 	self:setLastSeen(other_contact:getLastSeen())
 end
 
-function Aircraft:pack()
+function Contact:pack()
 	return {
 		id = self:getID(),
 		x = self:getX(),
@@ -301,7 +301,7 @@ function Aircraft:pack()
 	}
 end
 
-function Aircraft:unpack(data)
+function Contact:unpack(data)
 	self.id = data.id
 	self.position = { x = data.x, alt = data.alt, z = data.z }
 	self.heading = data.heading
@@ -311,4 +311,4 @@ function Aircraft:unpack(data)
 	self:setLastSeen(data.lastSeen)
 end
 
-return Aircraft
+return Contact

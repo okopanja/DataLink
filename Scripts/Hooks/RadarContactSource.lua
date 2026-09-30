@@ -1,7 +1,7 @@
 local Logging = require("Utils.Logging").new("DataLink.log")
 local BaseContactSource = require("BaseContactSource")
 local Player = require("Player")
-local Aircraft = require("Aircraft")
+local Contact = require("Contact")
 local DCSTimer = require("DCSTimer")
 local UnitData = require("UnitData")
 local GlobalData = require("GlobalData")
@@ -22,7 +22,7 @@ if DEBUG then
     if use_lfs_resolution then
       folder_path = lfs.writedir().."Mods/tech/DataLink/Cockpit/Scripts/dumps/Su-27"
     else
-      folder_path = LockOn_Options.script_path..[[dumps\]]..get_aircraft_type()
+      folder_path = LockOn_Options.script_path..[[dumps\]]..get_contact_type()
     end
     lfs.mkdir(folder_path)
     local file = io.open(folder_path..[[\]]..inspect_name..".lua",'w')
@@ -41,12 +41,12 @@ function RadarContactSource:new(o)
   setmetatable(o, self)
   self.__index = self
   o.timer = DCSTimer:new(1)
-  o.aircrafts = {}
+  o.contacts = {}
   return o
 end
 
 function RadarContactSource:clearAllContacts()
-  self.aircrafts = {}
+  self.contacts = {}
 end
 
 function RadarContactSource:initialize()
@@ -67,7 +67,7 @@ function RadarContactSource:initialize()
         end,
         onActivatePlane = function(airplaneID)
           Logging:info("RadarContactSource:onActivatePlane called with airplaneID: " .. tostring(airplaneID))
-          self:updateOwnPlayerAircraft()
+          self:updateOwnPlayerContact()
         end,
         onNetDisconnect = function(arg1, arg2)
           Logging:info("RadarContactSource:onNetDisconnect called")
@@ -94,7 +94,7 @@ function RadarContactSource:onPlayerChangeSlot(playerID)
     -- Handle player change slot logic here
     local player_info = net.get_player_info(playerID)
     self.player = Player:new(player_info)
-    self:updateOwnPlayerAircraft(playerID)
+    self:updateOwnPlayerContact(playerID)
   end    
 end
 
@@ -108,12 +108,12 @@ function RadarContactSource:onSimulationFrame()
     local targets = Export.LoGetTargetInformation() or {}
     local lockedTargets = Export.LoGetLockedTargetInformation()
     local twsInfo = Export.LoGetTWSInfo()    
-    self:updateOwnPlayerAircraft()
+    self:updateOwnPlayerContact()
     for i, target in ipairs(targets) do
-        local aircraft = Aircraft:new({id = target.ID})
+        local contact = Contact:new({id = target.ID})
         -- country in target is actually coalitionID!
-        aircraft:setSide(Sides[target.country])
-        aircraft:setPosition({
+        contact:setSide(Sides[target.country])
+        contact:setPosition({
           x = target.position.p.x,
           alt = target.position.p.y,
           z = target.position.p.z
@@ -127,16 +127,16 @@ function RadarContactSource:onSimulationFrame()
         local headingDegree = math.deg(math.atan2(velocity.z, velocity.x))
         -- calculated speed in km/h
         local trueAirSpeed = math.sqrt(velocity.x^2 + velocity.y^2 + velocity.z^2) * 3.6
-        aircraft:setSpeed(trueAirSpeed)
-        aircraft:setHeading(headingDegree)
-        aircraft:setRange(target.distance / 1000)
-        aircraft:setBearing(self.current_player_aircraft:getBearingToAircraft(aircraft))
-        aircraft:setFlags(target.flags)
-        aircraft:setContactSource(CONTACT_SOURCES.RLPK_27)
-        Logging:info("Aircraft ID: " .. tostring(aircraft:getID()))
-        Logging:info("Aircraft side: " .. tostring(aircraft:getSide()))
-        Logging:info("Aircraft country:"..tostring(target.country))
-        Logging:info("Aircraft type: " .. tostring(aircraft:getType()))
+        contact:setSpeed(trueAirSpeed)
+        contact:setHeading(headingDegree)
+        contact:setRange(target.distance / 1000)
+        contact:setBearing(self.current_player_contact:getBearingToContact(contact))
+        contact:setFlags(target.flags)
+        contact:setContactSource(CONTACT_SOURCES.RLPK_27)
+        Logging:info("Contact ID: " .. tostring(contact:getID()))
+        Logging:info("Contact side: " .. tostring(contact:getSide()))
+        Logging:info("Contact country:"..tostring(target.country))
+        Logging:info("Contact type: " .. tostring(contact:getType()))
         for key, value in pairs(TARGET_FLAGS) do
           local flag_is_set = bitops.bitand(value,target.flags) == value
           if flag_is_set then
@@ -145,10 +145,10 @@ function RadarContactSource:onSimulationFrame()
         end
         if bitops.bitand(target.flags, TARGET_RADAR_TRACKED) ~= 0 then
           Logging:info("Target is radar tracked")
-          self.aircrafts[#self.aircrafts + 1] = aircraft
+          self.contacts[#self.contacts + 1] = contact
         end
     end
-    self:dispatchEvent(self.EventTypes.ContactsReceived, self.aircrafts)
+    self:dispatchEvent(self.EventTypes.ContactsReceived, self.contacts)
   end
 end
 

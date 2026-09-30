@@ -1,7 +1,7 @@
 local Logging = require("Utils.Logging").new("DataLink.log")
 local BaseContactSource = require("BaseContactSource")
 local Player = require("Player")
-local Aircraft = require("Aircraft")
+local Contact = require("Contact")
 local ScriptedEWRContactSource = BaseContactSource:new()
 local net = require("net")
 
@@ -51,7 +51,7 @@ function ScriptedEWRContactSource:initialize()
     end,
     onActivatePlane = function(airplaneID)
       Logging:info("onActivatePlane called with airplaneID: " .. tostring(airplaneID))
-      self:updateOwnPlayerAircraft()
+      self:updateOwnPlayerContact()
     end,
 
   })
@@ -79,7 +79,7 @@ function ScriptedEWRContactSource:onPlayerChangeSlot(playerID)
   if playerID == nil then return end
   -- Ignore own slot changes, but reset datalink device and sequence counter
   if net.get_my_player_id() == playerID then
-    self:updateOwnPlayerAircraft(playerID)
+    self:updateOwnPlayerContact(playerID)
     return 
   end
   -- Create a new Player object for the player who changed slots
@@ -183,16 +183,16 @@ function ScriptedEWRContactSource:parseEWR_SPS(msg)
 				spd = spd * 1.852
 			end
 
-      local aircraft = Aircraft:new()
-      aircraft:setBearing(tonumber(brg))
-      aircraft:setRange(rng)
-      aircraft:setAltitude(alt)
-      aircraft:setSpeed(spd)
-      aircraft:setHeading(tonumber(hdg))
-      aircraft:setDonor("SPS")
-      aircraft:setContactSource("ScriptedEWRContactSource")
+      local contact = Contact:new()
+      contact:setBearing(tonumber(brg))
+      contact:setRange(rng)
+      contact:setAltitude(alt)
+      contact:setSpeed(spd)
+      contact:setHeading(tonumber(hdg))
+      contact:setDonor("SPS")
+      contact:setContactSource("ScriptedEWRContactSource")
 
-      contacts[#contacts + 1] = aircraft
+      contacts[#contacts + 1] = contact
 
 			-- if #contacts >= MAX_CONTACTS then break end
 		end

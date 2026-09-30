@@ -1,6 +1,6 @@
 local ContactProcessor = {}
 local Logging = require("Utils.Logging").new("DataLink.log")
-local Aircraft = require("Aircraft")
+local Contact = require("Contact")
 local net = require("net")
 local UnitData = require("UnitData")
 local GlobalData = require("GlobalData")
@@ -47,15 +47,15 @@ end
 
 function ContactProcessor:calculateBearingAndRange(contact)
     Logging:info("Calculating bearing")
-    contact:setBearing(self.ownAircraft:getBearingToAircraft(contact))
+    contact:setBearing(self.ownContact:getBearingToContact(contact))
     Logging:info("Calculating range")
-    contact:setRange(self.ownAircraft:getRangeToAircraft(contact))
+    contact:setRange(self.ownContact:getRangeToContact(contact))
 end
 
 function ContactProcessor:onFigherToFighterContactsUpdate(contacts)
     Logging:info("onFigherToFighterContactsUpdate: "..tostring(#contacts).." contacts")
-    -- Update the own aircraft information before processing contacts
-    self:updateOwnAircraft()
+    -- Update the own contact information before processing contacts
+    self:updateOwnContact()
     for i, contact in ipairs(contacts) do
         self:updateIFF(contact)
         self:calculateBearingAndRange(contact)
@@ -126,27 +126,27 @@ function ContactProcessor:corellateContact(contact)
     return self:getExistingContact(contact)
 end
 
-function ContactProcessor:updateOwnAircraft()
-    self.ownAircraft = Aircraft:new({id = net.get_my_player_id()})
+function ContactProcessor:updateOwnContact()
+    self.ownContact = Contact:new({id = net.get_my_player_id()})
     local selfData = Export.LoGetSelfData()
     if selfData == nil then
         return nil
     end
-    self.ownAircraft:setSide(GlobalData:getCoalitionByCountry(selfData.Country))
-    self.ownAircraft:setPosition({
+    self.ownContact:setSide(GlobalData:getCoalitionByCountry(selfData.Country))
+    self.ownContact:setPosition({
       x = selfData.Position.x,
       alt = selfData.Position.y,
       z = selfData.Position.z
     })
-    self.ownAircraft:setType(selfData.name)
+    self.ownContact:setType(selfData.name)
 end
 
 function ContactProcessor:updateIFF(contact)
     local side = contact:getSide()
     Logging:info("Updating IFF for contact with ID: "..tostring(contact.id).." with side: "..tostring(side))
-    Logging:info("Own aircraft side: "..tostring(self.ownAircraft:getSide()))
+    Logging:info("Own contact side: "..tostring(self.ownContact:getSide()))
     if side == "red" or side == "blue" then
-        if side == self.ownAircraft:getSide() then
+        if side == self.ownContact:getSide() then
             Logging:info("It's friendly")
             contact:setIFF(UnitData.IFF.FRIENDLY)
         else
