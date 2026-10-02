@@ -1,3 +1,4 @@
+local VERSION_INFO = dofile(current_mod_path..'/VersionInfo.lua')
 dofile(current_mod_path..'/Cockpit/Scripts/common.lua')
 declare_plugin("DataLink", {
 	installed    = true,
@@ -5,7 +6,7 @@ declare_plugin("DataLink", {
 	developerName = _("okopanja"),
 	developerLink = _("https://github.com/okopanja"),
 	displayName  = _("DataLink Overlay"),
-	version      = "0.1.0.0",
+	version      = VERSION_INFO.version,
 	state        = "installed",
 	info         = _("DataLink overlay panel for Flanker cockpit.\nDisplays a configurable overlay positioned over the cockpit centre display."),
 	load_immediate = true,
