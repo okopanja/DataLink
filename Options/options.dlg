@@ -1,0 +1,272 @@
+dialog = {
+	["children"] = {
+		["containerPlugin"] = {
+			["children"] = {
+				["generalLabel"] = {
+					["params"] = {
+						["angle"] = 0,
+						["bounds"] = {
+							["h"] = 18,
+							["w"] = 261,
+							["x"] = 57,
+							["y"] = 60,
+						},
+						["enabled"] = true,
+						["pivotPoint"] = {
+							["x"] = 0,
+							["y"] = 0,
+						},
+						["text"] = "$GENERAL_LABEL",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "staticOptionsTitleSkin",
+						},
+					},
+					["type"] = "Static",
+				},
+				["generalEnabledCheckbox"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = 18,
+							["w"] = 261,
+							["x"] = 57,
+							["y"] = 103,
+						},
+						["enabled"] = true,
+						["state"] = false,
+						["tabOrder"] = 0,
+						["text"] = "$GENERAL_ENABLED",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "checkBoxSkin_options",
+						},
+					},
+					["type"] = "CheckBox",
+				},
+				["generalEnabledScriptedEwrCheckbox"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = 18,
+							["w"] = 261,
+							["x"] = 57,
+							["y"] = 142,
+						},
+						["enabled"] = true,
+						["state"] = false,
+						["tabOrder"] = 0,
+						["text"] = "$GENERAL_ENABLED_SCRIPTED_EWR",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "checkBoxSkin_options",
+						},
+					},
+					["type"] = "CheckBox",
+				},
+				["generalEnabledFighterToFighterDatalinkCheckbox"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = 18,
+							["w"] = 261,
+							["x"] = 57,
+							["y"] = 181,
+						},
+						["enabled"] = true,
+						["state"] = false,
+						["tabOrder"] = 0,
+						["text"] = "$GENERAL_ENABLED_FIGHTER_TO_FIGHTER_DATALINK",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "checkBoxSkin_options",
+						},
+					},
+					["type"] = "CheckBox",
+				},
+                ["networkSettingsLabel"] = {
+					["params"] = {
+						["angle"] = 0,
+						["bounds"] = {
+							["h"] = 18,
+							["w"] = 275,
+							["x"] = 403,
+							["y"] = 60,
+						},
+						["enabled"] = true,
+						["pivotPoint"] = {
+							["x"] = 0,
+							["y"] = 0,
+						},
+						["text"] = "$NETWORK_SETTINGS_LABEL",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "staticOptionsTitleSkin",
+						},
+					},
+					["type"] = "Static",
+				},
+				["networkNatsHostnameEditBox"] = {
+					["params"] = {
+						["acceptDecimalPoint"] = false,
+						["allowLineNumbers"] = false,
+						["allowSyntaxHightlight"] = false,
+						["bounds"] = {
+							["h"] = 18,
+							["w"] = 275,
+							["x"] = 403,
+							["y"] = 103,
+						},
+						["enabled"] = true,
+						-- ["state"] = false,
+						["tabOrder"] = 0,
+						["hintText"] = "$NETWORK_NATS_HOSTNAME",
+						["multiline"] = false,
+						["numeric"] = false,
+						["password"] = false,
+						["readOnly"] = false,
+						["tabOrder"] = 0,
+						["textWrapping"] = false,
+						["text"] = "",
+						-- ["maxLength"] = 1024,
+						-- ["inputType"] = "text",
+						["tooltip"] = "$NETWORK_NATS_HOSTNAME",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "editBoxNew",
+						},
+					},
+					["type"] = "EditBox",
+				},
+				["networkNatsPortEditBox"] = {
+					["params"] = {
+						["acceptDecimalPoint"] = false,
+						["allowLineNumbers"] = false,
+						["allowSyntaxHightlight"] = false,
+						["bounds"] = {
+							["h"] = 18,
+							["w"] = 275,
+							["x"] = 403,
+							["y"] = 142,							
+						},
+						["enabled"] = true,
+						-- ["state"] = false,
+						["tabOrder"] = 0,
+						["hintText"] = "$NETWORK_NATS_PORT",
+						["multiline"] = false,
+						["numeric"] = true,
+						["password"] = false,
+						["readOnly"] = false,
+						["tabOrder"] = 0,
+						["textWrapping"] = false,
+						-- ["text"] = "$NETWORK_NATS_HOSTNAME",
+						["text"] = "",
+						-- ["maxLength"] = 1024,
+						-- ["inputType"] = "text",
+						["tooltip"] = "$NETWORK_NATS_PORT",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "editBoxNew",
+						},
+					},
+					["type"] = "EditBox",
+				},
+				["networkNatsEnableSslCheckbox"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = 18,
+							["w"] = 275,
+							["x"] = 403,
+							["y"] = 181,
+						},
+						["enabled"] = true,
+						["state"] = false,
+						["tabOrder"] = 0,
+						["text"] = "$NETWORK_NATS_ENABLE_SSL",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "checkBoxSkin_options",
+						},
+					},
+					["type"] = "CheckBox",
+				},
+			},
+			["params"] = {
+				["bounds"] = {
+					["h"] = 600,
+					["w"] = 974,
+					["x"] = 0,
+					["y"] = 0,
+				},
+				["enabled"] = true,
+				["layout"] = {
+				},
+				["text"] = "",
+				["tooltip"] = "",
+				["visible"] = true,
+				["zindex"] = 2,
+			},
+			["skin"] = {
+				["params"] = {
+					["name"] = "panelSkin",
+				},
+			},
+			["type"] = "Panel",
+		},
+	},
+	["params"] = {
+		["bounds"] = {
+			["h"] = 851,
+			["w"] = 1135,
+			["x"] = 0,
+			["y"] = 0,
+		},
+		["buddy"] = false,
+		["clipResizeCursor"] = false,
+		["draggable"] = true,
+		["enabled"] = true,
+		["hasCursor"] = true,
+		["layout"] = {
+		},
+		["lockFlow"] = false,
+		["modal"] = false,
+		["offscreen"] = false,
+		["overlay"] = false,
+		["resizable"] = false,
+		["text"] = "New dialog",
+		["zOrder"] = 0,
+	},
+	["skin"] = {
+		["params"] = {
+			["name"] = "windowSkin",
+		},
+	},
+	["type"] = "Window",
+}
