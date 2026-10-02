@@ -9,7 +9,18 @@ declare_plugin("DataLink", {
 	state        = "installed",
 	info         = _("DataLink overlay panel for Flanker cockpit.\nDisplays a configurable overlay positioned over the cockpit centre display."),
 	load_immediate = true,
-})
+	Options =
+		{
+			{
+				name		= _("DataLink"),
+				nameId		= "DataLink",
+				dir			= "Options",
+				CLSID		= "{DataLink options}"
+			},
+		},
+
+}
+)
 
 local path = current_mod_path..'/Cockpit/Scripts/'
 
