@@ -10,7 +10,6 @@ local uuid = require("uuid")
 local Contact = require("Contact")
 local Options = require('optionsEditor')
 
-
 package.path = package.path .. lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\ssl\lua\?.lua]]
 package.cpath = package.cpath .. lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\ssl\dll\?.dll]]
 
@@ -106,7 +105,7 @@ function DataLinkTransiever:configure()
         self.connection_settings.tls = true
         self.connection_settings.tls_ca_file = lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\ssl\certs\ca-certificates.crt]]
     end
-    Logging:info("TLS_CA_FILE: "..tostring(self.connection_settings.tls_ca_file))    
+    Logging:info("TLS_CA_FILE: "..tostring(self.connection_settings.tls_ca_file))
 end
 
 function DataLinkTransiever:onNetMissionChanged(missionName)
