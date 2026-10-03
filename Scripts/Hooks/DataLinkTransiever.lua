@@ -82,7 +82,7 @@ function DataLinkTransiever:initialize()
             end
         end,
     })
-    Logging:info("DataLinkTransiever initialized")
+    Logging:info("DataLinkTransiever: "..tostring(self.enabled))
 end
 
 function DataLinkTransiever:configure()

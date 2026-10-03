@@ -32,6 +32,9 @@ function GlobalData:getCountryCoalitionMap()
 end
 
 function GlobalData:getCoalitionByCountry(country_id)
+    if not self.coalitions_by_country_id then
+        self:updateCountryCoalitionMap()
+    end
     return self.coalitions_by_country_id[country_id]
 end
 

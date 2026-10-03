@@ -1,6 +1,7 @@
 local Logging = require("Utils.Logging").new("DataLink.log")
 local Table = require("Utils.Table")
 local UnitData = require("UnitData")
+local Options = require('optionsEditor')
 dofile(lfs.writedir() .. [[Mods\tech\DataLink\Cockpit\Scripts\common.lua]])
 
 local DataLinkDeviceConnector = {}
@@ -31,16 +32,25 @@ function DataLinkDeviceConnector:new(o)
 end
 
 function DataLinkDeviceConnector:initialize()
-  Logging:info("Initializing DataLinkDeviceConnector")
+  self:configure()
   -- register callbacks which will pass the the events to the object method handlers
   DCS.setUserCallbacks({
     onNetMissionChanged = function(missionName)
+      self:configure()
+      if self.enabled == false then return end
       self:onNetMissionChanged(missionName)
     end,
     onPlayerChangeSlot = function(playerID)
+      self:configure()
+      if self.enabled == false then return end
       self:onPlayerChangeSlot(playerID)
     end,
   })
+  Logging:info("DataLinkDeviceConnector: "..tostring(self.enabled))
+end
+
+function DataLinkDeviceConnector:configure()
+  self.enabled = Options.getOption("plugins.DataLink.generalEnabled")
 end
 
 function DataLinkDeviceConnector:onNetMissionChanged(missionName)

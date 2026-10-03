@@ -38,7 +38,6 @@ end
 
 function ScriptedEWRContactSource:initialize()
   self:configure()
-  Logging:info("Initializing ScriptedEWRContactSource")
   -- register callbacks which will pass the the events to the object method handlers
   DCS.setUserCallbacks({
     onNetMissionChanged = function(missionName)
@@ -62,6 +61,7 @@ function ScriptedEWRContactSource:initialize()
     end,
 
   })
+  Logging:info("ScriptedEWRContactSource: "..tostring(self.enabled))
 end
 
 function ScriptedEWRContactSource:configure()

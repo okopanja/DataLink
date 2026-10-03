@@ -6,6 +6,7 @@ local DCSTimer = require("DCSTimer")
 local UnitData = require("UnitData")
 local GlobalData = require("GlobalData")
 local bitops = require("External.bitops")
+local Options = require('optionsEditor')
 local UNIT_PROPERTIES = UnitData.UNIT_PROPERTIES
 local TARGET_FLAGS = UnitData.TARGET_FLAGS
 local Sides = UnitData.Sides
@@ -50,26 +51,31 @@ function RadarContactSource:clearAllContacts()
 end
 
 function RadarContactSource:initialize()
-  Logging:info("Initializing RadarContactSource")
-  -- Add any additional initialization logic here
+  self:configure()
   if Export.LoIsSensorExportAllowed() then
     DCS.setUserCallbacks({
         onNetMissionChanged = function(missionName)
+          self:configure()
+          if self.enabled == false then return end
           self:onNetMissionChanged(missionName)
         end,
         onPlayerChangeSlot = function(playerID)
-        self:onPlayerChangeSlot(playerID)
+          if self.enabled == false then return end
+          self:onPlayerChangeSlot(playerID)
         end,
         onSimulationFrame = function()
+          if self.enabled == false then return end
           if self:getActive() then
             self:onSimulationFrame()
           end
         end,
         onActivatePlane = function(airplaneID)
+          if self.enabled == false then return end
           Logging:info("RadarContactSource:onActivatePlane called with airplaneID: " .. tostring(airplaneID))
           self:updateOwnPlayerContact()
         end,
         onNetDisconnect = function(arg1, arg2)
+          if self.enabled == false then return end
           Logging:info("RadarContactSource:onNetDisconnect called")
           self:clearAllContacts()
           self.active = false
@@ -78,6 +84,11 @@ function RadarContactSource:initialize()
   else
     Logging:warn("Sensor export is not allowed")
   end
+  Logging:info("RadarContactSource: "..tostring(self.enabled))
+end
+
+function RadarContactSource:configure()
+  self.enabled = Options.getOption("plugins.DataLink.generalEnabled")
 end
 
 function RadarContactSource:onNetMissionChanged(missionName)

@@ -8,7 +8,11 @@ SUPPORTED_AIRCRAFT = {
 }
 
 -- Enable to activate debugging features
-DEBUG=false
+if get_plugin_option_value then
+  DEBUG=get_plugin_option_value("DataLink", "generalEnabledDebug", "local")
+else
+  DEBUG=false
+end
 
 -- If inspect.lua is not present in the scripts folder, debugging will be disabled automatically.
 DEBUG = DEBUG and lfs.attributes(lfs.writedir().."Mods/tech/DataLink/Cockpit/Scripts/inspect.lua") ~= nil
