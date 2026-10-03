@@ -4,6 +4,7 @@ local Contact = require("Contact")
 local net = require("net")
 local UnitData = require("UnitData")
 local GlobalData = require("GlobalData")
+local Options = require('optionsEditor')
 
 function ContactProcessor:new(o)
     o = o or {}
@@ -14,11 +15,19 @@ function ContactProcessor:new(o)
 end
 
 function ContactProcessor:initialize()
+    self:configure()
     DCS.setUserCallbacks({
         onNetMissionChanged = function(missionName)
+            self:configure()
+            if self.enabled == false then return end
             self:onNetMissionChanged(missionName)
         end,
     })
+    Logging:info("ContactProcessor: "..tostring(self.enabled))
+end
+
+function ContactProcessor:configure()
+    self.enabled = Options.getOption("plugins.DataLink.generalEnabled")
 end
 
 function ContactProcessor:onNetMissionChanged(missionName)

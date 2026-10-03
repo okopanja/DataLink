@@ -97,6 +97,29 @@ dialog = {
 					},
 					["type"] = "CheckBox",
 				},
+				["generalEnabledDebugCheckbox"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = 18,
+							["w"] = 261,
+							["x"] = 57,
+							["y"] = 220,
+						},
+						["enabled"] = true,
+						["state"] = false,
+						["tabOrder"] = 0,
+						["text"] = "$GENERAL_ENABLED_DEBUG",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "checkBoxSkin_options",
+						},
+					},
+					["type"] = "CheckBox",
+				},
                 ["networkSettingsLabel"] = {
 					["params"] = {
 						["angle"] = 0,

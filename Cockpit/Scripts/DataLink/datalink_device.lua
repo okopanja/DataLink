@@ -60,7 +60,7 @@ local DEVICE_STATES = {
 local device_state = DEVICE_STATES.NO_CONTACTS
 
 
-print_message_to_user("DataLink: "..tostring(DEBUG))
+print_message_to_user("DataLink debug: "..tostring(DEBUG))
 
 function post_initialize()
 	print_message_to_user("DataLink: initialized")

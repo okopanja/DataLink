@@ -1,14 +1,18 @@
 -- define here for which modules to enable the data link device.
 SUPPORTED_AIRCRAFT = {
-  ["Su-27"] = {},
-  ["Su-33"] = {},
-  ["J-11A"] = {},
+  ["Su-27"] = { enable_options_key_for_unit = "generalEnabled" },
+  ["Su-33"] = { enable_options_key_for_unit = "generalEnabled" },
+  ["J-11A"] = { enable_options_key_for_unit = "generalEnabled" },
   -- TODO: MiG-29 Fulcrum should not be supported
   -- ["MiG-29 Fulcrum"] = {},
 }
 
 -- Enable to activate debugging features
-DEBUG=false
+if get_plugin_option_value then
+  DEBUG=get_plugin_option_value("DataLink", "generalEnabledDebug", "local")
+else
+  DEBUG=false
+end
 
 -- If inspect.lua is not present in the scripts folder, debugging will be disabled automatically.
 DEBUG = DEBUG and lfs.attributes(lfs.writedir().."Mods/tech/DataLink/Cockpit/Scripts/inspect.lua") ~= nil
