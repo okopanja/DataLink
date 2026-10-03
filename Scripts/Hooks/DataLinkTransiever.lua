@@ -52,24 +52,28 @@ function DataLinkTransiever:new()
 end
 
 function DataLinkTransiever:initialize()
-    Logging:info("DataLinkTransiever initialized")
+    self:configure()
     DCS.setUserCallbacks({
         onNetMissionChanged = function(missionName)
             self:onNetMissionChanged(missionName)
         end,
         onPlayerChangeSlot = function(playerID)
+            if self.enabled == false then return end
             self:onPlayerChangeSlot(playerID)
         end,
         onSimulationFrame = function()
+        if self.enabled == false then return end
           if self:getActive() then
             self:onSimulationFrame()
           end
         end,
         onActivatePlane = function(airplaneID)
+          if self.enabled == false then return end
           Logging:info("DataLinkTransiever:onActivatePlane called with airplaneID: " .. tostring(airplaneID))
           self:updateOwnPlayerContact()
         end,
         onNetDisconnect = function(arg1, arg2)
+            if self.enabled == false then return end
             if self.client then
                 Logging:info("Disconnecting from NATS server...")
                 self.client:shutdown()
@@ -79,11 +83,12 @@ function DataLinkTransiever:initialize()
             end
         end,
     })
-    self:configure()
+    Logging:info("DataLinkTransiever initialized")
 end
 
 function DataLinkTransiever:configure()
     self.enabled = Options.getOption("plugins.DataLink.generalEnabledFighterToFighterDatalink")
+    if self.enabled == false then return end
     self.host = Options.getOption("plugins.DataLink.networkNatsHostname")
     self.port = Options.getOption("plugins.DataLink.networkNatsPort")
     self.tls = Options.getOption("plugins.DataLink.networkNatsEnableSsl")
@@ -97,7 +102,7 @@ function DataLinkTransiever:configure()
         send_timeout = 0.100, -- send timeout
         receive_timeout = 0.005, -- receive needs to return fast
     }
-    if tls then
+    if self.tls then
         self.connection_settings.tls = true
         self.connection_settings.tls_ca_file = lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\ssl\certs\ca-certificates.crt]]
     end
@@ -108,6 +113,7 @@ function DataLinkTransiever:onNetMissionChanged(missionName)
     Logging:info("Net mission changed: " .. tostring(missionName))
     self.currentMissionName = missionName
     self:configure()
+    if self.enabled == false then return end
     Logging:info("Connecting to: " .. tostring(self.host) .. ":" .. tostring(self.port))
     -- Connect to the NATS server with provided host and port.
     self.client = nats.connect(self.connection_settings)
@@ -252,6 +258,7 @@ function DataLinkTransiever:handleIncomingMessage(message)
 end
 
 function DataLinkTransiever:transfer(contacts)
+    if self.enabled == false then return end
     if self.connection_status ~= CONNECTION_STATUS.CONNECTED then
         Logging:warning("Cannot transfer contacts, not connected to NATS server.")
         return
