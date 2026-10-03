@@ -86,7 +86,8 @@ function DataLinkTransiever:initialize()
 end
 
 function DataLinkTransiever:configure()
-    self.enabled = Options.getOption("plugins.DataLink.generalEnabledFighterToFighterDatalink")
+    self.enabled = Options.getOption("plugins.DataLink.generalEnabled") and
+                   Options.getOption("plugins.DataLink.generalEnabledFighterToFighterDatalink")
     if self.enabled == false then return end
     self.host = Options.getOption("plugins.DataLink.networkNatsHostname")
     self.port = Options.getOption("plugins.DataLink.networkNatsPort")

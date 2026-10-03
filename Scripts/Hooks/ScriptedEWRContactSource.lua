@@ -65,7 +65,8 @@ function ScriptedEWRContactSource:initialize()
 end
 
 function ScriptedEWRContactSource:configure()
-  self.enabled = Options.getOption("plugins.DataLink.generalEnabledScriptedEwr")
+  self.enabled = Options.getOption("plugins.DataLink.generalEnabled") and
+                 Options.getOption("plugins.DataLink.generalEnabledScriptedEwr")
 end
 
 function ScriptedEWRContactSource:onTriggerMessage(message, clearView)

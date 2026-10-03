@@ -1,8 +1,8 @@
 -- define here for which modules to enable the data link device.
 SUPPORTED_AIRCRAFT = {
-  ["Su-27"] = {},
-  ["Su-33"] = {},
-  ["J-11A"] = {},
+  ["Su-27"] = { enable_options_key_for_unit = "generalEnabled" },
+  ["Su-33"] = { enable_options_key_for_unit = "generalEnabled" },
+  ["J-11A"] = { enable_options_key_for_unit = "generalEnabled" },
   -- TODO: MiG-29 Fulcrum should not be supported
   -- ["MiG-29 Fulcrum"] = {},
 }
