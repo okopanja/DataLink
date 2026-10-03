@@ -8,6 +8,8 @@ local JSON = require("JSON")
 local Player = require("Player")
 local uuid = require("uuid")
 local Contact = require("Contact")
+local Options = require('optionsEditor')
+
 
 package.path = package.path .. lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\ssl\lua\?.lua]]
 package.cpath = package.cpath .. lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\ssl\dll\?.dll]]
@@ -49,7 +51,7 @@ function DataLinkTransiever:new()
     return obj
 end
 
-function DataLinkTransiever:initialize(host, port, tls)
+function DataLinkTransiever:initialize()
     Logging:info("DataLinkTransiever initialized")
     DCS.setUserCallbacks({
         onNetMissionChanged = function(missionName)
@@ -76,30 +78,21 @@ function DataLinkTransiever:initialize(host, port, tls)
                 Logging:info("Disconnected from NATS server.")
             end
         end,
-    })    
-    self.host = host or "demo.nats.io"
-    self.port = port or 4222
-    self.tls = tls or false
-    self.connection_settings =
-        {
-            host = self.host,
-            port = self.port,
-            timeout = 20, -- general timeout for connection attempts
-        }
-    self.timeouts = {
-        send_timeout = 0.100, -- send timeout
-        receive_timeout = 0.005, -- receive needs to return fast
-    }
-    if tls then
-        self.connection_settings.tls = true
-        self.connection_settings.tls_ca_file = lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\ssl\certs\ca-certificates.crt]]
-    end
-    Logging:info("TLS_CA_FILE: "..tostring(self.connection_settings.tls_ca_file))
+    })
+    self:configure()
+end
+
+function DataLinkTransiever:configure()
+    self.enabled = Options.getOption("plugins.DataLink.generalEnabledFighterToFighterDatalink")
+    self.host = Options.getOption("plugins.DataLink.networkNatsHostname")
+    self.port = Options.getOption("plugins.DataLink.networkNatsPort")
+    self.tls = Options.getOption("plugins.DataLink.networkNatsEnableSsl")
 end
 
 function DataLinkTransiever:onNetMissionChanged(missionName)
     Logging:info("Net mission changed: " .. tostring(missionName))
     self.currentMissionName = missionName
+    self:configure()
     Logging:info("Connecting to: " .. tostring(self.host) .. ":" .. tostring(self.port))
     -- Connect to the NATS server with provided host and port.
     self.client = nats.connect(self.connection_settings)
