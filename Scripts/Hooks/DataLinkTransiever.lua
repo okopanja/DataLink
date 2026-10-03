@@ -87,6 +87,21 @@ function DataLinkTransiever:configure()
     self.host = Options.getOption("plugins.DataLink.networkNatsHostname")
     self.port = Options.getOption("plugins.DataLink.networkNatsPort")
     self.tls = Options.getOption("plugins.DataLink.networkNatsEnableSsl")
+    self.connection_settings =
+        {
+            host = self.host,
+            port = self.port,
+            timeout = 20, -- general timeout for connection attempts
+        }
+    self.timeouts = {
+        send_timeout = 0.100, -- send timeout
+        receive_timeout = 0.005, -- receive needs to return fast
+    }
+    if tls then
+        self.connection_settings.tls = true
+        self.connection_settings.tls_ca_file = lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\ssl\certs\ca-certificates.crt]]
+    end
+    Logging:info("TLS_CA_FILE: "..tostring(self.connection_settings.tls_ca_file))    
 end
 
 function DataLinkTransiever:onNetMissionChanged(missionName)
