@@ -10,6 +10,13 @@ declare_plugin("DataLink", {
 	state        = "installed",
 	info         = _("DataLink overlay panel for Flanker cockpit.\nDisplays a configurable overlay positioned over the cockpit centre display."),
 	load_immediate = true,
+	Skins	=
+	{
+		{
+			name	= "DataLink",
+			dir		= "Theme"
+		},
+	},	
 	Options =
 		{
 			{
