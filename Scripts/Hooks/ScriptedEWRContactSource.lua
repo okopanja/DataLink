@@ -5,6 +5,7 @@ local Contact = require("Contact")
 local UnitData = require("UnitData")
 local ScriptedEWRContactSource = BaseContactSource:new()
 local net = require("net")
+local Options = require('optionsEditor')
 
 local Sides = {
   [0] = "spectators",
@@ -36,26 +37,35 @@ function ScriptedEWRContactSource:new(o)
 end
 
 function ScriptedEWRContactSource:initialize()
+  self:configure()
   Logging:info("Initializing ScriptedEWRContactSource")
   -- register callbacks which will pass the the events to the object method handlers
   DCS.setUserCallbacks({
     onNetMissionChanged = function(missionName)
+      if self.enabled == false then return end
       self:onNetMissionChanged(missionName)
     end,
     onTriggerMessage = function(message, clearView)
+      if self.enabled == false then return end
       if self:getActive() then
         self:onTriggerMessage(message, clearView)
       end
     end,
     onPlayerChangeSlot = function(playerID)
+      if self.enabled == false then return end
       self:onPlayerChangeSlot(playerID)
     end,
     onActivatePlane = function(airplaneID)
+      if self.enabled == false then return end
       Logging:info("onActivatePlane called with airplaneID: " .. tostring(airplaneID))
       self:updateOwnPlayerContact()
     end,
 
   })
+end
+
+function ScriptedEWRContactSource:configure()
+  self.enabled = Options.getOption("plugins.DataLink.generalEnabledScriptedEwr")
 end
 
 function ScriptedEWRContactSource:onTriggerMessage(message, clearView)
