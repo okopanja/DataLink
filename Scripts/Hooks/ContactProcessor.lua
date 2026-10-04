@@ -70,7 +70,7 @@ function ContactProcessor:onFigherToFighterContactsUpdate(contacts)
         self:calculateBearingAndRange(contact)
         Logging:info("Correlating contact: "..tostring(contact.id))
         local corellated_contact = self:corellateContact(contact)
-        if corellated_contact then
+        if corellated_contact ~= nil then
             Logging:info("Found correlated contact: "..tostring(corellated_contact.id))
             if contact:getLastSeen() > corellated_contact:getLastSeen() then
                 Logging:info("Updating correlated contact with newer information from contact: "..tostring(contact.id))
