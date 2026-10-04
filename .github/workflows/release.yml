@@ -36,6 +36,7 @@ jobs:
           cp -r source/Theme DataLink/
           cp source/README.md DataLink/
           cp source/LICENSE DataLink/
+          cp source/THIRD_PARTY_LICENSES.md DataLink/
           cp source/entry.lua DataLink/
           cp source/VersionInfo.lua DataLink/
           # replace version=0.0.0 with tag_no_v in VersionInfo.lua
