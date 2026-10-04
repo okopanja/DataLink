@@ -298,8 +298,7 @@ function DataLinkTransiever:transfer(contacts)
 end
 
 function DataLinkTransiever:getNATSSubject()
-    -- return "DCSWorld.DataLink."..self.currentMissionName.."."..tostring(self.current_player_contact:getSide())
-    return "DCSWorld.DataLink."..self.currentMissionName
+    return "DCSWorld.DataLink."..self.currentMissionName.."."..self.current_player_contact:getSide()
 end
 
 return DataLinkTransiever
