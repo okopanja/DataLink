@@ -1,0 +1,53 @@
+name: DataLink -> package, create release(on tag)
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  publish:
+    runs-on: ubuntu-latest 
+    permissions: 
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          lfs: true
+          path: source
+      - name: Prepare versions for EXE file 
+        uses: actions/github-script@v6
+        id: set_version
+        with:
+          script: |
+            const tag = context.ref.substring(10)
+            const tag_no_v = context.ref.substring(11)
+            console.log(tag)            
+            core.setOutput('tag', tag)
+            core.setOutput('tag-no-v', tag_no_v)
+        if: startsWith(github.ref, 'refs/tags/')            
+      - name: Package
+        run: |
+          # create a directory for the release package files
+          mkdir DataLink
+          # copy all necessary files into the release package directory
+          cp -r source/Cockpit DataLink/
+          cp -r source/Options DataLink/
+          cp -r source/Scripts DataLink/
+          cp -r source/Theme DataLink/
+          cp source/README.md DataLink/
+          cp source/LICENSE DataLink/
+          cp source/entry.lua DataLink/
+          cp source/VersionInfo.lua DataLink/
+          # replace version=0.0.0 with tag_no_v in VersionInfo.lua
+          sed -i "s/version = \"0.0.0\"/version = \"${{steps.set_version.outputs.tag-no-v}}\"/" DataLink/VersionInfo.lua
+          # replace commit hash with the current GitHub SHA in VersionInfo.lua
+          sed -i "s/commit = \"0000000000000000000000000000000000000000\"/commit = \"${{github.sha}}\"/" DataLink/VersionInfo.lua
+          # create a zip archive of the release package directory
+          zip -9 -r DataLink-${{steps.set_version.outputs.tag-no-v}}.zip DataLink
+        if: startsWith(github.ref, 'refs/tags/')            
+      - name: Create release and upload asset
+        uses: softprops/action-gh-release@v3
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: DataLink-${{steps.set_version.outputs.tag-no-v}}.zip
+          token: ${{ secrets.GITHUB_TOKEN }}

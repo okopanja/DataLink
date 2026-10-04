@@ -4,7 +4,7 @@
 local VERSION_INFO=
 {
     version = "0.0.0",
-    commit = "",
+    commit = "0000000000000000000000000000000000000000",
 }
 
 return VERSION_INFO
