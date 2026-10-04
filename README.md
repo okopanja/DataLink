@@ -52,7 +52,8 @@ To remove the DataLink Overlay mod:
    %USERPROFILE%\Saved Games\DCS\Mods\tech\
    ```
 
-2. **Delete the DataLink folder:**
+2. **Delete the 
+DataLink folder:**
    - Delete the entire `DataLink` folder and all its contents
      
 3. **Navigate to your DCS Scripts folder:**
@@ -93,6 +94,10 @@ GitHub: [https://github.com/okopanja](https://github.com/okopanja)
 ## Contributing
 
 Contributions, bug reports, and feature requests are welcome! Please visit the GitHub repository for more information.
+
+## Licensing
+
+The code in this repository is covered with GPLv3 license as described in [LICENSE](LICENSE) except for cases specified in [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
 
 ---
 
