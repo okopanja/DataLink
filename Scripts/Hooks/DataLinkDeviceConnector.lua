@@ -55,7 +55,7 @@ end
 
 function DataLinkDeviceConnector:onNetMissionChanged(missionName)
   Logging:info("DataLinkDeviceConnector:onNetMissionChanged: "..missionName)
-  -- Handle mission change logic here
+  self.datalink_device = nil
 end
 
 function DataLinkDeviceConnector:onPlayerChangeSlot(playerID)
@@ -66,7 +66,7 @@ function DataLinkDeviceConnector:onPlayerChangeSlot(playerID)
     local shouldSearchDevice = (selfData ~= nil) and Table.is_in_keys(SUPPORTED_AIRCRAFT, selfData.Name)
     if shouldSearchDevice then
       self.datalink_device = self:findDataLinkDevice()
-      if self.datalink_device then
+      if self.datalink_device ~= nil then
         Logging:info("DataLink device found and initialized.")
       else
         Logging:info("DataLink device not found.")
@@ -90,14 +90,13 @@ function DataLinkDeviceConnector:findDataLinkDevice()
 end
 
 function DataLinkDeviceConnector:transfer(contacts)	
-	if not self.datalink_device then
-		self.datalink_device = self:findDataLinkDevice()
-	end
-
-	if not self.datalink_device then 
-		Logging:info("transfer: no DataLink device found.")
-		return 
-	end
+  if self.datalink_device == nil then
+	  self.datalink_device = self:findDataLinkDevice()
+    if self.datalink_device == nil then 
+      Logging:info("transfer: no DataLink device found.")
+      return 
+    end
+  end
 
 	self.dl_seq = (self.dl_seq + 1) % 1000
 	if not self.dl_seq then
