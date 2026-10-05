@@ -82,7 +82,7 @@ In order to make sure you do not get into trouble I decided to reach the popular
 Please watch for updates. If any of you is server owner please contact me for any technical clarifications.
 | Server  | Status | Enforcement |
 | ------------- | ------------- | ------------- |
-| SPS Contention (any ERA) | Strictly prohibited  | Server actively probes the connected clients. You will get banned if they detect the mod. I strongly encourage you to avoid using ANY modes on this server. |
+| SPS Contention (any ERA) | Strictly prohibited  | Server actively probes the connected clients. You will get banned if they detect the mod. I strongly encourage you to avoid using ANY modes on this server. In the next release support for this server will be removed. |
 | ...  | ...  | ...  |
 | ...  | ...  | ...  |
 | ...  | ...  | ...  |
