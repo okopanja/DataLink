@@ -18,6 +18,10 @@ DataLink Overlay is a cockpit modification that displays a customizable overlay 
 - **Su-33 Flanker-D**
 - **J-11A**
 
+### Technical information
+
+Technical users and server owners, please read [Data Link Design](https://github.com/okopanja/DataLink/tree/main/Documentation/Design#data-link-design).
+
 ## Installation
 
 ### Requirements
