@@ -78,7 +78,7 @@ No
 2. Is this MOD a cheat?
 
 No, it was not designed to be a cheat, however you should respect the rules of the server you connect to. If you get asked not to use this MOD, do not use it.
-In order to make sure you do not get into trouble I decided to reach the popular server owners in order to obtain either explicit permission or prohibition for the mod.
+In order to make sure you do not get into trouble I decided to reach the owners of the popular servers in order to obtain either explicit permission or prohibition for the mod.
 Please watch for updates. If any of you is server owner please contact me for any technical clarifications.
 | Server  | Status | Enforcement |
 | ------------- | ------------- | ------------- |
