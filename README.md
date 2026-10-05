@@ -9,6 +9,7 @@ DataLink Overlay is a cockpit modification that displays a customizable overlay 
 ### Features
 
 - Scripted EWR as data source
+- Radar Export based on sensor exports (this is controlled by the server, server admins can disable)
 - Seamless integration with DCS World cockpit systems
 
 ### Supported Aircraft
@@ -77,8 +78,17 @@ No
 2. Is this MOD a cheat?
 
 No, it was not designed to be a cheat, however you should respect the rules of the server you connect to. If you get asked not to use this MOD, do not use it.
+In order to make sure you do not get into trouble I decided to reach the popular server owners in order to obtain either explicit permission or prohibition for the mod.
+Please watch for updates. If any of you is server owner please contact me for any technical clarifications.
+| Server  | Status | Enforcement |
+| ------------- | ------------- | ------------- |
+| SPS Contention (any ERA) | Strictly prohibited  | Server actively probes the connected clients. You will get banned if they detect the mod. I strongly encourage you to avoid using ANY modes on this server. |
+| ...  | ...  | ...  |
+| ...  | ...  | ...  |
+| ...  | ...  | ...  |
 
-3. How are information on aircrafts retreived?
+
+3. How are information on aircrafts retrieved?
 
 MOD supports implementation of different Contact Sources. Per default it is supplied with Scripted EWR Contact Source, which relies on information the server owners are willing to broadcast. However in future additional data sources will be added.
 
