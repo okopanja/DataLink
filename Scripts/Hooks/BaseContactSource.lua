@@ -2,6 +2,7 @@ local Logging = require("Utils.Logging").new("DataLink.log")
 local EventSource = require("EventSource")
 local Table = require("Utils.Table")
 local Contact = require("Contact")
+local net = require("net")
 dofile(lfs.writedir() .. [[Mods\tech\DataLink\Cockpit\Scripts\common.lua]])
 local ContactEventSource = EventSource:new()
 local UnitData = require("UnitData")
@@ -40,7 +41,7 @@ end
 
 function ContactEventSource:updateOwnPlayerContact(playerID)
     if not self.current_player_contact then        
-        self.current_player_contact = Contact:new({id = playerID })
+        self.current_player_contact = Contact:new({id = net.get_my_player_id()})
     end
     if self.current_player_contact:getID() == nil and playerID ~= nil then
         self.current_player_contact:setID(playerID)
