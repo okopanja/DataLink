@@ -1,0 +1,158 @@
+<mxfile host="Electron">
+  <diagram name="Page-1" id="kpxiCSKxKK6DMeBLsY9A">
+    <mxGraphModel dx="1212" dy="1185" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-4" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" value="DCS client 1" vertex="1">
+          <mxGeometry height="450" width="430" x="20" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-5" parent="ihfzEOTeNQdEwgJrlR8O-4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" value="Flanker module" vertex="1">
+          <mxGeometry height="60" width="120" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-7" parent="ihfzEOTeNQdEwgJrlR8O-4" style="swimlane;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" value="DataLink mod" vertex="1">
+          <mxGeometry height="210" width="370" x="20" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-12" edge="1" parent="ihfzEOTeNQdEwgJrlR8O-7" source="ihfzEOTeNQdEwgJrlR8O-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ihfzEOTeNQdEwgJrlR8O-9" value="update">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-8" parent="ihfzEOTeNQdEwgJrlR8O-7" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" value="LUA: Hook Export Environment" vertex="1">
+          <mxGeometry height="60" width="130" x="10" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-9" parent="ihfzEOTeNQdEwgJrlR8O-7" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" value="LUA: Cockpit" vertex="1">
+          <mxGeometry height="60" width="130" x="210" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-10" parent="ihfzEOTeNQdEwgJrlR8O-7" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" value="luasocket/luasec" vertex="1">
+          <mxGeometry height="20" width="120" x="15" y="182" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-11" parent="ihfzEOTeNQdEwgJrlR8O-7" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" value="NATS library" vertex="1">
+          <mxGeometry height="20" width="120" x="15" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-13" edge="1" parent="ihfzEOTeNQdEwgJrlR8O-4" source="ihfzEOTeNQdEwgJrlR8O-5" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.123;entryY=0.033;entryDx=0;entryDy=0;entryPerimeter=0;" target="ihfzEOTeNQdEwgJrlR8O-8" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="470" as="sourcePoint" />
+            <mxPoint x="240" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-14" connectable="0" parent="ihfzEOTeNQdEwgJrlR8O-13" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;" value="Radar&lt;br&gt;Contacts" vertex="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-20" edge="1" parent="ihfzEOTeNQdEwgJrlR8O-4" source="ihfzEOTeNQdEwgJrlR8O-17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" target="ihfzEOTeNQdEwgJrlR8O-8" value="EWR scripted text">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-17" parent="ihfzEOTeNQdEwgJrlR8O-4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" value="DCS core" vertex="1">
+          <mxGeometry height="60" width="120" x="155" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-21" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" value="DCS client 2" vertex="1">
+          <mxGeometry height="450" width="430" x="610" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-22" parent="ihfzEOTeNQdEwgJrlR8O-21" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" value="Flanker module" vertex="1">
+          <mxGeometry height="60" width="120" x="20" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-23" parent="ihfzEOTeNQdEwgJrlR8O-21" style="swimlane;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" value="DataLink mod" vertex="1">
+          <mxGeometry height="210" width="370" x="20" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-24" edge="1" parent="ihfzEOTeNQdEwgJrlR8O-23" source="ihfzEOTeNQdEwgJrlR8O-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="ihfzEOTeNQdEwgJrlR8O-26" value="update">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-25" parent="ihfzEOTeNQdEwgJrlR8O-23" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" value="LUA: Hook Export Environment" vertex="1">
+          <mxGeometry height="60" width="130" x="10" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-26" parent="ihfzEOTeNQdEwgJrlR8O-23" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" value="LUA: Cockpit" vertex="1">
+          <mxGeometry height="60" width="130" x="210" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-27" parent="ihfzEOTeNQdEwgJrlR8O-23" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" value="luasocket/luasec" vertex="1">
+          <mxGeometry height="20" width="120" x="15" y="182" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-28" parent="ihfzEOTeNQdEwgJrlR8O-23" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;" value="NATS library" vertex="1">
+          <mxGeometry height="20" width="120" x="15" y="142" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-29" edge="1" parent="ihfzEOTeNQdEwgJrlR8O-21" source="ihfzEOTeNQdEwgJrlR8O-22" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.123;entryY=0.033;entryDx=0;entryDy=0;entryPerimeter=0;" target="ihfzEOTeNQdEwgJrlR8O-25" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="140" y="470" as="sourcePoint" />
+            <mxPoint x="240" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-30" connectable="0" parent="ihfzEOTeNQdEwgJrlR8O-29" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;" value="Radar&lt;br&gt;Contacts" vertex="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-31" edge="1" parent="ihfzEOTeNQdEwgJrlR8O-21" source="ihfzEOTeNQdEwgJrlR8O-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;" target="ihfzEOTeNQdEwgJrlR8O-25" value="EWR scripted text">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-32" parent="ihfzEOTeNQdEwgJrlR8O-21" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" value="DCS core" vertex="1">
+          <mxGeometry height="60" width="120" x="155" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-35" edge="1" parent="1" source="ihfzEOTeNQdEwgJrlR8O-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;fillColor=#008a00;strokeColor=#005700;strokeWidth=4;" target="ihfzEOTeNQdEwgJrlR8O-17" value="game update, &lt;br&gt;including&amp;nbsp;scripted&lt;br&gt;EWR scripts">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="530" y="790" />
+              <mxPoint x="530" y="100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-47" edge="1" parent="1" source="ihfzEOTeNQdEwgJrlR8O-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;dashed=1;dashPattern=1 4;" value="potentional alternative Data Source&lt;br&gt;(depends on server owners)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="920" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-33" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;" value="DCS Server" vertex="1">
+          <mxGeometry height="240" width="200" x="725" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-36" parent="ihfzEOTeNQdEwgJrlR8O-33" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" value="DCS core" vertex="1">
+          <mxGeometry height="60" width="120" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-40" edge="1" parent="ihfzEOTeNQdEwgJrlR8O-33" source="ihfzEOTeNQdEwgJrlR8O-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="ihfzEOTeNQdEwgJrlR8O-36" value="Scripted EWR&lt;br&gt;Text">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-37" parent="ihfzEOTeNQdEwgJrlR8O-33" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;" value="Server Scripts" vertex="1">
+          <mxGeometry height="60" width="120" x="40" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-34" parent="1" style="swimlane;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;gradientColor=#b3b3b3;" value="NATS server" vertex="1">
+          <mxGeometry height="240" width="300" x="20" y="720" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-48" parent="ihfzEOTeNQdEwgJrlR8O-34" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;gradientColor=#ea6b66;" value="DCSWorld.DataLink.ServerName.red" vertex="1">
+          <mxGeometry height="80" width="240" x="30" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-50" parent="ihfzEOTeNQdEwgJrlR8O-34" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;gradientColor=#7ea6e0;" value="DCSWorld.DataLink.ServerName.blue" vertex="1">
+          <mxGeometry height="80" width="240" x="30" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-43" edge="1" parent="1" source="ihfzEOTeNQdEwgJrlR8O-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fillColor=#60a917;strokeColor=#2D7600;strokeWidth=3;" target="ihfzEOTeNQdEwgJrlR8O-32" value="game update,&lt;br&gt;including scripted&lt;br&gt;EWR scripts">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1110" y="790" />
+              <mxPoint x="1110" y="100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-54" edge="1" parent="1" source="ihfzEOTeNQdEwgJrlR8O-48" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.396;exitY=-0.012;exitDx=0;exitDy=0;exitPerimeter=0;fillColor=#f5f5f5;gradientColor=#b3b3b3;strokeColor=#666666;targetPerimeterSpacing=1;strokeWidth=4;" value="deliver">
+          <mxGeometry relative="1" x="0.1959" y="-6" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="144" y="759" />
+            </Array>
+            <mxPoint x="144" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-57" edge="1" parent="1" source="ihfzEOTeNQdEwgJrlR8O-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.146;entryY=-0.05;entryDx=0;entryDy=0;entryPerimeter=0;strokeWidth=3;fillColor=#0050ef;strokeColor=#001DBC;" target="ihfzEOTeNQdEwgJrlR8O-48" value="subscribe/publish">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-64" edge="1" parent="1" source="ihfzEOTeNQdEwgJrlR8O-27" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.633;entryY=-0.1;entryDx=0;entryDy=0;entryPerimeter=0;exitX=0.25;exitY=1;exitDx=0;exitDy=0;strokeWidth=3;fillColor=#0050ef;strokeColor=#001DBC;" target="ihfzEOTeNQdEwgJrlR8O-48" value="subscribe/publish">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="675" y="540" />
+              <mxPoint x="202" y="540" />
+            </Array>
+            <mxPoint x="740" y="520" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ihfzEOTeNQdEwgJrlR8O-65" edge="1" parent="1" source="ihfzEOTeNQdEwgJrlR8O-48" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;fillColor=#f5f5f5;gradientColor=#b3b3b3;strokeColor=#666666;strokeWidth=3;" target="ihfzEOTeNQdEwgJrlR8O-27" value="deliver">
+          <mxGeometry relative="1" x="0.1959" y="-6" as="geometry">
+            <mxPoint as="offset" />
+            <mxPoint x="460" y="1012" as="sourcePoint" />
+            <mxPoint x="460" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
