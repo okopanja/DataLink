@@ -148,14 +148,10 @@ function ScriptedEWRContactSource:parseEWR(msg)
 		return nil
 	end
 	Logging:info("parseEWR: EWR type = " .. ewr_type)
-	if ewr_type == "SPS" then
-    local contacts = self:parseEWR_SPS(msg)
-		return contacts
-	end
-	if ewr_type == "BLUEFLAG" then
-		-- return parse_ewr_blueflag(msg)
-    return nil
-	end
+
+  -- TODO: add support for opt-in servers
+  Logging.info("NO servers are supported at this moment.")
+
 	Logging:info("parse_ewr: no parser registered for type " .. ewr_type)
 	return nil
 end
@@ -163,54 +159,12 @@ end
 function ScriptedEWRContactSource:recognizeEWRType(msg)
 	local first_line = msg:match("^[^\n]*")
 	if not first_line then return nil end
-	if first_line:find("Contention EWR") then
-		return "SPS"
-	end
-	if first_line:find("CURRENT PICTURE") then
-		return "BLUEFLAG"
-	end
+
+  -- TODO: add recognition logic for different EWR types based on the first line of the message
+  -- Reserved for opt-in servers
+  Logging.info("No servers are supported at this moment.")
+
 	return nil
-end
-
-function ScriptedEWRContactSource:parseEWR_SPS(msg)
-	local contacts = {}
-	for line in msg:gmatch("[^\n]+") do
-		-- TYPE  BRG  RNG_VAL RNG_UNIT  ALT_VAL ALT_UNIT  SPD_VAL SPD_UNIT  HDG  [Aspect]
-		local brg, rng_val, rng_unit, alt_s, alt_unit, spd_val, spd_unit, hdg =
-			line:match("^%S+%s+(%d+)%s+([%d%.]+)%s+([%a]+)%s+([%d,]+)%s+([%a]+)%s+([%d%.]+)%s+([%a/]+)%s+(%d+)")
-
-		if brg then
-			local rng = tonumber(rng_val)
-			if rng_unit:lower() == "nm" then
-				rng = rng * 1.852
-			end
-
-			local alt = tonumber((alt_s:gsub(",", "")))
-			if alt_unit:lower() == "ft" then
-				alt = alt * 0.3048
-			end
-
-			local spd = tonumber(spd_val)
-			if spd_unit:lower() == "knts" or spd_unit:lower() == "kts" then
-				spd = spd * 1.852
-			end
-
-      local contact = Contact:new()
-      contact:setBearing(tonumber(brg))
-      contact:setRange(rng)
-      contact:setAltitude(alt)
-      contact:setSpeed(spd)
-      contact:setHeading(tonumber(hdg))
-      contact:setDonor("SPS")
-      contact:setContactSource("ScriptedEWRContactSource")
-      contact:setIFF(UnitData.IFF.HOSTILE)
-      contacts[#contacts + 1] = contact
-
-			-- if #contacts >= MAX_CONTACTS then break end
-		end
-	end
-	Logging:info("parseEWR_SPS: parsed "..#contacts.." contacts")
-	return #contacts > 0 and contacts or nil
 end
 
 return ScriptedEWRContactSource
