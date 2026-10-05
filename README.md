@@ -90,7 +90,10 @@ Please watch for updates. If any of you is server owner please contact me for an
 
 3. How are information on aircrafts retrieved?
 
-MOD supports implementation of different Contact Sources. Per default it is supplied with Scripted EWR Contact Source, which relies on information the server owners are willing to broadcast. However in future additional data sources will be added.
+MOD supports implementation of different Contact Sources. Per default it is supplied with Scripted EWR Contact Source, which relies on information the server owners are willing to broadcast.
+Support for the Figher-To-Figher DL over the NATS protocol has been added as of v1.0.1. 
+Please note that on explicit wish DCS server side controlled data source can be added (this way each server may decide on their own if they want to support the mod).
+However in future additional data sources will be added.
 
 4. Do I need DCS FC3/FC4 modules?
 
