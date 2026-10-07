@@ -2,6 +2,7 @@ local Logging = require("Utils.Logging").new("DataLink.log")
 local Table = require("Utils.Table")
 local UnitData = require("UnitData")
 local Options = require('optionsEditor')
+local GlobalData = require("GlobalData")
 dofile(lfs.writedir() .. [[Mods\tech\DataLink\Cockpit\Scripts\common.lua]])
 
 local DataLinkDeviceConnector = {}
@@ -50,7 +51,10 @@ function DataLinkDeviceConnector:initialize()
 end
 
 function DataLinkDeviceConnector:configure()
-    self.enabled = Options.getOption("plugins.DataLink.generalEnabled")
+    GlobalData:updateServerExportSettings()
+    self.enabled = Options.getOption("plugins.DataLink.generalEnabled") and 
+        GlobalData:isOwnshipExportAllowed()
+    Logging:info("DataLinkDeviceConnector.enabled: " .. tostring(self.enabled))
 end
 
 function DataLinkDeviceConnector:onNetMissionChanged(missionName)

@@ -67,5 +67,8 @@ function ContactEventSource:updateOwnPlayerContact(playerID)
     Logging:info("selfData.name: "..tostring(selfData.Name))
 end
 
+function ContactEventSource:deactivate()
+    self:setActive(false)
+end
 
 return ContactEventSource

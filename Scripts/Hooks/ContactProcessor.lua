@@ -5,12 +5,17 @@ local net = require("net")
 local UnitData = require("UnitData")
 local GlobalData = require("GlobalData")
 local Options = require('optionsEditor')
+local DCSTimer = require("DCSTimer")
+local Table = require("Utils.Table")
+dofile(lfs.writedir() .. [[Mods\tech\DataLink\Cockpit\Scripts\common.lua]])
 
 function ContactProcessor:new(o)
     o = o or {}
     setmetatable(o, self)
     self.__index = self
     self.contacts = {}
+    self.timer = DCSTimer:new(1)
+    self.active = false
     return o
 end
 
@@ -22,18 +27,59 @@ function ContactProcessor:initialize()
             if self.enabled == false then return end
             self:onNetMissionChanged(missionName)
         end,
+        onSimulationFrame = function()
+            if self.enabled == false then return end
+            if self.active then
+                self:onSimulationFrame()
+            end
+        end,
+        onActivatePlane = function(airplaneID)
+            if self.enabled == false then return end
+            self:onActivatePlane(airplaneID)
+        end,
+        onNetDisconnect = function(arg1, arg2)
+            if self.enabled == false then return end
+            Logging:info("ContactProcessor:onNetDisconnect")
+            self.active = false
+        end,
     })
     Logging:info("ContactProcessor: "..tostring(self.enabled))
 end
 
 function ContactProcessor:configure()
-    self.enabled = Options.getOption("plugins.DataLink.generalEnabled")
+    GlobalData:updateServerExportSettings()
+    self.enabled = Options.getOption("plugins.DataLink.generalEnabled") and GlobalData:isOwnshipExportAllowed()
+    Logging:info("ContactProcessor.enabled: "..tostring(self.enabled))
 end
 
 function ContactProcessor:onNetMissionChanged(missionName)
     Logging:info("ContactProcessor:onNetMissionChanged: "..missionName)
     Logging:info("Updating country coalition map")
     GlobalData:updateCountryCoalitionMap()
+end
+
+function ContactProcessor:onActivatePlane(airplaneID)
+    Logging:info("ContactProcessor:onActivatePlane called with airplaneID: " .. tostring(airplaneID))
+    if Table.is_in_keys(SUPPORTED_AIRCRAFT, airplaneID) then
+        self.active = true
+        self:updateOwnContact()
+        self:updateIFF(self.ownContact)
+    else
+        self.active = false
+    end
+end
+
+function ContactProcessor:onSimulationFrame()
+    local elapsed, elaspedTime = self.timer:intervalHasElapsed()
+    if not elapsed then return end
+    self.timer:reset()
+    -- if the sensor export is not allowed, transfer own contacts with no other targets
+    if (GlobalData:isSensorExportAllowed() == false) and (GlobalData:isOwnshipExportAllowed()) == true then
+        Logging:info("ContactProcessor:onSimulationFrame: Ownship export allowed but sensor export not allowed, transferring own contact only")
+        self:updateOwnContact()
+        self:updateIFF(self.ownContact)
+        self.dataLinkTransiever:transfer({})
+    end
 end
 
 function ContactProcessor:setDataLinkConnector(dataLinkConnector)
@@ -49,6 +95,8 @@ function ContactProcessor:setRadarContactSource(radarContactSource)
 end
 
 function ContactProcessor:onRadarContactsUpdate(contacts)
+    -- if disabled, do not receive updates
+    if self.enabled == false then return end
     -- Implement radar contacts update logic here
 	Logging:info("onRadarContactsReceived: "..tostring(#contacts).." contacts")
 	self.dataLinkTransiever:transfer(contacts)
@@ -62,6 +110,8 @@ function ContactProcessor:calculateBearingAndRange(contact)
 end
 
 function ContactProcessor:onFigherToFighterContactsUpdate(contacts)
+    -- if disabled, do not receive updates
+    if self.enabled == false then return end
     Logging:info("onFigherToFighterContactsUpdate: "..tostring(#contacts).." contacts")
     -- Update the own contact information before processing contacts
     self:updateOwnContact()
@@ -89,6 +139,8 @@ function ContactProcessor:onFigherToFighterContactsUpdate(contacts)
 end
 
 function ContactProcessor:onEWRContactsUpdate(contacts)
+    -- if disabled, do not receive updates
+    if self.enabled == false then return end
     -- Implement EWR contacts update logic here
     Logging:info("onEWRContactsUpdate: "..tostring(#contacts).." contacts")
 	self.dataLinkConnector:transfer(contacts)

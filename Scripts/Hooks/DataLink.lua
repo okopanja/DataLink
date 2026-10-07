@@ -35,8 +35,9 @@ ewrContactSource:addEventHandler(ewrContactSource.EventTypes.ContactsReceived, c
 dataLinkTransiever:addEventHandler(dataLinkTransiever.EventTypes.ContactsReceived, contactProcessor, contactProcessor.onFigherToFighterContactsUpdate)
 radarContactSource:addEventHandler(radarContactSource.EventTypes.ContactsReceived, contactProcessor, contactProcessor.onRadarContactsUpdate)
 
-contactProcessor:initialize()
 dataLinkDeviceConnector:initialize()
 ewrContactSource:initialize()
 radarContactSource:initialize()
 dataLinkTransiever:initialize()
+contactProcessor:initialize()
+

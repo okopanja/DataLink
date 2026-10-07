@@ -3,6 +3,7 @@ local BaseContactSource = require("BaseContactSource")
 local Player = require("Player")
 local Contact = require("Contact")
 local UnitData = require("UnitData")
+local GlobalData = require("GlobalData")
 local ScriptedEWRContactSource = BaseContactSource:new()
 local net = require("net")
 local Options = require('optionsEditor')
@@ -65,8 +66,11 @@ function ScriptedEWRContactSource:initialize()
 end
 
 function ScriptedEWRContactSource:configure()
+  GlobalData:updateServerExportSettings()
   self.enabled = Options.getOption("plugins.DataLink.generalEnabled") and
-                 Options.getOption("plugins.DataLink.generalEnabledScriptedEwr")
+                 Options.getOption("plugins.DataLink.generalEnabledScriptedEwr") and 
+                 GlobalData:isOwnshipExportAllowed()
+  Logging:info("ScriptedEWRContactSource.enabled: " .. tostring(self.enabled))
 end
 
 function ScriptedEWRContactSource:onTriggerMessage(message, clearView)
