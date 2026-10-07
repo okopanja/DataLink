@@ -34,6 +34,7 @@ jobs:
           cp -r source/Options DataLink/
           cp -r source/Scripts DataLink/
           cp -r source/Theme DataLink/
+          cp -R source/Documentation DataLink/
           cp source/README.md DataLink/
           cp source/LICENSE DataLink/
           cp source/THIRD_PARTY_LICENSES.md DataLink/
