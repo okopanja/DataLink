@@ -32,4 +32,4 @@ Even in this case remaining connected clients will remain dormant (for them the 
 Server owners desiring to provide custom radar picture to the mod users will be able to do so in the future. At this moment the specification is not yet complete.
 Once the mod functionality is implemented the reference simplistic EWR data source shall be provided.
 
-For high level description please see:  [Documentation/Design/README.md](../Design/README.md).
+For high level description please see:  [Documentation/Design/README.md](/Documentation/Design/README.md).
