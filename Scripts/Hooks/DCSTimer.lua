@@ -1,16 +1,24 @@
 local DCSTimer = {}
 
-function DCSTimer:new(interval)
+function DCSTimer:new(interval, real)
 	local o = {}
 	setmetatable(o, self)
 	self.__index = self
-	o.last_time = DCS.getModelTime()
+	if real == nil then
+		real = false
+	end
+	if real then
+		o.time_function = DCS.getRealTime
+	else
+		o.time_function = DCS.getModelTime
+	end
+	o.last_time = o.time_function()
 	o.interval = interval or 1 -- default interval of 1 second
 	return o
 end
 
 function DCSTimer:getElapsedTime()
-	local current_time = DCS.getModelTime()
+	local current_time = self.time_function()
 	return current_time - self.last_time
 end
 
@@ -32,7 +40,7 @@ function DCSTimer:setLastTime(last_time)
 end
 
 function DCSTimer:reset()
-	self.last_time = DCS.getModelTime()
+	self.last_time = self.time_function()
 end
 
 return DCSTimer

@@ -31,43 +31,42 @@ end
 
 function RadarContactSource:initialize()
   self:configure()
-  if Export.LoIsSensorExportAllowed() then
-    DCS.setUserCallbacks({
-        onNetMissionChanged = function(missionName)
-          self:configure()
-          if self.enabled == false then return end
-          self:onNetMissionChanged(missionName)
-        end,
-        onPlayerChangeSlot = function(playerID)
-          if self.enabled == false then return end
-          self:onPlayerChangeSlot(playerID)
-        end,
-        onSimulationFrame = function()
-          if self.enabled == false then return end
-          if self:getActive() then
-            self:onSimulationFrame()
-          end
-        end,
-        onActivatePlane = function(airplaneID)
-          if self.enabled == false then return end
-          Logging:info("RadarContactSource:onActivatePlane called with airplaneID: " .. tostring(airplaneID))
-          self:updateOwnPlayerContact()
-        end,
-        onNetDisconnect = function(arg1, arg2)
-          if self.enabled == false then return end
-          Logging:info("RadarContactSource:onNetDisconnect called")
-          self:clearAllContacts()
-          self.active = false
+  DCS.setUserCallbacks({
+      onNetMissionChanged = function(missionName)
+        self:configure()
+        if self.enabled == false then return end
+        self:onNetMissionChanged(missionName)
+      end,
+      onPlayerChangeSlot = function(playerID)
+        if self.enabled == false then return end
+        self:onPlayerChangeSlot(playerID)
+      end,
+      onSimulationFrame = function()
+        if self.enabled == false then return end
+        if self:getActive() then
+          self:onSimulationFrame()
         end
-    })
-  else
-    Logging:warn("Sensor export is not allowed")
-  end
+      end,
+      onActivatePlane = function(airplaneID)
+        if self.enabled == false then return end
+        Logging:info("RadarContactSource:onActivatePlane called with airplaneID: " .. tostring(airplaneID))
+        self:updateOwnPlayerContact()
+      end,
+      onNetDisconnect = function(arg1, arg2)
+        if self.enabled == false then return end
+        Logging:info("RadarContactSource:onNetDisconnect called")
+        self:clearAllContacts()
+        self:deactivate()
+      end
+  })
   Logging:info("RadarContactSource: "..tostring(self.enabled))
 end
 
 function RadarContactSource:configure()
-  self.enabled = Options.getOption("plugins.DataLink.generalEnabled")
+  -- ensure that both client and server settings are accounted for enablement
+  GlobalData:updateServerExportSettings()
+  self.enabled = Options.getOption("plugins.DataLink.generalEnabled") and GlobalData:isSensorExportAllowed()
+  Logging:info("RadarContactSource.enabled: " .. tostring(self.enabled))
 end
 
 function RadarContactSource:onNetMissionChanged(missionName)
@@ -94,8 +93,9 @@ function RadarContactSource:onSimulationFrame()
     self:clearAllContacts()
     self.timer:reset()
     local targets = Export.LoGetTargetInformation() or {}
-    local lockedTargets = Export.LoGetLockedTargetInformation()
-    local twsInfo = Export.LoGetTWSInfo()    
+    -- TODO: for now these should not be used.
+    -- local lockedTargets = Export.LoGetLockedTargetInformation()
+    -- local twsInfo = Export.LoGetTWSInfo()
     self:updateOwnPlayerContact()
     for i, target in ipairs(targets) do
         local contact = Contact:new({id = target.ID})

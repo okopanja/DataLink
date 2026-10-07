@@ -54,6 +54,8 @@ function DataLinkTransiever:initialize()
     self:configure()
     DCS.setUserCallbacks({
         onNetMissionChanged = function(missionName)
+            self:configure()
+            if self.enabled == false then return end
             self:onNetMissionChanged(missionName)
         end,
         onPlayerChangeSlot = function(playerID)
@@ -86,9 +88,11 @@ function DataLinkTransiever:initialize()
 end
 
 function DataLinkTransiever:configure()
+    GlobalData:updateServerExportSettings()
     self.enabled = Options.getOption("plugins.DataLink.generalEnabled") and
-                   Options.getOption("plugins.DataLink.generalEnabledFighterToFighterDatalink")
-    if self.enabled == false then return end
+                   Options.getOption("plugins.DataLink.generalEnabledFighterToFighterDatalink") and
+                   GlobalData:isOwnshipExportAllowed()
+    Logging:info("DataLinkTransiever.enabled: " .. tostring(self.enabled))
     self.host = Options.getOption("plugins.DataLink.networkNatsHostname")
     self.port = Options.getOption("plugins.DataLink.networkNatsPort")
     self.tls = Options.getOption("plugins.DataLink.networkNatsEnableSsl")
@@ -110,10 +114,8 @@ function DataLinkTransiever:configure()
 end
 
 function DataLinkTransiever:onNetMissionChanged(missionName)
-    Logging:info("Net mission changed: " .. tostring(missionName))
+    Logging:info("DataLinkTransiever:onNetMissionChanged: " .. tostring(missionName))
     self.currentMissionName = missionName
-    self:configure()
-    if self.enabled == false then return end
     Logging:info("Connecting to: " .. tostring(self.host) .. ":" .. tostring(self.port))
     -- Connect to the NATS server with provided host and port.
     self.client = nats.connect(self.connection_settings)
