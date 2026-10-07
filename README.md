@@ -91,6 +91,8 @@ Please watch for updates. If any of you is server owner please contact me for an
 | ...  | ...  | ...  |
 | ...  | ...  | ...  |
 
+Server owners are kindly asked to read additional information provided [here](Documentation/ServerOwnersInstructions/README.md). 
+
 
 3. How are information on aircrafts retrieved?
 
