@@ -58,10 +58,6 @@ function DataLinkTransiever:initialize()
             if self.enabled == false then return end
             self:onNetMissionChanged(missionName)
         end,
-        onPlayerChangeSlot = function(playerID)
-            if self.enabled == false then return end
-            self:onPlayerChangeSlot(playerID)
-        end,
         onSimulationFrame = function()
         if self.enabled == false then return end
           if self:getActive() then
@@ -70,8 +66,7 @@ function DataLinkTransiever:initialize()
         end,
         onActivatePlane = function(airplaneID)
           if self.enabled == false then return end
-          Logging:info("DataLinkTransiever:onActivatePlane called with airplaneID: " .. tostring(airplaneID))
-          self:updateOwnPlayerContact()
+          self:onActivatePlane(airplaneID)
         end,
         onNetDisconnect = function(arg1, arg2)
             if self.enabled == false then return end
@@ -140,25 +135,20 @@ function DataLinkTransiever:onNetMissionChanged(missionName)
     end
 end
 
-function DataLinkTransiever:onPlayerChangeSlot(playerID)
-    if net.get_my_player_id() ~= playerID then
-        return
-    end
-
-    Logging:info("Player changed slot: " .. tostring(playerID))
+function DataLinkTransiever:onActivatePlane(airplaneID)
+    Logging:info("DataLinkTransiever:onActivatePlane called with airplaneID: " .. tostring(airplaneID))
+    self:updateOwnPlayerContact()
     self.timer:reset()
     -- Handle player change slot logic here
     local player_info = net.get_player_info(playerID)
     self.player = Player:new(player_info)
     self:updateOwnPlayerContact(playerID)
-
     Logging:info("Subscribing to NATS subject: " .. self:getNATSSubject())
     self.subscription_id = self.client:subscribe(self:getNATSSubject(), 
         function(message)
             self:handleIncomingMessage(message)
         end
     )
-    -- self.client:publish(self:getNATSSubject(), "Subscribed: "..self.player:getName()) -- TODO: do we want to announce this?
     Logging:info("Subscribed to NATS subject: " .. self:getNATSSubject() .. " with subscription ID: " .. tostring(self.subscription_id))
     self.sender_uuid = uuid() -- generate a new sender UUID for this subscription
 end
