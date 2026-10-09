@@ -1,3 +1,31 @@
+
+local position = 103
+local first_column_x = 57
+local first_column_control_width = 261
+local second_column_control_width = 275
+local second_column_x = 403
+local control_height = 18
+local control_extended_height = 25
+local control_vertical_spacing = 21
+
+
+
+function next_y(delta)
+	delta = delta or control_height
+	delta = delta + control_vertical_spacing
+	local result = position
+	position = position + delta
+	return result
+end
+
+function reset_y()
+	position = 103
+	return next_y()
+end
+
+function next_section()
+end
+
 dialog = {
 	["children"] = {
 		["containerPlugin"] = {
@@ -6,10 +34,10 @@ dialog = {
 					["params"] = {
 						["angle"] = 0,
 						["bounds"] = {
-							["h"] = 18,
-							["w"] = 261,
-							["x"] = 57,
-							["y"] = 60,
+							["h"] = control_height,
+							["w"] = first_column_control_width,
+							["x"] = first_column_x,
+							["y"] = next_y(),
 						},
 						["enabled"] = true,
 						["pivotPoint"] = {
@@ -31,10 +59,10 @@ dialog = {
 				["generalEnabledCheckbox"] = {
 					["params"] = {
 						["bounds"] = {
-							["h"] = 18,
-							["w"] = 261,
-							["x"] = 57,
-							["y"] = 103,
+							["h"] = control_height,
+							["w"] = first_column_control_width,
+							["x"] = first_column_x,
+							["y"] = next_y(),
 						},
 						["enabled"] = true,
 						["state"] = false,
@@ -54,10 +82,10 @@ dialog = {
 				["generalEnabledScriptedEwrCheckbox"] = {
 					["params"] = {
 						["bounds"] = {
-							["h"] = 18,
-							["w"] = 261,
-							["x"] = 57,
-							["y"] = 142,
+							["h"] = control_height,
+							["w"] = first_column_control_width,
+							["x"] = first_column_x,
+							["y"] = next_y(),
 						},
 						["enabled"] = true,
 						["state"] = false,
@@ -77,10 +105,10 @@ dialog = {
 				["generalEnabledFighterToFighterDatalinkCheckbox"] = {
 					["params"] = {
 						["bounds"] = {
-							["h"] = 18,
-							["w"] = 261,
-							["x"] = 57,
-							["y"] = 181,
+							["h"] = control_height,
+							["w"] = first_column_control_width,
+							["x"] = first_column_x,
+							["y"] = next_y(),
 						},
 						["enabled"] = true,
 						["state"] = false,
@@ -100,10 +128,10 @@ dialog = {
 				["generalEnabledDebugCheckbox"] = {
 					["params"] = {
 						["bounds"] = {
-							["h"] = 18,
-							["w"] = 261,
-							["x"] = 57,
-							["y"] = 220,
+							["h"] = control_height,
+							["w"] = first_column_control_width,
+							["x"] = first_column_x,
+							["y"] = next_y(),
 						},
 						["enabled"] = true,
 						["state"] = false,
@@ -120,14 +148,167 @@ dialog = {
 					},
 					["type"] = "CheckBox",
 				},
+				["generalTactical"] = {
+					["params"] = {
+						["angle"] = 0,
+						["bounds"] = {
+							["h"] = control_height,
+							["w"] = first_column_control_width,
+							["x"] = first_column_x,
+							["y"] = next_y(),
+						},
+						["enabled"] = true,
+						["pivotPoint"] = {
+							["x"] = 0,
+							["y"] = 0,
+						},
+						["text"] = "$TACTICAL_LABEL",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},					
+					["skin"] = {
+						["params"] = {
+							["name"] = "staticOptionsTitleSkin",
+						},
+					},
+					["type"] = "Static",
+				},
+				["tacticalGroupIDLabel"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = control_height,
+							["w"] = 100,
+							["x"] = first_column_x,
+							["y"] = position,
+						},
+						["enabled"] = true,
+						["text"] = "$TACTICAL_GROUP_ID",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "staticOptionsCaptionSkin",
+						},
+					},
+					["type"] = "Static",
+				},
+				["tacticalGroupIDEditBox"] = {
+					["params"] = {
+						["acceptDecimalPoint"] = false,
+						["allowLineNumbers"] = false,
+						["allowSyntaxHightlight"] = false,
+						["bounds"] = {
+							["h"] = control_height,
+							["w"] = first_column_control_width - 100,
+							["x"] = first_column_x + 100,
+							["y"] = next_y(),
+						},
+						["enabled"] = true,
+						-- ["state"] = false,
+						["tabOrder"] = 0,
+						["hintText"] = "$TACTICAL_GROUP_ID",
+						["multiline"] = false,
+						["numeric"] = false,
+						["password"] = false,
+						["readOnly"] = false,
+						["tabOrder"] = 0,
+						["textWrapping"] = false,
+						["text"] = "",
+						-- ["maxLength"] = 1024,
+						-- ["inputType"] = "text",
+						["tooltip"] = "$TACTICAL_GROUP_ID",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "editBoxNew",
+						},
+					},
+					["type"] = "EditBox",
+				},
+				["tacticalGroupPositionLabel"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = control_extended_height,
+							["w"] = 100,
+							["x"] = first_column_x,
+							["y"] = position,
+						},
+						["enabled"] = true,
+						["text"] = "$TACTICAL_GROUP_POSITION",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "staticOptionsCaptionSkin",
+						},
+					},
+					["type"] = "Static",
+				},
+				["tacticalGroupPositionSlider"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = control_extended_height,
+							["w"] = 131,
+							["x"] = first_column_x + 100,
+							["y"] = position,
+						},
+						["enabled"] = true,
+						["pageStep"] = 1,
+						["range"] = {
+							["max"] = 4,
+							["min"] = 1,
+						},
+						["step"] = 1,
+						["tabOrder"] = 0,
+						["text"] = "",
+						["tooltip"] = "",
+						["value"] = 1,
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "horzSliderSkin_options",
+						},
+					},
+					["type"] = "HorzSlider",
+				},
+				["tacticalGroupPositionWidget"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = control_extended_height,
+							["w"] = 20,
+							["x"] = first_column_x + 100 + 131,
+							["y"] = next_y(control_extended_height),
+						},
+						["enabled"] = true,
+						["text"] = "1",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "staticOptionsSliderValueSkin",
+						},
+					},
+					["type"] = "Static",
+				},				
                 ["networkSettingsLabel"] = {
 					["params"] = {
 						["angle"] = 0,
 						["bounds"] = {
-							["h"] = 18,
-							["w"] = 275,
-							["x"] = 403,
-							["y"] = 60,
+							["h"] = control_height,
+							["w"] = second_column_control_width,
+							["x"] = second_column_x,
+							["y"] = reset_y(),
 						},
 						["enabled"] = true,
 						["pivotPoint"] = {
@@ -146,16 +327,37 @@ dialog = {
 					},
 					["type"] = "Static",
 				},
+				["networkNatsHostnameLabel"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = control_height,
+							["w"] = 100,
+							["x"] = second_column_x,
+							["y"] = position,
+						},
+						["enabled"] = true,
+						["text"] = "$NETWORK_NATS_HOSTNAME",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "staticOptionsCaptionSkin",
+						},
+					},
+					["type"] = "Static",
+				},
 				["networkNatsHostnameEditBox"] = {
 					["params"] = {
 						["acceptDecimalPoint"] = false,
 						["allowLineNumbers"] = false,
 						["allowSyntaxHightlight"] = false,
 						["bounds"] = {
-							["h"] = 18,
-							["w"] = 275,
-							["x"] = 403,
-							["y"] = 103,
+							["h"] = control_height,
+							["w"] = second_column_control_width - 100,
+							["x"] = second_column_x + 100,
+							["y"] = next_y(),
 						},
 						["enabled"] = true,
 						-- ["state"] = false,
@@ -181,16 +383,37 @@ dialog = {
 					},
 					["type"] = "EditBox",
 				},
+				["networkNatsPortLabel"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = control_height,
+							["w"] = 100,
+							["x"] = second_column_x,
+							["y"] = position,
+						},
+						["enabled"] = true,
+						["text"] = "$NETWORK_NATS_PORT",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "staticOptionsCaptionSkin",
+						},
+					},
+					["type"] = "Static",
+				},
 				["networkNatsPortEditBox"] = {
 					["params"] = {
 						["acceptDecimalPoint"] = false,
 						["allowLineNumbers"] = false,
 						["allowSyntaxHightlight"] = false,
 						["bounds"] = {
-							["h"] = 18,
-							["w"] = 275,
-							["x"] = 403,
-							["y"] = 142,							
+							["h"] = control_height,
+							["w"] = second_column_control_width - 100,
+							["x"] = second_column_x + 100,
+							["y"] = next_y(),
 						},
 						["enabled"] = true,
 						-- ["state"] = false,
@@ -220,10 +443,10 @@ dialog = {
 				["networkNatsEnableSslCheckbox"] = {
 					["params"] = {
 						["bounds"] = {
-							["h"] = 18,
-							["w"] = 275,
-							["x"] = 403,
-							["y"] = 181,
+							["h"] = control_height,
+							["w"] = second_column_control_width,
+							["x"] = second_column_x,
+							["y"] = next_y(),
 						},
 						["enabled"] = true,
 						["state"] = false,

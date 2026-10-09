@@ -8,5 +8,8 @@ cdata =
     NETWORK_SETTINGS_LABEL = _('Network Settings'),
     NETWORK_NATS_HOSTNAME = _('NATS hostname'),
     NETWORK_NATS_PORT = _('NATS port'),
-    NETWORK_NATS_ENABLE_SSL = _('NATS SSL'),    
+    NETWORK_NATS_ENABLE_SSL = _('NATS SSL'),
+    TACTICAL_LABEL = _('Tactical Configuration'),
+    TACTICAL_GROUP_ID = _('Group ID'),
+    TACTICAL_GROUP_POSITION = _('Group position'),
 }

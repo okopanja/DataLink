@@ -14,17 +14,21 @@ local function update()
         dialogRef.networkNatsHostnameEditBox:setEnabled(enabledFighterToFighterDatalink)
         dialogRef.networkNatsPortEditBox:setEnabled(enabledFighterToFighterDatalink)
         dialogRef.networkNatsEnableSslCheckbox:setEnabled(enabledFighterToFighterDatalink)
+        dialogRef.tacticalGroupIDEditBox:setEnabled(enabledFighterToFighterDatalink)
+        dialogRef.tacticalGroupPositionSlider:setEnabled(enabledFighterToFighterDatalink)
     end
 end
 
 local options = {
-    generalEnabled = DbOption:new():setValue(true):checkbox():callback(function(value) update() end),
-    generalEnabledScriptedEwr = DbOption:new():setValue(true):checkbox(),
-    generalEnabledFighterToFighterDatalink = DbOption:new():setValue(true):checkbox():callback(function(value) update() end),
-    generalEnabledDebug = DbOption:new():setValue(false):checkbox(),
-    networkNatsHostname = DbOption:new():setValue("demo.nats.io"):editbox(),
-    networkNatsPort = DbOption:new():setValue(4222):editbox(),
-    networkNatsEnableSsl = DbOption:new():setValue(true):checkbox(),
+    generalEnabled = DbOption.new():setValue(true):checkbox():callback(function(value) update() end),
+    generalEnabledScriptedEwr = DbOption.new():setValue(true):checkbox(),
+    generalEnabledFighterToFighterDatalink = DbOption.new():setValue(true):checkbox():callback(function(value) update() end),
+    generalEnabledDebug = DbOption.new():setValue(false):checkbox(),
+    networkNatsHostname = DbOption.new():setValue("demo.nats.io"):editbox(),
+    networkNatsPort = DbOption.new():setValue(4222):editbox(),
+    networkNatsEnableSsl = DbOption.new():setValue(true):checkbox(),
+    tacticalGroupID = DbOption.new():setValue(""):editbox(),
+    tacticalGroupPosition = DbOption.new():setValue(1):slider(DbOption.Range(1, 4)),
     callbackOnShowDialog = function(dialog)
         if dialog ~= dialogRef then
            dialogRef = dialog
