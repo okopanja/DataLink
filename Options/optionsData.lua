@@ -11,5 +11,7 @@ cdata =
     NETWORK_NATS_ENABLE_SSL = _('NATS SSL'),
     TACTICAL_LABEL = _('Tactical Configuration'),
     TACTICAL_GROUP_ID = _('Group ID'),
+    TACTICAL_GROUP_ID_TOOLTIP = _('Specify group ID to work together with other units in the same group.'),
     TACTICAL_GROUP_POSITION = _('Group position'),
+    TACTICAL_GROUP_POSITION_TOOLTIP = _('Specify the position of the unit within the group: 1 for commander, 2-4 for wingmen.'),
 }
