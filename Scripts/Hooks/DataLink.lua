@@ -7,6 +7,11 @@ package.path = package.path ..
 math.randomseed(os.time())
 
 local Logging = require("Utils.Logging").new("DataLink.log")
+local Options = require('optionsEditor')
+if Options.getOption("plugins.DataLink.generalEnabled") == false then
+	Logging:info("DataLink plugin is disabled via options. Visit the Options -> Special -> DataLink menu to enable it.")
+	return
+end
 local ScriptedEWRContactSource = require("ScriptedEWRContactSource")
 -- local DCSContactSource = require("DCSContactSource")
 local RadarContactSource = require("RadarContactSource")
