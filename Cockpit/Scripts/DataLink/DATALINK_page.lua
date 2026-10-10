@@ -37,10 +37,10 @@ local aspect = 6/5     -- panel width-to-height ratio
 local bw = 0.56        -- panel half-width (0.58)
 local bh = bw / aspect -- panel half-height
 
--- ── Contact constants ─────────────────────────────────────────────────
+-- Contact constants -------------------------------------------------
 local MAX_CONTACTS     = 80
-local maxSpeed         = 6372   -- km/h  — maps to full CONTACT_SPD_MAX line
-local maxAltitude      = 15000  -- m     — maps to full CONTACT_ALT_MAX bar
+local maxSpeed         = 6372   -- km/h  - maps to full CONTACT_SPD_MAX line
+local maxAltitude      = 15000  -- m     - maps to full CONTACT_ALT_MAX bar
 
 local CONTACT_SPD_MIN  = bw * 0.015  -- min speed-line length at minSpeed (panel units)
 local CONTACT_SPD_MAX  = bw * 0.080  -- max speed-line length at maxSpeed (panel units)
@@ -50,22 +50,19 @@ local CONTACT_TAIL_LEN = bw * 0.06  -- fixed rear tail line length
 local CONTACT_THICK    = 0.0025     -- line half-thickness
 local CONTACT_RADIUS = bw * 0.025  -- contact circle radius (panel units)
 
--- -- If DEBUG is true, then we wish to skip the clipping rectangle so we can see the whole panel in the 3D cockpit.
-if not DEBUG then
-	log.info("DATALINK: clipping rectangle enabled")
-	local clip_rect = CreateElement "ceMeshPoly"
-	clip_rect.name            = "dl_clip_rect"
-	clip_rect.primitivetype   = "triangles"
-	clip_rect.vertices        = {{-bw, -bh}, {bw, -bh}, {bw, bh}, {-bw, bh}}
-	clip_rect.indices         = {0, 1, 2, 0, 2, 3}
-	clip_rect.h_clip_relation = h_clip_relations.REWRITE_LEVEL
-	clip_rect.level           = DEFAULT_LEVEL
-	clip_rect.blend_mode      = blend_mode.IBM_NO_WRITECOLOR
-	clip_rect.parent_element  = anchor.name
-	clip_rect.material = MakeMaterial("", {255,255,255,255})
-	Add(clip_rect)
-	parent = clip_rect
-end
+log.info("DATALINK: clipping rectangle enabled")
+local clip_rect = CreateElement "ceMeshPoly"
+clip_rect.name            = "dl_clip_rect"
+clip_rect.primitivetype   = "triangles"
+clip_rect.vertices        = {{-bw, -bh}, {bw, -bh}, {bw, bh}, {-bw, bh}}
+clip_rect.indices         = {0, 1, 2, 0, 2, 3}
+clip_rect.h_clip_relation = h_clip_relations.REWRITE_LEVEL
+clip_rect.level           = DEFAULT_LEVEL
+clip_rect.blend_mode      = blend_mode.IBM_NO_WRITECOLOR
+clip_rect.parent_element  = anchor.name
+clip_rect.material = MakeMaterial("", {255,255,255,255})
+Add(clip_rect)
+parent = clip_rect
 
 -- Ownship
 -- Positioned at the horizontal centre, 1/4 from the bottom of the panel.
@@ -81,7 +78,7 @@ Add(ownship)
 
 local FONT = "font_datalink_green"
 
--- ── Materials palette ─────────────────────────────────────────────────
+-- Materials palette -------------------------------------------------
 local MAT_BG        = MakeMaterial("", {  0,   0,   0, 210})
 local MAT_BORDER    = MakeMaterial("", {  0, 210,   0, 255})
 local MAT_TITLE     = MakeMaterial("", {  0, 130,   0, 220})
@@ -119,7 +116,7 @@ local normalized_coalition_color_filters = {
 	HOSTILE = normalize_color(coalition_color_filters.HOSTILE),
 }
 
--- ── Helper: solid-colour filled quad, child of anchor ─────────────────
+-- -- Helper: solid-colour filled quad, child of anchor -----------------
 local function solid_quad(parent, name_, x1, y1, x2, y2, mat, level_)
 	local q               = CreateElement "ceMeshPoly"
 	q.name                = name_
@@ -134,7 +131,7 @@ local function solid_quad(parent, name_, x1, y1, x2, y2, mat, level_)
 	Add(q)
 end
 
--- ── Helper: thick line between two arbitrary points ───────────────────
+-- -- Helper: thick line between two arbitrary points -------------------
 -- Builds a quad whose long axis runs from (x1,y1) to (x2,y2).
 local function line_quad(parent, name_, x1, y1, x2, y2, thick, mat, level_)
 	local dx  = x2 - x1
@@ -164,7 +161,7 @@ end
 -- Position is expressed in polar form: the bearing rotator ceSimple turns
 -- the child coordinate system so that its +Y axis points along the bearing,
 -- then the range arm child slides along that +Y axis by RANGE km.
--- No sin/cos needed in Lua — the element hierarchy performs the conversion.
+-- No sin/cos needed in Lua - the element hierarchy performs the conversion.
 --
 -- Visibility is controlled by the VISIBLE argument (0 = hidden, 1 = shown).
 -- All three rotations (bearing, heading-compensation, heading) are stacked
@@ -239,7 +236,7 @@ local function create_contact(parent_elem, contact_parameters, mat, level)
 	log.info("Created heading rotator for contact: " .. contact_parameters.NAME)
 
 	-- TODO: objects 5 and 6 should be refactored and merged into a single object.
-	-- 5. Speed bar — ceSimpleLineObject; point 0 fixed, point 1 is fixed.
+	-- 5. Speed bar - ceSimpleLineObject; point 0 fixed, point 1 is fixed.
 	local min_spd_line           = CreateElement "ceSimpleLineObject"
 	min_spd_line.name            = contact_parameters.NAME .. "_min_spd"
 	min_spd_line.material        = mat
@@ -255,7 +252,7 @@ local function create_contact(parent_elem, contact_parameters, mat, level)
 	Add(min_spd_line)
 	log.info("Created minimum speed bar for contact: " .. contact_parameters.NAME)
 
-	-- 6. Speed bar — ceSimpleLineObject; point 0 fixed, point 1 scaled by SPEED parameter. The line is drawn along own heading.
+	-- 6. Speed bar - ceSimpleLineObject; point 0 fixed, point 1 scaled by SPEED parameter. The line is drawn along own heading.
 	local spd_line           = CreateElement "ceSimpleLineObject"
 	spd_line.name            = contact_parameters.NAME .. "_spd"
 	spd_line.material        = mat
@@ -313,7 +310,7 @@ local function create_contact(parent_elem, contact_parameters, mat, level)
 	Add(alt_line)
 	log.info("Created altitude bar for contact: " .. contact_parameters.NAME)
 
-	-- 9. Fins — fixed tail lines at +-30° toward rear of contact
+	-- 9. Fins - fixed tail lines at +-30° toward rear of contact
 
 	local enemy_fins = CreateElement "ceSimple"
 	enemy_fins.name = contact_parameters.NAME .. "_enemy_fins"
