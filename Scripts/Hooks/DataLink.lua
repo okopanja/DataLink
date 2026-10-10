@@ -1,5 +1,14 @@
+-- If the user Disabled the mod, log a message and return early without initializing the plugin.
+local Options = require('optionsEditor')
+if Options.getOption("plugins.DataLink.generalEnabled") == false then
+	log.info("DataLink plugin is disabled via options. To enable it, visit the Options -> Special -> DataLink menu.")
+	return
+end
+
+log.info("Initializing DataLink plugin...")
+
 package.path = package.path .. 
-	lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\?.lua;]] ..
+	lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\?.lua;]] .. -- needed for lest of lua modules to load
 	lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\?.lua;]] .. -- added for regular external modules
 	lfs.writedir() .. [[Mods\tech\DataLink\Scripts\Hooks\External\?\init.lua;]] -- added for uuid funky dependancy declaration
 
@@ -7,11 +16,6 @@ package.path = package.path ..
 math.randomseed(os.time())
 
 local Logging = require("Utils.Logging").new("DataLink.log")
-local Options = require('optionsEditor')
-if Options.getOption("plugins.DataLink.generalEnabled") == false then
-	Logging:info("DataLink plugin is disabled via options. Visit the Options -> Special -> DataLink menu to enable it.")
-	return
-end
 local ScriptedEWRContactSource = require("ScriptedEWRContactSource")
 -- local DCSContactSource = require("DCSContactSource")
 local RadarContactSource = require("RadarContactSource")
@@ -46,3 +50,4 @@ radarContactSource:initialize()
 dataLinkTransiever:initialize()
 contactProcessor:initialize()
 
+log.info("DataLink MOD export hook initialization completed.")
