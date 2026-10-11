@@ -92,7 +92,7 @@ function post_initialize()
 		dev:listen_event(event_name)
 	end
 	if DEBUG then
-		show_dummy_targets()
+		-- show_dummy_targets()
 		show_param_handles_list()
 	end
 end
