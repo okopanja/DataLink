@@ -17,14 +17,14 @@ dofile(LockOn_Options.script_path..[[Datalink\definitions.lua]])
 -- ======================================================================
 
 print_message_to_user("DataLink: device loaded for "..get_aircraft_type())
-print_message_to_user("Username: "..get_aircraft_property("MY_PROPERTY"))
+print_message_to_user("TRANSMITTED_CONTACT_PARAMETER_COUNT: "..tostring(TRANSMITTED_CONTACT_PARAMETER_COUNT))
+
 require("terrain")
 -- require("net")
 local dev = GetSelf()
 local UPDATE_INTERVAL = 0.1
 make_default_activity(UPDATE_INTERVAL)
 
-local ARGS_PER_CTX = 6
 local DL_COMMAND_ID = 123456
 local DL_COMMAND_ARG = 123456
 local DL_COMMAND_SEQ      = DL_COMMAND_ID + 1
@@ -83,8 +83,8 @@ function post_initialize()
 	dev:listen_command(iCommandPowerOnOff)
 	dev:listen_command(iCommandPlayerToPlayer)
 	for i = 0, MAX_CONTACTS - 1 do
-		for f = 0, ARGS_PER_CTX - 1 do
-			dev:listen_command(DL_COMMAND_BASE + i * ARGS_PER_CTX + f)
+		for f = 0, TRANSMITTED_CONTACT_PARAMETER_COUNT - 1 do
+			dev:listen_command(DL_COMMAND_BASE + i * TRANSMITTED_CONTACT_PARAMETER_COUNT + f)
 		end
 	end
 	-- register Events to listen to
@@ -101,7 +101,7 @@ end
 
 local last_seq  = -1
 local new_contacts = {} -- contacts being received
-local received_contacts  = {}   -- current picture: list of {brg, rng, alt, spd, hdg, iff}
+local received_contacts  = {}   -- current picture: list of {brg, rng, alt, spd, hdg, iff, target_donor, target_attacker, target_number}
 local last_update_time = 0
 
 -- ── Update loop ───────────────────────────────────────────────────────
@@ -119,6 +119,9 @@ for i = 1, #ContactParameterNames do
     SPEED    = get_param_handle(ContactParameterNames[i].SPEED),
     HEADING  = get_param_handle(ContactParameterNames[i].HEADING),
     IFF 	 = get_param_handle(ContactParameterNames[i].IFF),
+    TARGET_DONOR = get_param_handle(ContactParameterNames[i].TARGET_DONOR),
+    TARGET_ATTACKER = get_param_handle(ContactParameterNames[i].TARGET_ATTACKER),
+    TARGET_NUMBER = get_param_handle(ContactParameterNames[i].TARGET_NUMBER),
     VISIBLE  = get_param_handle(ContactParameterNames[i].VISIBLE),
   }
 end
@@ -165,7 +168,7 @@ end
 
 function update()
 	local own_heading_rad = full_circle_radian - base_data:getHeading()
-	true_heading_handle:set(own_heading_rad)
+	true_heading_handle:set(math.deg(own_heading_rad))
 	-- extrapolate contacts based on our own speed and heading and the contact's speed and heading to update the cockpit parameters
 	
 	if device_state == DEVICE_STATES.EXTRAPOLATING_CONTACTS then
@@ -183,7 +186,7 @@ function update_contacts(contacts)
 	local scale = HDDScales[zoom_level]
 
 	for i, contact in ipairs(contacts) do
-		if contact.BEARING and contact.RANGE and contact.ALTITUDE and contact.SPEED and contact.HEADING and contact.IFF then
+		if contact.BEARING and contact.RANGE and contact.ALTITUDE and contact.SPEED and contact.HEADING and contact.IFF and contact.TARGET_DONOR and contact.TARGET_ATTACKER and contact.TARGET_NUMBER then
 			local contact_parameters = ContactParameterHandles[i]
 			for key, value in pairs(contact) do
 				if key == "RANGE" then
@@ -298,9 +301,9 @@ function SetCommand(command, value)
 		log.info("DataLink: Player-to-Player command received with value "..tostring(value))
 	elseif command >= DL_COMMAND_BASE and command then
 		-- log.info("Received contact data: command="..tostring(command).." value="..tostring(value))
-		local idx = math.floor((command - DL_COMMAND_BASE) / ARGS_PER_CTX) + 1
+		local idx = math.floor((command - DL_COMMAND_BASE) / TRANSMITTED_CONTACT_PARAMETER_COUNT) + 1
 		log.info("Contact index: "..tostring(idx))
-		local field = (command - DL_COMMAND_BASE) % ARGS_PER_CTX
+		local field = (command - DL_COMMAND_BASE) % TRANSMITTED_CONTACT_PARAMETER_COUNT
 		local contact = new_contacts[idx]
 		if field == 0 then 
 			log.info("BRG: "..tostring(value))
@@ -320,8 +323,17 @@ function SetCommand(command, value)
 		elseif field == 5 then
 			log.info("IFF: "..tostring(value))
 			contact.IFF = value
+		elseif field == 6 then
+			log.info("TARGET_DONOR: "..tostring(value))
+			contact.TARGET_DONOR = value
+		elseif field == 7 then
+			log.info("TARGET_ATTACKER: "..tostring(value))
+			contact.TARGET_ATTACKER = value
+		elseif field == 8 then
+			log.info("TARGET_NUMBER: "..tostring(value))
+			contact.TARGET_NUMBER = value
 		end
-		if idx == #new_contacts and field == 5 then
+		if idx == #new_contacts and field == 8 then
 			log.info("All contacts received, updating last_seq")
 			last_seq = last_seq + 1
 			received_contacts = new_contacts
@@ -363,6 +375,9 @@ function show_dummy_targets()
 		SPEED = 2588,
 		HEADING = (240 + true_heading_degree) % 360,
 		IFF = 1,
+		TARGET_DONOR = 1,
+		TARGET_ATTACKER = 2,
+		TARGET_NUMBER = 1,
 	}
 	received_contacts[2] =
 	{
@@ -372,6 +387,9 @@ function show_dummy_targets()
 		SPEED = 0,
 		HEADING = (240 + true_heading_degree) % 360,
 		IFF = 1,
+		TARGET_DONOR = 1,
+		TARGET_ATTACKER = 2,
+		TARGET_NUMBER = 2,
 	}
 	received_contacts[3] =
 	{
@@ -381,6 +399,9 @@ function show_dummy_targets()
 		SPEED = 250,
 		HEADING = (240 + true_heading_degree) % 360,
 		IFF = 2,
+		TARGET_DONOR = 3,
+		TARGET_ATTACKER = 4,
+		TARGET_NUMBER = 3,
 	}
 	received_contacts[4] =
 	{
@@ -390,6 +411,9 @@ function show_dummy_targets()
 		SPEED = 250,
 		HEADING = (240 + true_heading_degree) % 360,
 		IFF = 3,
+		TARGET_DONOR = 4,
+		TARGET_ATTACKER = 3,
+		TARGET_NUMBER = 4,
 	}
 	received_contacts[5] =
 	{
@@ -399,6 +423,9 @@ function show_dummy_targets()
 		SPEED = 250,
 		HEADING = (240 + true_heading_degree) % 360,
 		IFF = 4,
+		TARGET_DONOR = 0,
+		TARGET_ATTACKER = 0,
+		TARGET_NUMBER = 5,
 	}
 	-- new_contacts = received_contacts
 	device_state = DEVICE_STATES.EXTRAPOLATING_CONTACTS

@@ -20,7 +20,9 @@ function Contact:new(o)
 	o.speed = nil
 	o.side = nil	
 	o.type = nil
-	o.donor = nil
+	o.donor = 0
+	o.attacker = 0
+	o.contact_number = 0
 	o.contact_source = nil
 	o.flags = 0
 	o.iff = UnitData.IFF.UNKNOWN
@@ -131,6 +133,22 @@ end
 
 function Contact:setDonor(donor)
 	self.donor = donor
+end
+
+function Contact:getContactNumber()
+	return self.contact_number
+end
+
+function Contact:setContactNumber(contact_number)
+	self.contact_number = contact_number
+end
+
+function Contact:getAttacker()
+	return self.attacker
+end
+
+function Contact:setAttacker(attacker)
+	self.attacker = attacker
 end
 
 function Contact:getFlags()
