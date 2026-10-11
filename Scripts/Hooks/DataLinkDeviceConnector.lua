@@ -8,7 +8,7 @@ dofile(lfs.writedir() .. [[Mods\tech\DataLink\Cockpit\Scripts\common.lua]])
 local DataLinkDeviceConnector = {}
 
 local MAX_CONTACTS = 20
-local ARGS_PER_CTX = 6
+local ARGS_PER_CTX = 9
 local DL_COMMAND_ID = 123456
 local DL_COMMAND_ARG = 123456
 local ARG_SEQ = DL_COMMAND_ID + 1
@@ -125,6 +125,9 @@ function DataLinkDeviceConnector:transfer(contacts)
         self.datalink_device:SetCommand(b + 3, contact:getSpeed())
         self.datalink_device:SetCommand(b + 4, contact:getHeading())
         self.datalink_device:SetCommand(b + 5, contact:getIFF())
+        self.datalink_device:SetCommand(b + 6, contact:getDonor())
+        self.datalink_device:SetCommand(b + 7, contact:getAttacker())
+        self.datalink_device:SetCommand(b + 8, contact:getContactNumber())
     end
 
     -- Write sequence counter LAST so the device/page sees a consistent snapshot

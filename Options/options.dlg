@@ -148,6 +148,29 @@ dialog = {
 					},
 					["type"] = "CheckBox",
 				},
+				["generalEnabledDebugDummyTargetsCheckbox"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = control_height,
+							["w"] = first_column_control_width,
+							["x"] = first_column_x,
+							["y"] = next_y(),
+						},
+						["enabled"] = true,
+						["state"] = false,
+						["tabOrder"] = 0,
+						["text"] = "$GENERAL_ENABLED_DEBUG_DUMMY_TARGETS",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "checkBoxSkin_options",
+						},
+					},
+					["type"] = "CheckBox",
+				},
 				["generalTactical"] = {
 					["params"] = {
 						["angle"] = 0,

@@ -87,6 +87,8 @@ function DataLinkTransiever:configure()
     self.enabled = Options.getOption("plugins.DataLink.generalEnabled") and
                    Options.getOption("plugins.DataLink.generalEnabledFighterToFighterDatalink") and
                    GlobalData:isOwnshipExportAllowed()
+    self.tacticalGroupID = Options.getOption("plugins.DataLink.tacticalGroupID")
+    self.tacticalGroupPosition = Options.getOption("plugins.DataLink.tacticalGroupPosition")
     Logging:info("DataLinkTransiever.enabled: " .. tostring(self.enabled))
     self.host = Options.getOption("plugins.DataLink.networkNatsHostname")
     self.port = Options.getOption("plugins.DataLink.networkNatsPort")
@@ -225,7 +227,7 @@ function DataLinkTransiever:handleIncomingMessage(message)
     -- add sender as contact to the contacts by filling in all things from unpack
     local sender_contact = Contact:new()
     sender_contact:unpack({
-        id = sender_contact.sender,
+        id = sender_contact.sender,        
         x = decodedMessage.x,
         alt = decodedMessage.alt,
         z = decodedMessage.z,
@@ -237,6 +239,13 @@ function DataLinkTransiever:handleIncomingMessage(message)
         -- iff = UnitData.IFF.FRIENDLY,
         -- iff = decodedMessage.iff,
     })
+    if decodedMessage.tacticalGroupID == self.tacticalGroupID then
+        if decodedMessage.tacticalGroupPosition ~= self.tacticalGroupPosition then
+            sender_contact:setContactNumber(decodedMessage.tacticalGroupPosition)
+        else
+            Logging:warning("Sender is in the same tactical group position as self. It will not be marked")
+        end
+    end
     sender_contact:setDonor(decodedMessage.sender)
     sender_contact:setContactSource(CONTACT_SOURCES.K_DLAE) -- mark the sender as received from the К-ДлАЭ source
     contacts[#contacts + 1] = sender_contact
@@ -259,6 +268,8 @@ function DataLinkTransiever:transfer(contacts)
     Logging:info("Transmitting " .. tostring(#contacts) .. " contacts")
     local message = {
         sender = self.sender_uuid, -- used to filter out own messsages
+        tacticalGroupID = self.tacticalGroupID,
+        tacticalGroupPosition = self.tacticalGroupPosition,
         x = self.current_player_contact:getX(), -- TODO: is it wise to transmit own exact coordinatess?
         alt = self.current_player_contact:getAltitude(),
         z = self.current_player_contact:getZ(),

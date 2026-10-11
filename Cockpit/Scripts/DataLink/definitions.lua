@@ -109,9 +109,17 @@ for i = 1, MAX_CONTACTS do
     ALTITUDE = string.format("DATALINK_CONTACT_%02d_ALTITUDE", i),
     SPEED    = string.format("DATALINK_CONTACT_%02d_SPEED", i),
     HEADING  = string.format("DATALINK_CONTACT_%02d_HEADING", i),
-	IFF 	 = string.format("DATALINK_CONTACT_%02d_IFF", i),
+    IFF 	 = string.format("DATALINK_CONTACT_%02d_IFF", i),
+    TARGET_DONOR = string.format("DATALINK_CONTACT_%02d_TARGET_DONOR", i),
+    TARGET_ATTACKER = string.format("DATALINK_CONTACT_%02d_TARGET_ATTACKER", i),
+    TARGET_NUMBER = string.format("DATALINK_CONTACT_%02d_TARGET_NUMBER", i),
     VISIBLE  = string.format("DATALINK_CONTACT_%02d_VISIBLE", i), -- does not count towards the passed number of arguments
   }
 end
 
+-- we reduce count by 2 to exclude NAME and VISIBLE parameters
+TRANSMITTED_CONTACT_PARAMETER_COUNT = -2
+for k, v in pairs(ContactParameterNames[1]) do
+	TRANSMITTED_CONTACT_PARAMETER_COUNT = TRANSMITTED_CONTACT_PARAMETER_COUNT + 1
+end
 

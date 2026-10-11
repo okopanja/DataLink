@@ -10,8 +10,10 @@ SUPPORTED_AIRCRAFT = {
 -- Enable to activate debugging features
 if get_plugin_option_value then
   DEBUG=get_plugin_option_value("DataLink", "generalEnabledDebug", "local")
+  DEBUG_DUMMY_TARGETS=DEBUG and get_plugin_option_value("DataLink", "generalEnabledDebugDummyTargets", "local")
 else
   DEBUG=false
+  DEBUG_DUMMY_TARGETS=false
 end
 
 -- If inspect.lua is not present in the scripts folder, debugging will be disabled automatically.
