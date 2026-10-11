@@ -15,11 +15,11 @@ local function update()
         dialogRef.networkNatsPortEditBox:setEnabled(enabledFighterToFighterDatalink)
         dialogRef.networkNatsEnableSslCheckbox:setEnabled(enabledFighterToFighterDatalink)
         dialogRef.generalEnabledDebugCheckbox:setEnabled(generalEnabled)
-        local enbladeDebug = dialogRef.generalEnabledDebugCheckbox:getState() and generalEnabled
-        local enabledDebugDummyTargets = dialogRef.generalEnabledDebugDummyTargetsCheckbox:getState() and enbladeDebug
+        local enabledDebug = dialogRef.generalEnabledDebugCheckbox:getState() and generalEnabled
+        local enabledDebugDummyTargets = dialogRef.generalEnabledDebugDummyTargetsCheckbox:getState() and enabledDebug
+        dialogRef.generalEnabledDebugDummyTargetsCheckbox:setEnabled(enabledDebug)
         dialogRef.tacticalGroupIDEditBox:setEnabled(enabledFighterToFighterDatalink)
         dialogRef.tacticalGroupPositionSlider:setEnabled(enabledFighterToFighterDatalink)
-        dialogRef.generalEnabledDebugDummyTargetsCheckbox:setEnabled(enabledDebugDummyTargets)
     end
 end
 
