@@ -3,8 +3,6 @@ SUPPORTED_AIRCRAFT = {
   ["Su-27"] = { enable_options_key_for_unit = "generalEnabled" },
   ["Su-33"] = { enable_options_key_for_unit = "generalEnabled" },
   ["J-11A"] = { enable_options_key_for_unit = "generalEnabled" },
-  -- TODO: MiG-29 Fulcrum should not be supported
-  -- ["MiG-29 Fulcrum"] = {},
 }
 
 -- Enable to activate debugging features
