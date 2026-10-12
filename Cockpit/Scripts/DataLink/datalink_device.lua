@@ -106,8 +106,6 @@ local new_contacts = {} -- contacts being received
 local received_contacts  = {}   -- current picture: list of {brg, rng, alt, spd, hdg, iff, target_donor, target_attacker, target_number}
 local last_update_time = 0
 
--- ── Update loop ───────────────────────────────────────────────────────
-
 local toggle_visibility_handle = get_param_handle(CommonParameterNames.DATALINK_TOGGLE_VISIBILITY)
 toggle_visibility_handle:set(0.0)
 
@@ -168,6 +166,7 @@ function extrapolate_contacts(own_heading_rad, own_speed_mps, dt)
 	end
 end
 
+-- updated callback
 function update()
 	local own_heading_rad = full_circle_radian - base_data:getHeading()
 	true_heading_handle:set(math.deg(own_heading_rad))
@@ -183,6 +182,7 @@ function update()
 	end
 end
 
+-- internal function to update contact parameters based on received data
 function update_contacts(contacts)
 	log.info("Zoom level: "..tostring(zoom_level))
 	local scale = HDDScales[zoom_level]
@@ -206,8 +206,7 @@ function update_contacts(contacts)
 	end
 end
 
--- ── Cockpit events ────────────────────────────────────────────────────
-
+-- Cockpit events
 function CockpitEvent(event, value)
 	log.info("DataLink: CockpitEvent: event="..tostring(event))
 	-- check if value is not nil
@@ -226,7 +225,7 @@ function CockpitEvent(event, value)
 	end
 end
 
--- ── Commands ──────────────────────────────────────────────────────────
+-- Command processing of device
 
 function SetCommand(command, value)
 	if command == iCommandPlaneZoomIn then
