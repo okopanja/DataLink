@@ -101,7 +101,7 @@ function DataLinkTransiever:configure()
         }
     self.timeouts = {
         send_timeout = 0.100, -- send timeout
-        receive_timeout = 0.005, -- receive needs to return fast
+        receive_timeout = 0.01, -- receive needs to return fast
     }
     if self.tls then
         self.connection_settings.tls = true
@@ -227,7 +227,7 @@ function DataLinkTransiever:handleIncomingMessage(message)
     -- add sender as contact to the contacts by filling in all things from unpack
     local sender_contact = Contact:new()
     sender_contact:unpack({
-        id = sender_contact.sender,        
+        id = decodedMessage.sender,        
         x = decodedMessage.x,
         alt = decodedMessage.alt,
         z = decodedMessage.z,
