@@ -79,12 +79,7 @@
 	Add(ownship)
 
 	-- Materials palette -------------------------------------------------
-	local MAT_BG        = MakeMaterial("", {  0,   0,   0, 210})
 	local MAT_BORDER    = MakeMaterial("", {  0, 210,   0, 255})
-	local MAT_TITLE     = MakeMaterial("", {  0, 130,   0, 220})
-	local MAT_SEPARATOR = MakeMaterial("", {  0, 180,   0, 255})
-	-- local MAT_CROSS     = MakeMaterial("", {  0, 210,   0, 180})
-	local MAT_CROSS     = MakeMaterial("", { 210, 0,   0, 180})
 	local MAT_CROSS_2     = MakeMaterial("", { 0, 0,   255, 255})
 	local MAT_DEFAULT = nil
 	if DEBUG then
@@ -94,10 +89,6 @@
 	end
 	MAT_DEFAULT    = MakeMaterial("", MAT_DEFAULT_COLOR)  -- default contact is green
 	local FONT_COCKPIT_RUS_2 = MakeFont({used_DXUnicodeFontData = "FUI/Fonts/font_cockpit_rus_2"}, MAT_DEFAULT_COLOR, 0, "test_font")
-
-	-- local MAT_ENEMY       = MakeMaterial("", {210, 0,     0, 255})  -- enemy contact RED
-	-- local MAT_FRIENDLY       = MakeMaterial("", {0, 0,     210, 255})  -- friendly contact BLUE
-	-- local MAT_ENEMY       = MakeMaterial("", {0, 210,     0, 255})  -- enemy contact
 
 	local function normalize_color(color)
 		return {color[1]/255, color[2]/255, color[3]/255}

@@ -23,7 +23,7 @@ dedicated_viewport = {
 	math.floor(VP_H * scale_y),
 }
 
--- ── Pages ────────────────────────────────────────────────────────────
+-- Pages
 page_subsets = {
 	[1] = LockOn_Options.script_path.."DataLink/DATALINK_page.lua",
 }

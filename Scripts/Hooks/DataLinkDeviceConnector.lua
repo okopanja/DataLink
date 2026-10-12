@@ -4,17 +4,17 @@ local UnitData = require("UnitData")
 local Options = require('optionsEditor')
 local GlobalData = require("GlobalData")
 dofile(lfs.writedir() .. [[Mods\tech\DataLink\Cockpit\Scripts\common.lua]])
+dofile(lfs.writedir() .. [[Mods\tech\DataLink\Cockpit\Scripts\DataLink\definitions.lua]])
+
 
 local DataLinkDeviceConnector = {}
 
-local MAX_CONTACTS = 20
-local ARGS_PER_CTX = 9
 local DL_COMMAND_ID = 123456
 local DL_COMMAND_ARG = 123456
 local ARG_SEQ = DL_COMMAND_ID + 1
 local ARG_COUNT = ARG_SEQ + 1
 local ARG_BASE = ARG_COUNT + 1 -- contact slots start here
-local ARG_EXPERIMENT = ARG_BASE + MAX_CONTACTS * ARGS_PER_CTX -- used for testing / experimentation
+local ARG_EXPERIMENT = ARG_BASE + MAX_CONTACTS * TRANSMITTED_CONTACT_PARAMETER_COUNT -- used for testing / experimentation
 -- Draw argument used for device discovery handshake.
 -- After sending DL_COMMAND_ID to a device, the DataLink device responds by writing
 -- DL_DISCOVERY_VALUE to DL_DISCOVERY_ARG via draw_argument_value().
@@ -118,7 +118,7 @@ function DataLinkDeviceConnector:transfer(contacts)
                          tostring(contact:getAltitude()) .. " spd=" ..
                          tostring(contact:getSpeed()) .. " hdg=" ..
                          tostring(contact:getHeading()))
-        local b = ARG_BASE + (i - 1) * ARGS_PER_CTX
+        local b = ARG_BASE + (i - 1) * TRANSMITTED_CONTACT_PARAMETER_COUNT
         self.datalink_device:SetCommand(b + 0, contact:getBearing())
         self.datalink_device:SetCommand(b + 1, contact:getRange())
         self.datalink_device:SetCommand(b + 2, contact:getAltitude())
