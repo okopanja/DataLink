@@ -32,21 +32,17 @@ Technical users and server owners, please read [Data Link Design](https://github
 ### Installation Steps
 
 1. **Locate your DCS Saved Games folder:**
-   - Default location: `C:\Users\[YourUsername]\Saved Games\DCS\`
+   - Default location: `%USERPROFILE%\Saved Games\DCS\`
 
-2. **Copy the mod files:**
-   - Copy all files from repository to:
+2. **Unpack mod files:**
+   - Once you open the zip file, copy the DataLink subfolder to
      ```
-     %USERPROFILE%\Saved Games\DCS\Mods\tech\DataLink
+     %USERPROFILE%\Saved Games\DCS\Mods\tech\
      ```
-   - Copy the hook file Scripts\Hooks\DataLink.lua to:
-     ```
-     %USERPROFILE%\Saved Games\DCS\Scripts\Hooks
-     ```
-3. **Verify installation:**
-   - Launch DCS World
-   - Start a mission with a supported aircraft (Su-27, Su-33, or J-11A)
-   - The datalink overlay should be visible on the centre display
+3. **Finish installation:**
+   - Launch DCS World.
+   - After main screen is displayed you should be able to find DataLink icon.
+   - In addition inside Options -> Special -> DataLink, configuration options will be present.
 
 ## De-installation
 
@@ -57,8 +53,7 @@ To remove the DataLink Overlay mod:
    %USERPROFILE%\Saved Games\DCS\Mods\tech\
    ```
 
-2. **Delete the 
-DataLink folder:**
+2. **Delete the DataLink folder:**
    - Delete the entire `DataLink` folder and all its contents
      
 3. **Navigate to your DCS Scripts folder:**
@@ -67,11 +62,11 @@ DataLink folder:**
    ```
 
 4. **Delete the hook file:**
-   - Delete the 'DataLink.lua'
+   - Delete the 'DataLink.lua' (note: if you disabled the DataLink beforehand, the fill will not be present).
 
 5. **Verify removal:**
    - Launch DCS World
-   - The overlay should no longer appear in supported aircraft
+   - DataLink icon will not be present on main screen and also not in Options -> Special.
 
 ## Frequently asked question
 
@@ -97,7 +92,7 @@ Server owners are kindly asked to read additional information provided [here](Do
 3. How are information on aircrafts retrieved?
 
 MOD supports implementation of different Contact Sources. Per default it is supplied with Scripted EWR Contact Source, which relies on information the server owners are willing to broadcast.
-Support for the Figher-To-Figher DL over the NATS protocol has been added as of v1.0.1. 
+Support for the Figher-To-Figher DL over the NATS protocol has been added as of v1.0.1.
 Please note that on explicit wish DCS server side controlled data source can be added (this way each server may decide on their own if they want to support the mod).
 However in future additional data sources will be added.
 
