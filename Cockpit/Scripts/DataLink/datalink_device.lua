@@ -441,7 +441,18 @@ if DEBUG then
 	saveInspect("list_cockpit_params", list_cockpit_params())
 	saveInspect("list_indication", list_indication())
 	saveInspect("RPC", RPC)
-	saveInspect("get_base_data", get_base_data())
+	saveInspect("get_base_data", base_data)
+	saveInspect("get_mission_route", get_mission_route())
+	local x, y, z = base_data.getSelfCoordinates()
+	saveInspect("get_base_data-getSelfCoordinates", { ['x'] = x, ['y'] = y, ['z'] = z })
+	saveInspect("terrain", terrain)
+	saveInspect("terrain_GetTerrainConfig_Airdromes", terrain.GetTerrainConfig("Airdromes"))
+
+	do_mission_file("mission")
+	saveInspect("mission", mission)
+	do_mission_file("warehouses")
+	saveInspect("warehouses", warehouses)
+
 end
 
 -- must be false in order to receive updates.
