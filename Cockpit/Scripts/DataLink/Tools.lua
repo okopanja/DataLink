@@ -67,8 +67,13 @@ function Tools:determine_coalition_and_country()
 		local best_result = results[1]
 		return best_result.coalition, best_result.country, best_result.country_id
 	end
+	local coalitions = {
+		[0] = "red",
+		[1] = "blue"
+	}
+	local tacticalDynamicSpawnCoalition = coalitions[get_plugin_option_value("DataLink", "tacticalDynamicSpawnCoalition", "local")]
 	-- Example return values, replace with actual logic
-	return nil, nil, nil
+	return tacticalDynamicSpawnCoalition, "Unknown", -1
 end
 
 

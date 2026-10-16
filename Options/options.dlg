@@ -197,6 +197,54 @@ dialog = {
 					},
 					["type"] = "Static",
 				},
+				["tacticalDynamicSpawnCoalitionLabel"] = {
+					["params"] = {
+						["angle"] = 0,
+						["bounds"] = {
+							["h"] = control_height,
+							["w"] = 100,
+							["x"] = first_column_x,
+							["y"] = position,
+						},
+						["enabled"] = true,
+						["pivotPoint"] = {
+							["x"] = 0,
+							["y"] = 0,
+						},
+						["text"] = "$TACTICAL_DYNAMIC_SPAWN_COALITION",
+						["tooltip"] = "$TACTICAL_DYNAMIC_SPAWN_COALITION_TOOLTIP",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "staticOptionsCaptionSkin",
+						},
+					},
+					["type"] = "Static",
+				},
+				["tacticalDynamicSpawnCoalitionComboList"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = control_height,
+							["w"] = first_column_control_width - 100,
+							["x"] = first_column_x + 100,
+							["y"] = next_y(),
+						},
+						["enabled"] = true,
+						["tabOrder"] = 0,
+						["text"] = "Item1",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "comboListSkin_options",
+						},
+					},
+					["type"] = "ComboList",
+				},
 				["tacticalGroupIDLabel"] = {
 					["params"] = {
 						["bounds"] = {

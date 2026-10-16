@@ -440,6 +440,7 @@ function show_dummy_targets()
 end
 	
 local coalition, country, countryID = Tools:determine_coalition_and_country()
+
 if coalition ~= nil then
 	log.info("Determined coalition: " .. tostring(coalition))
 	log.info("Determined country: " .. tostring(country))

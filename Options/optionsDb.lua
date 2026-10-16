@@ -86,6 +86,12 @@ local options = {
     networkNatsHostname = DbOption.new():setValue("demo.nats.io"):editbox(),
     networkNatsPort = DbOption.new():setValue(4222):editbox(),
     networkNatsEnableSsl = DbOption.new():setValue(true):checkbox(),
+    tacticalDynamicSpawnCoalition = DbOption.new():setValue(0):combo(
+        {
+            DbOption.Item(_("red")):Value(0),
+            DbOption.Item(_("blue")):Value(1),
+        }
+    ),
     tacticalGroupID = DbOption.new():setValue(""):editbox(),
     tacticalGroupPosition = DbOption.new():setValue(1):slider(DbOption.Range(1, 4)),
     callbackOnShowDialog = function(dialog)
