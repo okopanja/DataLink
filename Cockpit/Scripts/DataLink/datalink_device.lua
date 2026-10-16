@@ -16,7 +16,9 @@ dofile(LockOn_Options.script_path..[[Datalink\definitions.lua]])
 --   i = 0 .. MAX_CONTACTS-1
 -- ======================================================================
 
-print_message_to_user("DataLink: device loaded for "..get_aircraft_type())
+local aircraft_type = get_aircraft_type()
+print_message_to_user("DataLink: device loaded for "..aircraft_type)
+
 print_message_to_user("TRANSMITTED_CONTACT_PARAMETER_COUNT: "..tostring(TRANSMITTED_CONTACT_PARAMETER_COUNT))
 
 require("terrain")
@@ -434,6 +436,53 @@ function show_dummy_targets()
 	update_contacts(received_contacts)
 	print_message_to_user("Dummy targets are set!")
 end
+
+function determine_coalition_and_country()
+	-- Implementation for determining coalition and country goes here
+	do_mission_file("mission")
+	do_mission_file("warehouses")
+
+	local x, alt, z = base_data:getSelfCoordinates()
+	-- iterate over coalition
+	for coalition, coalition_data in pairs(mission.coalition) do
+		log.info("Coalition: " .. tostring(coalition))
+		for _, country_data in pairs(coalition_data.country) do
+			log.info("  Country: " .. tostring(country_data.name))
+			for _, group in ipairs(country_data.plane.group) do
+				-- skip dynamically spawned groups
+				if group.dynSpawnTemplate == false then
+					log.info("    Group: " .. tostring(group.groupId))
+					for _, unit in ipairs(group.units) do
+						if unit.type == aircraft_type then
+							log.info("      Unit: " .. tostring(unit.unitId))
+							log.info("        Unit coordinates: x=" .. tostring(unit.x) .. ", alt=" .. tostring(unit.alt) .. ", y=" .. tostring(unit.y))
+							log.info("        Self coordinates: x=" .. tostring(x) .. ", alt=" .. tostring(alt) .. ", y=" .. tostring(z))
+							local delta_x = math.abs(unit.x - x)
+							local delta_alt = math.abs(unit.alt - alt)
+							local delta_y = math.abs(unit.y - z)
+							if delta_x < 1 and delta_alt < 1 and delta_y < 1 then
+								log.info("        This unit matches the self coordinates.")
+								return coalition, country_data.name, country_data.id
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+
+	-- Example return values, replace with actual logic
+	return nil, nil, nil
+end
+
+local coalition, country, countryID = determine_coalition_and_country()
+if coalition ~= nil then
+	log.info("Determined coalition: " .. tostring(coalition))
+	log.info("Determined country: " .. tostring(country))
+	log.info("Determined countryID: " .. tostring(countryID))
+end
+
 
 if DEBUG then
 	saveInspect("_G_device", _G, true)
