@@ -27,6 +27,12 @@ dofile(LockOn_Options.common_script_path.."Fonts/font_RWR.lua")
 if fonts == nil then fonts = {} end
 fonts["font_datalink_green"] = {fontdescription_RWR, {0, 220, 0, 255}}  -- bright green text
 
+MainPanel = {
+  "ccMainPanel",
+  LockOn_Options.script_path.."mainpanel_init.lua",
+  {}
+}
+
 -- Device registration
 creators  = {}
 indicators = {}
