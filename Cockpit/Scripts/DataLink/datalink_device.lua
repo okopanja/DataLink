@@ -17,10 +17,14 @@ dofile(LockOn_Options.script_path..[[Datalink\definitions.lua]])
 --   i = 0 .. MAX_CONTACTS-1
 -- ======================================================================
 
-print_message_to_user("DataLink: device loaded for "..get_aircraft_type())
+local aircraft_type = get_aircraft_type()
+print_message_to_user("DataLink: device loaded for "..aircraft_type)
+
 print_message_to_user("TRANSMITTED_CONTACT_PARAMETER_COUNT: "..tostring(TRANSMITTED_CONTACT_PARAMETER_COUNT))
 
 require("terrain")
+
+local Tools = dofile(LockOn_Options.script_path.."DataLink/Tools.lua")
 -- require("net")
 local dev = GetSelf()
 local UPDATE_INTERVAL = 0.1
@@ -482,6 +486,15 @@ function show_dummy_targets()
 	update_contacts(received_contacts)
 	print_message_to_user("Dummy targets are set!")
 end
+	
+local coalition, country, countryID = Tools:determine_coalition_and_country()
+
+if coalition ~= nil then
+	log.info("Determined coalition: " .. tostring(coalition))
+	log.info("Determined country: " .. tostring(country))
+	log.info("Determined countryID: " .. tostring(countryID))
+end
+
 
 if DEBUG then
 	saveInspect("_G_device", _G, true)
@@ -489,7 +502,18 @@ if DEBUG then
 	saveInspect("list_cockpit_params", list_cockpit_params())
 	saveInspect("list_indication", list_indication())
 	saveInspect("RPC", RPC)
-	saveInspect("get_base_data", get_base_data())
+	saveInspect("get_base_data", base_data)
+	saveInspect("get_mission_route", get_mission_route())
+	local x, y, z = base_data.getSelfCoordinates()
+	saveInspect("get_base_data-getSelfCoordinates", { ['x'] = x, ['y'] = y, ['z'] = z })
+	saveInspect("terrain", terrain)
+	saveInspect("terrain_GetTerrainConfig_Airdromes", terrain.GetTerrainConfig("Airdromes"))
+
+	do_mission_file("mission")
+	saveInspect("mission", mission)
+	do_mission_file("warehouses")
+	saveInspect("warehouses", warehouses)
+
 end
 
 -- must be false in order to receive updates.
