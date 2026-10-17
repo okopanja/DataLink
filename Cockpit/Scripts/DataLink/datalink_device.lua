@@ -1,5 +1,6 @@
 local lfs = require('lfs')
 dofile(LockOn_Options.script_path.."common.lua")
+dofile(LockOn_Options.script_path.."device_commands.lua")
 dofile(LockOn_Options.script_path..[[Datalink\definitions.lua]])
 -- ======================================================================
 -- DataLink plugin – datalink_device.lua  (avLuaDevice backend)
@@ -82,6 +83,7 @@ function post_initialize()
 	dev:listen_command(iCommandPlaneModeGrid)
 	dev:listen_command(iCommandPowerOnOff)
 	dev:listen_command(iCommandPlayerToPlayer)
+	register_datalink_commands()
 	for i = 0, MAX_CONTACTS - 1 do
 		for f = 0, TRANSMITTED_CONTACT_PARAMETER_COUNT - 1 do
 			dev:listen_command(DL_COMMAND_BASE + i * TRANSMITTED_CONTACT_PARAMETER_COUNT + f)
@@ -355,11 +357,57 @@ function SetCommand(command, value)
 		-- a, b = a_do_script(me_script)
 		-- log.info("DataLink: Markers: "..tostring(a))
 		-- log.info("DataLink: Markers: "..inspect(b))
+	elseif command >= data_link_command_first and command <= data_link_command_last then
+		handle_datalink_commands(command, value)
 	else
 		log.info("DataLink: received unhandled command "..tostring(command).." with value "..tostring(value))
 	end
 
 	return 0
+end
+
+function register_datalink_commands()
+	for id,command in pairs(device_commands) do
+		dev:listen_command(command)
+	end
+end
+
+function handle_datalink_commands(command, value)
+	if command == device_commands.TARGET_01 then
+		print_message_to_user("DataLink: received command TARGET_01 with value "..tostring(value))
+	elseif command == device_commands.TARGET_02 then
+		print_message_to_user("DataLink: received command TARGET_02 with value "..tostring(value))
+	elseif command == device_commands.TARGET_03 then
+		print_message_to_user("DataLink: received command TARGET_03 with value "..tostring(value))
+	elseif command == device_commands.TARGET_04 then
+		print_message_to_user("DataLink: received command TARGET_04 with value "..tostring(value))
+	elseif command == device_commands.TARGET_05 then
+		print_message_to_user("DataLink: received command TARGET_05 with value "..tostring(value))
+	elseif command == device_commands.TARGET_06 then
+		print_message_to_user("DataLink: received command TARGET_06 with value "..tostring(value))
+	elseif command == device_commands.TARGET_07 then
+		print_message_to_user("DataLink: received command TARGET_07 with value "..tostring(value))
+	elseif command == device_commands.TARGET_08 then
+		print_message_to_user("DataLink: received command TARGET_08 with value "..tostring(value))
+	elseif command == device_commands.TARGET_09 then
+		print_message_to_user("DataLink: received command TARGET_09 with value "..tostring(value))
+	elseif command == device_commands.TARGET_10 then
+		print_message_to_user("DataLink: received command TARGET_10 with value "..tostring(value))
+	elseif command == device_commands.VVOD then
+		print_message_to_user("DataLink: received command VVOD with value "..tostring(value))
+	elseif command == device_commands.SBROS then
+		print_message_to_user("DataLink: received command SBROS with value "..tostring(value))
+	elseif command == device_commands.FIGHTER_01 then
+		print_message_to_user("DataLink: received command FIGHTER_01 with value "..tostring(value))
+	elseif command == device_commands.FIGHTER_02 then
+		print_message_to_user("DataLink: received command FIGHTER_02 with value "..tostring(value))
+	elseif command == device_commands.FIGHTER_03 then
+		print_message_to_user("DataLink: received command FIGHTER_03 with value "..tostring(value))
+	elseif command == device_commands.FIGHTER_04 then
+		print_message_to_user("DataLink: received command FIGHTER_04 with value "..tostring(value))
+	elseif command == device_commands.FIGHTER_GROUP then
+		print_message_to_user("DataLink: received command FIGHTER_GROUP with value "..tostring(value))
+	end
 end
 
 function show_dummy_targets()
