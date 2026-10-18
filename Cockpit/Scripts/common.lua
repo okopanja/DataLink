@@ -7,8 +7,8 @@ SUPPORTED_AIRCRAFT = {
 
 -- Enable to activate debugging features
 if get_plugin_option_value then
-  DEBUG=get_plugin_option_value("DataLink", "generalEnabledDebug", "local")
-  DEBUG_DUMMY_TARGETS=DEBUG and get_plugin_option_value("DataLink", "generalEnabledDebugDummyTargets", "local")
+  DEBUG=get_plugin_option_value("DataLink", "debugEnabled", "local")
+  DEBUG_DUMMY_TARGETS=DEBUG and get_plugin_option_value("DataLink", "debugEnabledDummyTargets", "local")
 else
   DEBUG=false
   DEBUG_DUMMY_TARGETS=false

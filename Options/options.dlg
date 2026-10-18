@@ -125,52 +125,6 @@ dialog = {
 					},
 					["type"] = "CheckBox",
 				},
-				["generalEnabledDebugCheckbox"] = {
-					["params"] = {
-						["bounds"] = {
-							["h"] = control_height,
-							["w"] = first_column_control_width,
-							["x"] = first_column_x,
-							["y"] = next_y(),
-						},
-						["enabled"] = true,
-						["state"] = false,
-						["tabOrder"] = 0,
-						["text"] = "$GENERAL_ENABLED_DEBUG",
-						["tooltip"] = "",
-						["visible"] = true,
-						["zindex"] = 0,
-					},
-					["skin"] = {
-						["params"] = {
-							["name"] = "checkBoxSkin_options",
-						},
-					},
-					["type"] = "CheckBox",
-				},
-				["generalEnabledDebugDummyTargetsCheckbox"] = {
-					["params"] = {
-						["bounds"] = {
-							["h"] = control_height,
-							["w"] = first_column_control_width,
-							["x"] = first_column_x,
-							["y"] = next_y(),
-						},
-						["enabled"] = true,
-						["state"] = false,
-						["tabOrder"] = 0,
-						["text"] = "$GENERAL_ENABLED_DEBUG_DUMMY_TARGETS",
-						["tooltip"] = "",
-						["visible"] = true,
-						["zindex"] = 0,
-					},
-					["skin"] = {
-						["params"] = {
-							["name"] = "checkBoxSkin_options",
-						},
-					},
-					["type"] = "CheckBox",
-				},
 				["generalTactical"] = {
 					["params"] = {
 						["angle"] = 0,
@@ -196,6 +150,54 @@ dialog = {
 						},
 					},
 					["type"] = "Static",
+				},
+				["tacticalDynamicSpawnCoalitionLabel"] = {
+					["params"] = {
+						["angle"] = 0,
+						["bounds"] = {
+							["h"] = control_height,
+							["w"] = 100,
+							["x"] = first_column_x,
+							["y"] = position,
+						},
+						["enabled"] = true,
+						["pivotPoint"] = {
+							["x"] = 0,
+							["y"] = 0,
+						},
+						["text"] = "$TACTICAL_DYNAMIC_SPAWN_COALITION",
+						["tooltip"] = "$TACTICAL_DYNAMIC_SPAWN_COALITION_TOOLTIP",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "staticOptionsCaptionSkin",
+						},
+					},
+					["type"] = "Static",
+				},
+				["tacticalDynamicSpawnCoalitionComboList"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = control_height,
+							["w"] = first_column_control_width - 100,
+							["x"] = first_column_x + 100,
+							["y"] = next_y(),
+						},
+						["enabled"] = true,
+						["tabOrder"] = 0,
+						["text"] = "Item1",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "comboListSkin_options",
+						},
+					},
+					["type"] = "ComboList",
 				},
 				["tacticalGroupIDLabel"] = {
 					["params"] = {
@@ -475,6 +477,78 @@ dialog = {
 						["state"] = false,
 						["tabOrder"] = 0,
 						["text"] = "$NETWORK_NATS_ENABLE_SSL",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "checkBoxSkin_options",
+						},
+					},
+					["type"] = "CheckBox",
+				},
+                ["debugSettingsLabel"] = {
+					["params"] = {
+						["angle"] = 0,
+						["bounds"] = {
+							["h"] = control_height,
+							["w"] = second_column_control_width,
+							["x"] = second_column_x,
+							["y"] = next_y(),
+						},
+						["enabled"] = true,
+						["pivotPoint"] = {
+							["x"] = 0,
+							["y"] = 0,
+						},
+						["text"] = "$DEBUG_SETTINGS_LABEL",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "staticOptionsTitleSkin",
+						},
+					},
+					["type"] = "Static",
+				},
+				["debugEnabledCheckbox"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = control_height,
+							["w"] = second_column_control_width,
+							["x"] = second_column_x,
+							["y"] = next_y(),
+						},
+						["enabled"] = true,
+						["state"] = false,
+						["tabOrder"] = 0,
+						["text"] = "$DEBUG_ENABLED",
+						["tooltip"] = "",
+						["visible"] = true,
+						["zindex"] = 0,
+					},
+					["skin"] = {
+						["params"] = {
+							["name"] = "checkBoxSkin_options",
+						},
+					},
+					["type"] = "CheckBox",
+				},
+				["debugEnabledDummyTargetsCheckbox"] = {
+					["params"] = {
+						["bounds"] = {
+							["h"] = control_height,
+							["w"] = second_column_control_width,
+							["x"] = second_column_x,
+							["y"] = next_y(),
+						},
+						["enabled"] = true,
+						["state"] = false,
+						["tabOrder"] = 0,
+						["text"] = "$DEBUG_ENABLED_DUMMY_TARGETS",
 						["tooltip"] = "",
 						["visible"] = true,
 						["zindex"] = 0,
