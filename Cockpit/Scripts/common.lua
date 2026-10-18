@@ -16,6 +16,7 @@ end
 
 -- If inspect.lua is not present in the scripts folder, debugging will be disabled automatically.
 DEBUG = DEBUG and lfs.attributes(lfs.writedir().."Mods/tech/DataLink/Cockpit/Scripts/inspect.lua") ~= nil
+
 -- Debugging functions
 if DEBUG then
   -- load inspect

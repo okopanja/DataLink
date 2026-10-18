@@ -1,8 +1,12 @@
 local lfs = require('lfs')
+-- temporary package path
+package.path = package.path .. ";" ..
+	LockOn_Options.script_path .. [[..\..\Scripts\Hooks\?.lua;]]
 dofile(LockOn_Options.script_path.."common.lua")
 dofile(LockOn_Options.script_path.."device_commands.lua")
 dofile(LockOn_Options.script_path..[[Datalink\definitions.lua]])
 dofile(LockOn_Options.script_path.."animation_defs.lua")
+local ContactProcessor = require("ContactProcessor")
 
 -- ======================================================================
 -- DataLink plugin – datalink_device.lua  (avLuaDevice backend)
