@@ -61,7 +61,9 @@ local DEVICE_STATES = {
 }
 
 local device_state = DEVICE_STATES.NO_CONTACTS
-
+local sound_host = nil
+local sound_button_pressed = nil
+local sound_button_released = nils
 
 print_message_to_user("DataLink debug: "..tostring(DEBUG))
 
@@ -95,6 +97,10 @@ function post_initialize()
 	for event_key, event_name in pairs(EVENTS) do
 		dev:listen_event(event_name)
 	end
+	sound_host = create_sound_host("COCKPIT_CLICKS","3D")
+	sound_button_pressed = sound_host:create_sound("Cockpit/button-pressed")
+	sound_button_released = sound_host:create_sound("Cockpit/button-released")
+
 	if DEBUG then
 		if DEBUG_DUMMY_TARGETS then
 			show_dummy_targets()
@@ -382,8 +388,11 @@ function SetCommand(command, value)
 		if CockpitBtnPressAnimationParamHandles[command] ~= nil then
 			if value == 512.375 then
 				CockpitBtnPressAnimationParamHandles[command]:set(1.0)
+				sound_button_pressed:play_once()
+				-- sound_button_released:play_once()
 			else
 				CockpitBtnPressAnimationParamHandles[command]:set(0.0)
+				sound_button_released:play_once()
 			end
 		end
 		handle_datalink_commands(command, value)
