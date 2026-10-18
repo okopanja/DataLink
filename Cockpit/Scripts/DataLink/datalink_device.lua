@@ -2,6 +2,8 @@ local lfs = require('lfs')
 dofile(LockOn_Options.script_path.."common.lua")
 dofile(LockOn_Options.script_path.."device_commands.lua")
 dofile(LockOn_Options.script_path..[[Datalink\definitions.lua]])
+dofile(LockOn_Options.script_path.."animation_defs.lua")
+
 -- ======================================================================
 -- DataLink plugin – datalink_device.lua  (avLuaDevice backend)
 --
@@ -127,6 +129,25 @@ for i = 1, #ContactParameterNames do
     VISIBLE  = get_param_handle(ContactParameterNames[i].VISIBLE),
   }
 end
+local CockpitBtnPressAnimationParamHandles = {
+	[device_commands.TARGET_01] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_01),
+	[device_commands.TARGET_02] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_02),
+	[device_commands.TARGET_03] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_03),
+	[device_commands.TARGET_04] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_04),
+	[device_commands.TARGET_05] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_05),
+	[device_commands.TARGET_06] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_06),
+	[device_commands.TARGET_07] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_07),
+	[device_commands.TARGET_08] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_08),
+	[device_commands.TARGET_09] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_09),
+	[device_commands.TARGET_10] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_10),
+	[device_commands.VVOD] = get_param_handle(ANIMATION_PARAMS.BTN_VVOD),
+	[device_commands.SBROS] = get_param_handle(ANIMATION_PARAMS.BTN_SBROS),
+	[device_commands.FIGHTER_01] = get_param_handle(ANIMATION_PARAMS.BTN_FIGHTER_01),
+	[device_commands.FIGHTER_02] = get_param_handle(ANIMATION_PARAMS.BTN_FIGHTER_02),
+	[device_commands.FIGHTER_03] = get_param_handle(ANIMATION_PARAMS.BTN_FIGHTER_03),
+	[device_commands.FIGHTER_04] = get_param_handle(ANIMATION_PARAMS.BTN_FIGHTER_04),
+	[device_commands.FIGHTER_GROUP] = get_param_handle(ANIMATION_PARAMS.BTN_FIGHTER_GROUP),
+}
 
 local true_heading_handle = get_param_handle(CommonParameterNames.TRUE_HEADING)
 local full_circle_radian = 2 * math.pi
@@ -358,6 +379,13 @@ function SetCommand(command, value)
 		-- log.info("DataLink: Markers: "..tostring(a))
 		-- log.info("DataLink: Markers: "..inspect(b))
 	elseif command >= data_link_command_first and command <= data_link_command_last then
+		if CockpitBtnPressAnimationParamHandles[command] ~= nil then
+			if value == 512.375 then
+				CockpitBtnPressAnimationParamHandles[command]:set(1.0)
+			else
+				CockpitBtnPressAnimationParamHandles[command]:set(0.0)
+			end
+		end
 		handle_datalink_commands(command, value)
 	else
 		log.info("DataLink: received unhandled command "..tostring(command).." with value "..tostring(value))
