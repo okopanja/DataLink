@@ -1,23 +1,24 @@
+-- if DCS defined take values from DCS, otherwise fallback to hardcoded default values
 local UNIT_PROPERTIES = {
-	UNIT_RUNTIME_ID = DCS.UNIT_RUNTIME_ID, 
-	UNIT_MISSION_ID = DCS.UNIT_MISSION_ID, -- slot ID
-	UNIT_NAME = DCS.UNIT_NAME, -- Palmachim_C-130J-30_4333-1
-	UNIT_TYPE = DCS.UNIT_TYPE,
-	UNIT_CATEGORY = DCS.UNIT_CATEGORY, -- nil/empty?
-	UNIT_GROUP_MISSION_ID = DCS.UNIT_GROUP_MISSION_ID, -- 1004292
-	UNIT_GROUPNAME = DCS.UNIT_GROUPNAME, -- King Hussein Air College_F-16CM bl.50_4292, Hama_F-14B(U)_4298, Virtual unit
-	UNIT_GROUPCATEGORY = DCS.UNIT_GROUPCATEGORY, -- plane, helicopter, nil, ""
-	UNIT_CALLSIGN = DCS.UNIT_CALLSIGN,
-	UNIT_HIDDEN = DCS.UNIT_HIDDEN, -- true/false
-	UNIT_COALITION = DCS.UNIT_COALITION, -- red/blue/nil
-	UNIT_COUNTRY_ID = DCS.UNIT_COUNTRY_ID, -- 18, 21, nil	
-	UNIT_TASK = DCS.UNIT_TASK, -- CAS, CAP, SEAD, nil
-	UNIT_PLAYER_NAME = DCS.UNIT_PLAYER_NAME, -- nickname
-	UNIT_ROLE = DCS.UNIT_ROLE, -- artillery_commander/Pilot
-	UNIT_INVISIBLE_MAP_ICON = DCS.UNIT_INVISIBLE_MAP_ICON, -- true/false
-	UNIT_INVISIBLE_MAP_LABEL = DCS.UNIT_INVISIBLE_MAP_LABEL, -- Client/empty
-	UNKNOWN_18 = 18,
-	UNKNOWN_19 = 19, -- true/false
+  UNIT_RUNTIME_ID = DCS ~= nil and DCS.UNIT_RUNTIME_ID or 1, 
+  UNIT_MISSION_ID = DCS ~= nil and DCS.UNIT_MISSION_ID or 2, -- slot ID
+  UNIT_NAME = DCS ~= nil and DCS.UNIT_NAME or 3, -- Palmachim_C-130J-30_4333-1
+  UNIT_TYPE = DCS ~= nil and DCS.UNIT_TYPE or 4,
+  UNIT_CATEGORY = DCS ~= nil and DCS.UNIT_CATEGORY or 5, -- nil/empty?
+  UNIT_GROUP_MISSION_ID = DCS ~= nil and DCS.UNIT_GROUP_MISSION_ID or 6, -- 1004292
+  UNIT_GROUPNAME = DCS ~= nil and DCS.UNIT_GROUPNAME or 7, -- King Hussein Air College_F-16CM bl.50_4292, Hama_F-14B(U)_4298, Virtual unit
+  UNIT_GROUPCATEGORY = DCS ~= nil and DCS.UNIT_GROUPCATEGORY or 8, -- plane, helicopter, nil, ""
+  UNIT_CALLSIGN = DCS ~= nil and DCS.UNIT_CALLSIGN or 9,
+  UNIT_HIDDEN = DCS ~= nil and DCS.UNIT_HIDDEN or 10, -- true/false
+  UNIT_COALITION = DCS ~= nil and DCS.UNIT_COALITION or 11, -- red/blue/nil
+  UNIT_COUNTRY_ID = DCS ~= nil and DCS.UNIT_COUNTRY_ID or 12, -- 18, 21, nil	
+  UNIT_TASK = DCS ~= nil and DCS.UNIT_TASK or 13, -- CAS, CAP, SEAD, nil
+  UNIT_PLAYER_NAME = DCS ~= nil and DCS.UNIT_PLAYER_NAME or 14, -- nickname
+  UNIT_ROLE = DCS ~= nil and DCS.UNIT_ROLE or 15, -- artillery_commander/Pilot
+  UNIT_INVISIBLE_MAP_ICON = DCS ~= nil and DCS.UNIT_INVISIBLE_MAP_ICON or 16, -- true/false
+  UNIT_INVISIBLE_MAP_LABEL = DCS ~= nil and DCS.UNIT_INVISIBLE_MAP_LABEL or 17, -- Client/empty
+  UNKNOWN_18 = 18,
+  UNKNOWN_19 = 19, -- true/false
 }
 
 local Sides = {
@@ -86,7 +87,7 @@ end
 
 
 return {
-	UNIT_PROPERTIES	= UNIT_PROPERTIES,
+	UNIT_PROPERTIES	= DCS ~= nil and UNIT_PROPERTIES or nil,
 	TARGET_FLAGS = TARGET_FLAGS,
 	Sides = Sides,
 	sideID = sideID,

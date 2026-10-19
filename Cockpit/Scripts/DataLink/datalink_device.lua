@@ -6,7 +6,8 @@ dofile(LockOn_Options.script_path.."common.lua")
 dofile(LockOn_Options.script_path.."device_commands.lua")
 dofile(LockOn_Options.script_path..[[Datalink\definitions.lua]])
 dofile(LockOn_Options.script_path.."animation_defs.lua")
-local ContactProcessor = require("ContactProcessor")
+
+local suv27 = dofile(LockOn_Options.script_path.."DataLink/SUV27.lua")
 
 -- ======================================================================
 -- DataLink plugin – datalink_device.lua  (avLuaDevice backend)

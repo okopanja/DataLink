@@ -7,10 +7,20 @@ function DCSTimer:new(interval, real)
 	if real == nil then
 		real = false
 	end
+	-- timer can use either real or model time.
+	-- depending on weather class is used from export environment or cockpit the appropriate time function is selected
 	if real then
-		o.time_function = DCS.getRealTime
+		if DCS ~= nil then
+			o.time_function = DCS.getRealTime
+		else
+			o.time_function = os.clock
+		end
 	else
-		o.time_function = DCS.getModelTime
+		if DCS ~= nil then
+			o.time_function = DCS.getModelTime
+		else
+			o.time_function = get_absolute_model_time
+		end
 	end
 	o.last_time = o.time_function()
 	o.interval = interval or 1 -- default interval of 1 second
