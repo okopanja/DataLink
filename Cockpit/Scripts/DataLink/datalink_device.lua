@@ -412,11 +412,40 @@ function SetCommand(command, value)
 		if CockpitBtnPressAnimationParamHandles[command] ~= nil then
 			if value == 512.375 then
 				CockpitBtnPressAnimationParamHandles[command]:set(1.0)
-				CockpitLightPressAnimationParamHandles[command]:set(1.0 - CockpitLightPressAnimationParamHandles[command]:get(1.0))
+				if command >= device_commands.TARGET_01 and command <= device_commands.TARGET_10 then
+					CockpitLightPressAnimationParamHandles[command]:set(1.0 - CockpitLightPressAnimationParamHandles[command]:get(1.0))
+					for current_command = device_commands.TARGET_01, device_commands.TARGET_10 do
+						if current_command ~= command then
+							CockpitLightPressAnimationParamHandles[current_command]:set(0)
+						end
+					end
+				elseif command == device_commands.VVOD or command == device_commands.SBROS then
+					CockpitLightPressAnimationParamHandles[command]:set(1.0)
+					for current_command = device_commands.TARGET_01, device_commands.TARGET_10 do
+						CockpitLightPressAnimationParamHandles[current_command]:set(0)
+					end
+					for current_command = device_commands.FIGHTER_01, device_commands.FIGHTER_GROUP do
+						CockpitLightPressAnimationParamHandles[current_command]:set(0)
+					end
+				elseif command >= device_commands.FIGHTER_01 and command <= device_commands.FIGHTER_GROUP then
+					CockpitLightPressAnimationParamHandles[command]:set(1.0 - CockpitLightPressAnimationParamHandles[command]:get(1.0))
+					for current_command = device_commands.FIGHTER_01, device_commands.FIGHTER_GROUP do
+						if current_command ~= command then
+							CockpitLightPressAnimationParamHandles[current_command]:set(0)
+						end
+					end
+				end
 				sound_button_pressed:play_once()
 				-- sound_button_released:play_once()
 			else
 				CockpitBtnPressAnimationParamHandles[command]:set(0.0)
+				if command >= device_commands.TARGET_01 and command <= device_commands.TARGET_10 then
+					-- do nothing
+				elseif command == device_commands.VVOD or command == device_commands.SBROS then
+					CockpitLightPressAnimationParamHandles[command]:set(0)
+				elseif command >= device_commands.FIGHTER_01 and command <= device_commands.FIGHTER_GROUP then
+					-- do nothing
+				end
 				sound_button_released:play_once()
 			end
 		end
