@@ -159,6 +159,26 @@ local CockpitBtnPressAnimationParamHandles = {
 	[device_commands.FIGHTER_GROUP] = get_param_handle(ANIMATION_PARAMS.BTN_FIGHTER_GROUP),
 }
 
+local CockpitLightPressAnimationParamHandles = {
+	[device_commands.TARGET_01] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_01),
+	[device_commands.TARGET_02] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_02),
+	[device_commands.TARGET_03] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_03),
+	[device_commands.TARGET_04] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_04),
+	[device_commands.TARGET_05] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_05),
+	[device_commands.TARGET_06] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_06),
+	[device_commands.TARGET_07] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_07),
+	[device_commands.TARGET_08] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_08),
+	[device_commands.TARGET_09] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_09),
+	[device_commands.TARGET_10] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_10),
+	[device_commands.VVOD] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_VVOD),
+	[device_commands.SBROS] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_SBROS),
+	[device_commands.FIGHTER_01] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_FIGHTER_01),
+	[device_commands.FIGHTER_02] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_FIGHTER_02),
+	[device_commands.FIGHTER_03] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_FIGHTER_03),
+	[device_commands.FIGHTER_04] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_FIGHTER_04),
+	[device_commands.FIGHTER_GROUP] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_FIGHTER_GROUP),
+}
+
 local true_heading_handle = get_param_handle(CommonParameterNames.TRUE_HEADING)
 local full_circle_radian = 2 * math.pi
 
@@ -392,10 +412,12 @@ function SetCommand(command, value)
 		if CockpitBtnPressAnimationParamHandles[command] ~= nil then
 			if value == 512.375 then
 				CockpitBtnPressAnimationParamHandles[command]:set(1.0)
+				CockpitLightPressAnimationParamHandles[command]:set(1.0)
 				sound_button_pressed:play_once()
 				-- sound_button_released:play_once()
 			else
 				CockpitBtnPressAnimationParamHandles[command]:set(0.0)
+				CockpitLightPressAnimationParamHandles[command]:set(0.0)
 				sound_button_released:play_once()
 			end
 		end
