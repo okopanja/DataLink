@@ -412,12 +412,11 @@ function SetCommand(command, value)
 		if CockpitBtnPressAnimationParamHandles[command] ~= nil then
 			if value == 512.375 then
 				CockpitBtnPressAnimationParamHandles[command]:set(1.0)
-				CockpitLightPressAnimationParamHandles[command]:set(1.0)
+				CockpitLightPressAnimationParamHandles[command]:set(1.0 - CockpitLightPressAnimationParamHandles[command]:get(1.0))
 				sound_button_pressed:play_once()
 				-- sound_button_released:play_once()
 			else
 				CockpitBtnPressAnimationParamHandles[command]:set(0.0)
-				CockpitLightPressAnimationParamHandles[command]:set(0.0)
 				sound_button_released:play_once()
 			end
 		end
