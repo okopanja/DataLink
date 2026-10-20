@@ -38,4 +38,3 @@ elements.PNT_FIGHTER_02 = create_button(device, device_commands.FIGHTER_02, devi
 elements.PNT_FIGHTER_03 = create_button(device, device_commands.FIGHTER_03, device_commands.FIGHTER_03, {class_type.BTN}, _("Fighter 3"))
 elements.PNT_FIGHTER_04 = create_button(device, device_commands.FIGHTER_04, device_commands.FIGHTER_04, {class_type.BTN}, _("Fighter 4"))
 elements.PNT_FIGHTER_GROUP = create_button(device, device_commands.FIGHTER_GROUP, device_commands.FIGHTER_GROUP, {class_type.BTN}, _("Group"))
-

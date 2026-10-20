@@ -13,6 +13,7 @@ if not SUPPORTED_AIRCRAFT[get_aircraft_type()] then
 end
 
 mount_vfs_texture_archives("Bazar/Textures/AvionicsCommon")
+dofile(LockOn_Options.script_path.."animation_defs.lua")
 dofile(LockOn_Options.script_path.."devices.lua")
 
 -- TODO: do we need this?

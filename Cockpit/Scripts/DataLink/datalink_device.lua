@@ -2,6 +2,8 @@ local lfs = require('lfs')
 dofile(LockOn_Options.script_path.."common.lua")
 dofile(LockOn_Options.script_path.."device_commands.lua")
 dofile(LockOn_Options.script_path..[[Datalink\definitions.lua]])
+dofile(LockOn_Options.script_path.."animation_defs.lua")
+
 -- ======================================================================
 -- DataLink plugin – datalink_device.lua  (avLuaDevice backend)
 --
@@ -17,10 +19,14 @@ dofile(LockOn_Options.script_path..[[Datalink\definitions.lua]])
 --   i = 0 .. MAX_CONTACTS-1
 -- ======================================================================
 
-print_message_to_user("DataLink: device loaded for "..get_aircraft_type())
+local aircraft_type = get_aircraft_type()
+print_message_to_user("DataLink: device loaded for "..aircraft_type)
+
 print_message_to_user("TRANSMITTED_CONTACT_PARAMETER_COUNT: "..tostring(TRANSMITTED_CONTACT_PARAMETER_COUNT))
 
 require("terrain")
+
+local Tools = dofile(LockOn_Options.script_path.."DataLink/Tools.lua")
 -- require("net")
 local dev = GetSelf()
 local UPDATE_INTERVAL = 0.1
@@ -62,7 +68,9 @@ local DEVICE_STATES = {
 }
 
 local device_state = DEVICE_STATES.NO_CONTACTS
-
+local sound_host = nil
+local sound_button_pressed = nil
+local sound_button_released = nils
 
 print_message_to_user("DataLink debug: "..tostring(DEBUG))
 
@@ -98,6 +106,10 @@ function post_initialize()
 	end
 	-- Turn on cockpit click functionality
 	dispatch_action(nil,iCommandCockpitClickModeOnOff)
+	sound_host = create_sound_host("COCKPIT_CLICKS","3D")
+	sound_button_pressed = sound_host:create_sound("Cockpit/button-pressed")
+	sound_button_released = sound_host:create_sound("Cockpit/button-released")
+
 	if DEBUG then
 		if DEBUG_DUMMY_TARGETS then
 			show_dummy_targets()
@@ -132,6 +144,45 @@ for i = 1, #ContactParameterNames do
     VISIBLE  = get_param_handle(ContactParameterNames[i].VISIBLE),
   }
 end
+local CockpitBtnPressAnimationParamHandles = {
+	[device_commands.TARGET_01] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_01),
+	[device_commands.TARGET_02] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_02),
+	[device_commands.TARGET_03] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_03),
+	[device_commands.TARGET_04] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_04),
+	[device_commands.TARGET_05] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_05),
+	[device_commands.TARGET_06] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_06),
+	[device_commands.TARGET_07] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_07),
+	[device_commands.TARGET_08] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_08),
+	[device_commands.TARGET_09] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_09),
+	[device_commands.TARGET_10] = get_param_handle(ANIMATION_PARAMS.BTN_TARGET_10),
+	[device_commands.VVOD] = get_param_handle(ANIMATION_PARAMS.BTN_VVOD),
+	[device_commands.SBROS] = get_param_handle(ANIMATION_PARAMS.BTN_SBROS),
+	[device_commands.FIGHTER_01] = get_param_handle(ANIMATION_PARAMS.BTN_FIGHTER_01),
+	[device_commands.FIGHTER_02] = get_param_handle(ANIMATION_PARAMS.BTN_FIGHTER_02),
+	[device_commands.FIGHTER_03] = get_param_handle(ANIMATION_PARAMS.BTN_FIGHTER_03),
+	[device_commands.FIGHTER_04] = get_param_handle(ANIMATION_PARAMS.BTN_FIGHTER_04),
+	[device_commands.FIGHTER_GROUP] = get_param_handle(ANIMATION_PARAMS.BTN_FIGHTER_GROUP),
+}
+
+local CockpitLightPressAnimationParamHandles = {
+	[device_commands.TARGET_01] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_01),
+	[device_commands.TARGET_02] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_02),
+	[device_commands.TARGET_03] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_03),
+	[device_commands.TARGET_04] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_04),
+	[device_commands.TARGET_05] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_05),
+	[device_commands.TARGET_06] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_06),
+	[device_commands.TARGET_07] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_07),
+	[device_commands.TARGET_08] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_08),
+	[device_commands.TARGET_09] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_09),
+	[device_commands.TARGET_10] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_TARGET_10),
+	[device_commands.VVOD] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_VVOD),
+	[device_commands.SBROS] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_SBROS),
+	[device_commands.FIGHTER_01] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_FIGHTER_01),
+	[device_commands.FIGHTER_02] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_FIGHTER_02),
+	[device_commands.FIGHTER_03] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_FIGHTER_03),
+	[device_commands.FIGHTER_04] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_FIGHTER_04),
+	[device_commands.FIGHTER_GROUP] = get_param_handle(LIGHT_ANIMATION_PARAMS.LIGHT_FIGHTER_GROUP),
+}
 
 local true_heading_handle = get_param_handle(CommonParameterNames.TRUE_HEADING)
 local full_circle_radian = 2 * math.pi
@@ -363,6 +414,46 @@ function SetCommand(command, value)
 		-- log.info("DataLink: Markers: "..tostring(a))
 		-- log.info("DataLink: Markers: "..inspect(b))
 	elseif command >= data_link_command_first and command <= data_link_command_last then
+		if CockpitBtnPressAnimationParamHandles[command] ~= nil then
+			if value == 512.375 then
+				CockpitBtnPressAnimationParamHandles[command]:set(1.0)
+				if command >= device_commands.TARGET_01 and command <= device_commands.TARGET_10 then
+					CockpitLightPressAnimationParamHandles[command]:set(1.0 - CockpitLightPressAnimationParamHandles[command]:get(1.0))
+					for current_command = device_commands.TARGET_01, device_commands.TARGET_10 do
+						if current_command ~= command then
+							CockpitLightPressAnimationParamHandles[current_command]:set(0)
+						end
+					end
+				elseif command == device_commands.VVOD or command == device_commands.SBROS then
+					CockpitLightPressAnimationParamHandles[command]:set(1.0)
+					for current_command = device_commands.TARGET_01, device_commands.TARGET_10 do
+						CockpitLightPressAnimationParamHandles[current_command]:set(0)
+					end
+					for current_command = device_commands.FIGHTER_01, device_commands.FIGHTER_GROUP do
+						CockpitLightPressAnimationParamHandles[current_command]:set(0)
+					end
+				elseif command >= device_commands.FIGHTER_01 and command <= device_commands.FIGHTER_GROUP then
+					CockpitLightPressAnimationParamHandles[command]:set(1.0 - CockpitLightPressAnimationParamHandles[command]:get(1.0))
+					for current_command = device_commands.FIGHTER_01, device_commands.FIGHTER_GROUP do
+						if current_command ~= command then
+							CockpitLightPressAnimationParamHandles[current_command]:set(0)
+						end
+					end
+				end
+				sound_button_pressed:play_once()
+				-- sound_button_released:play_once()
+			else
+				CockpitBtnPressAnimationParamHandles[command]:set(0.0)
+				if command >= device_commands.TARGET_01 and command <= device_commands.TARGET_10 then
+					-- do nothing
+				elseif command == device_commands.VVOD or command == device_commands.SBROS then
+					CockpitLightPressAnimationParamHandles[command]:set(0)
+				elseif command >= device_commands.FIGHTER_01 and command <= device_commands.FIGHTER_GROUP then
+					-- do nothing
+				end
+				sound_button_released:play_once()
+			end
+		end
 		handle_datalink_commands(command, value)
 	else
 		log.info("DataLink: received unhandled command "..tostring(command).." with value "..tostring(value))
@@ -487,6 +578,15 @@ function show_dummy_targets()
 	update_contacts(received_contacts)
 	print_message_to_user("Dummy targets are set!")
 end
+	
+local coalition, country, countryID = Tools:determine_coalition_and_country()
+
+if coalition ~= nil then
+	log.info("Determined coalition: " .. tostring(coalition))
+	log.info("Determined country: " .. tostring(country))
+	log.info("Determined countryID: " .. tostring(countryID))
+end
+
 
 if DEBUG then
 	saveInspect("_G_device", _G, true)
@@ -494,7 +594,18 @@ if DEBUG then
 	saveInspect("list_cockpit_params", list_cockpit_params())
 	saveInspect("list_indication", list_indication())
 	saveInspect("RPC", RPC)
-	saveInspect("get_base_data", get_base_data())
+	saveInspect("get_base_data", base_data)
+	saveInspect("get_mission_route", get_mission_route())
+	local x, y, z = base_data.getSelfCoordinates()
+	saveInspect("get_base_data-getSelfCoordinates", { ['x'] = x, ['y'] = y, ['z'] = z })
+	saveInspect("terrain", terrain)
+	saveInspect("terrain_GetTerrainConfig_Airdromes", terrain.GetTerrainConfig("Airdromes"))
+
+	do_mission_file("mission")
+	saveInspect("mission", mission)
+	do_mission_file("warehouses")
+	saveInspect("warehouses", warehouses)
+
 end
 
 -- must be false in order to receive updates.
