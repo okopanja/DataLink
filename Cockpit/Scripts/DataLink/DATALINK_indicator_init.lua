@@ -3,7 +3,7 @@
 -- Configures the ccIndicator: render type, viewport position, and pages.
 --
 dofile(LockOn_Options.common_script_path.."devices_defs.lua")
-dofile(lfs.writedir().."Mods/tech/DataLink/Cockpit/Scripts/common.lua")
+dofile(LockOn_Options.script_path.."common.lua")
 print_message_to_user(current_mod_path)
 
 indicator_type = indicator_types.COMMON

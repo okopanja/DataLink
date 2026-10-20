@@ -23,8 +23,14 @@ end
 
 function Logger:initialize(log_filename)
   if self.fp == nil then
+    if DCS == nil then
+      -- if not in Hook Export environment, change log file extension to .Cockpit.Log
+      log_filename = log_filename:gsub("%.log$", ".Cockpit.Log")
+    end
     self.filename = lfs.writedir()..[[Logs\]]..log_filename
+    log.info("Opening log file: "..self.filename)
     self.fp = io.open(self.filename, "w")
+    log.info("Log file opened successfully.")
   end
 end
 

@@ -20,8 +20,8 @@
 	-- dofile(LockOn_Options.script_path.."common.lua")
 	-- for some reason gets wrong script_path when called from DATALINK_indicator_init.lua, but works fine when called from datalink_device.lua
 	-- instead this ugly non portable hack is used to get the correct path
-	dofile(lfs.writedir()..[[Mods/tech/DataLink/Cockpit/Scripts/common.lua]])
-	dofile(lfs.writedir()..[[Mods/tech/DataLink/Cockpit/Scripts/Datalink/definitions.lua]])
+	dofile(LockOn_Options.script_path.."common.lua")
+	dofile(LockOn_Options.script_path.."Datalink/definitions.lua")
 
 	SetScale(FOV)
 	-- local DEBUG = false
