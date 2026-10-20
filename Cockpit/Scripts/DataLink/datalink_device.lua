@@ -414,8 +414,10 @@ function SetCommand(command, value)
 		-- log.info("DataLink: Markers: "..tostring(a))
 		-- log.info("DataLink: Markers: "..inspect(b))
 	elseif command >= data_link_command_first and command <= data_link_command_last then
+		log.info("DataLink: trying to animate and sound for command "..tostring(command).." with value "..tostring(value))
+		print_message_to_user("DataLink: trying to animate and sound for command "..tostring(command).." with value "..tostring(value))
 		if CockpitBtnPressAnimationParamHandles[command] ~= nil then
-			if value == 512.375 then
+			if value == 512.375 or value == 256.375 then
 				CockpitBtnPressAnimationParamHandles[command]:set(1.0)
 				if command >= device_commands.TARGET_01 and command <= device_commands.TARGET_10 then
 					CockpitLightPressAnimationParamHandles[command]:set(1.0 - CockpitLightPressAnimationParamHandles[command]:get(1.0))
