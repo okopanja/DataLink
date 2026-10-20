@@ -49,6 +49,9 @@ local iCommandPlaneModeGround = 111;
 local iCommandPlaneModeGrid = 112;
 local iCommandPowerOnOff = 315;
 local iCommandPlayerToPlayer = 1001;
+local iCommandCockpitClickOn = 361;
+local iCommandCockpitClickOff = 362;
+local iCommandCockpitClickModeOnOff = 363;
 local last_mode = iCommandPlaneModeNAV
 local DEFAULT_ZOOM_LEVEL = 4
 local zoom_level = DEFAULT_ZOOM_LEVEL
@@ -93,6 +96,8 @@ function post_initialize()
 	for event_key, event_name in pairs(EVENTS) do
 		dev:listen_event(event_name)
 	end
+	-- Turn on cockpit click functionality
+	dispatch_action(nil,iCommandCockpitClickModeOnOff)
 	if DEBUG then
 		if DEBUG_DUMMY_TARGETS then
 			show_dummy_targets()
