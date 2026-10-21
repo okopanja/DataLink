@@ -416,46 +416,7 @@ function SetCommand(command, value)
 	elseif command >= data_link_command_first and command <= data_link_command_last then
 		log.info("DataLink: trying to animate and sound for command "..tostring(command).." with value "..tostring(value))
 		print_message_to_user("DataLink: trying to animate and sound for command "..tostring(command).." with value "..tostring(value))
-		if CockpitBtnPressAnimationParamHandles[command] ~= nil then
-			if value == 512.375 or value == 256.375 then
-				CockpitBtnPressAnimationParamHandles[command]:set(1.0)
-				if command >= device_commands.TARGET_01 and command <= device_commands.TARGET_10 then
-					CockpitLightPressAnimationParamHandles[command]:set(1.0 - CockpitLightPressAnimationParamHandles[command]:get(1.0))
-					for current_command = device_commands.TARGET_01, device_commands.TARGET_10 do
-						if current_command ~= command then
-							CockpitLightPressAnimationParamHandles[current_command]:set(0)
-						end
-					end
-				elseif command == device_commands.VVOD or command == device_commands.SBROS then
-					CockpitLightPressAnimationParamHandles[command]:set(1.0)
-					for current_command = device_commands.TARGET_01, device_commands.TARGET_10 do
-						CockpitLightPressAnimationParamHandles[current_command]:set(0)
-					end
-					for current_command = device_commands.FIGHTER_01, device_commands.FIGHTER_GROUP do
-						CockpitLightPressAnimationParamHandles[current_command]:set(0)
-					end
-				elseif command >= device_commands.FIGHTER_01 and command <= device_commands.FIGHTER_GROUP then
-					CockpitLightPressAnimationParamHandles[command]:set(1.0 - CockpitLightPressAnimationParamHandles[command]:get(1.0))
-					for current_command = device_commands.FIGHTER_01, device_commands.FIGHTER_GROUP do
-						if current_command ~= command then
-							CockpitLightPressAnimationParamHandles[current_command]:set(0)
-						end
-					end
-				end
-				sound_button_pressed:play_once()
-				-- sound_button_released:play_once()
-			else
-				CockpitBtnPressAnimationParamHandles[command]:set(0.0)
-				if command >= device_commands.TARGET_01 and command <= device_commands.TARGET_10 then
-					-- do nothing
-				elseif command == device_commands.VVOD or command == device_commands.SBROS then
-					CockpitLightPressAnimationParamHandles[command]:set(0)
-				elseif command >= device_commands.FIGHTER_01 and command <= device_commands.FIGHTER_GROUP then
-					-- do nothing
-				end
-				sound_button_released:play_once()
-			end
-		end
+		animate_datalink_controls(command, value)
 		handle_datalink_commands(command, value)
 	else
 		log.info("DataLink: received unhandled command "..tostring(command).." with value "..tostring(value))
@@ -468,6 +429,63 @@ function register_datalink_commands()
 	for id,command in pairs(device_commands) do
 		dev:listen_command(command)
 	end
+end
+
+function animate_datalink_controls(command, value)
+	local device, button_action = math.modf(value)
+	if CockpitBtnPressAnimationParamHandles[command] ~= nil then
+		if button_action == 0.375 then
+			-- Animate button press
+			CockpitBtnPressAnimationParamHandles[command]:set(1.0)			
+			if command >= device_commands.TARGET_01 and command <= device_commands.TARGET_10 then
+				-- togle light on/off
+				CockpitLightPressAnimationParamHandles[command]:set(1.0 - CockpitLightPressAnimationParamHandles[command]:get(1.0))
+				-- turn off all other target lights
+				for current_command = device_commands.TARGET_01, device_commands.TARGET_10 do
+					if current_command ~= command then
+						CockpitLightPressAnimationParamHandles[current_command]:set(0)
+					end
+				end
+			elseif command == device_commands.VVOD or command == device_commands.SBROS then
+				-- turn on VVOD or SBROS light
+				CockpitLightPressAnimationParamHandles[command]:set(1.0)
+				-- turn off all other target lights
+				for current_command = device_commands.TARGET_01, device_commands.TARGET_10 do
+					CockpitLightPressAnimationParamHandles[current_command]:set(0)
+				end
+				-- turn off all fighter lights, including group
+				for current_command = device_commands.FIGHTER_01, device_commands.FIGHTER_GROUP do
+					CockpitLightPressAnimationParamHandles[current_command]:set(0)
+				end
+			elseif command >= device_commands.FIGHTER_01 and command <= device_commands.FIGHTER_GROUP then
+				-- toggle fighter light on/off
+				CockpitLightPressAnimationParamHandles[command]:set(1.0 - CockpitLightPressAnimationParamHandles[command]:get(1.0))
+				-- turn off all other fighter lights, including group
+				for current_command = device_commands.FIGHTER_01, device_commands.FIGHTER_GROUP do
+					if current_command ~= command then
+						CockpitLightPressAnimationParamHandles[current_command]:set(0)
+					end
+				end
+			end
+			-- sound button pressed
+			-- TODO: consider sounding first (e.g. if asynchronous)
+			sound_button_pressed:play_once()
+		elseif button_action == 0.25 then
+			-- Animate button release
+			CockpitBtnPressAnimationParamHandles[command]:set(0.0)
+			if command >= device_commands.TARGET_01 and command <= device_commands.TARGET_10 then
+				-- do nothing, the light stays on
+			elseif command == device_commands.VVOD or command == device_commands.SBROS then
+				-- VVOD or SBROS always go off when released
+				CockpitLightPressAnimationParamHandles[command]:set(0)
+			elseif command >= device_commands.FIGHTER_01 and command <= device_commands.FIGHTER_GROUP then
+				-- do nothing, the light stays on
+			end
+			-- sound button released
+			-- TODO: consider sounding first (e.g. if asynchronous)
+			sound_button_released:play_once()
+		end
+	end	
 end
 
 function handle_datalink_commands(command, value)
