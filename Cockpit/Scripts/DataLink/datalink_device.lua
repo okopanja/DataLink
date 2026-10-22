@@ -434,7 +434,7 @@ end
 function animate_datalink_controls(command, value)
 	local device, button_action = math.modf(value)
 	if CockpitBtnPressAnimationParamHandles[command] ~= nil then
-		if button_action == 0.375 then
+		if value == 1.0 then
 			-- Animate button press
 			CockpitBtnPressAnimationParamHandles[command]:set(1.0)			
 			if command >= device_commands.TARGET_01 and command <= device_commands.TARGET_10 then
@@ -470,7 +470,7 @@ function animate_datalink_controls(command, value)
 			-- sound button pressed
 			-- TODO: consider sounding first (e.g. if asynchronous)
 			sound_button_pressed:play_once()
-		elseif button_action == 0.25 then
+		elseif value == 0.25 then
 			-- Animate button release
 			CockpitBtnPressAnimationParamHandles[command]:set(0.0)
 			if command >= device_commands.TARGET_01 and command <= device_commands.TARGET_10 then

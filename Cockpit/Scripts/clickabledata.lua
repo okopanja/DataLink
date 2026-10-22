@@ -16,11 +16,11 @@ local function create_button(device, action, stop_action, class_types, hint)
 		stop_action   = {stop_action},
 		arg           = {nil},
 		arg_value     = {1},
-		arg_lim       = {{0, 1}},
+		arg_lim       = {{-1, 1}},
 	}
 end
 
-local device = devices.DATA_LINK
+local device = devices.DATALINK
 elements.PNT_TARGET_01 = create_button(device, device_commands.TARGET_01, device_commands.TARGET_01, {class_type.BTN}, _("Target 1"))
 elements.PNT_TARGET_02 = create_button(device, device_commands.TARGET_02, device_commands.TARGET_02, {class_type.BTN}, _("Target 2"))
 elements.PNT_TARGET_03 = create_button(device, device_commands.TARGET_03, device_commands.TARGET_03, {class_type.BTN}, _("Target 3"))
