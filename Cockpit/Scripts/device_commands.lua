@@ -6,6 +6,7 @@ local function counter()
 end
 
 if device_commands == nil then
+    -- mark start of device commands range
     data_link_command_first = count    
 	device_commands = {}
 
@@ -29,6 +30,12 @@ if device_commands == nil then
     device_commands.FIGHTER_03 = counter()
     device_commands.FIGHTER_04 = counter()
     device_commands.FIGHTER_GROUP = counter()
+
+    -- Rotary switches
+    device_commands.KP_VEDUS_VEDOM = counter()
+    device_commands.PARA2_PARA1_GD_OTKL = counter()
+
+    -- conclude the device commands range
     data_link_command_last = count    
 end
 

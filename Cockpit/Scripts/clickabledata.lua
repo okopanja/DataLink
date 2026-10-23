@@ -38,3 +38,53 @@ elements.PNT_FIGHTER_02 = create_button(device, device_commands.FIGHTER_02, devi
 elements.PNT_FIGHTER_03 = create_button(device, device_commands.FIGHTER_03, device_commands.FIGHTER_03, {class_type.BTN}, _("Fighter 3"))
 elements.PNT_FIGHTER_04 = create_button(device, device_commands.FIGHTER_04, device_commands.FIGHTER_04, {class_type.BTN}, _("Fighter 4"))
 elements.PNT_FIGHTER_GROUP = create_button(device, device_commands.FIGHTER_GROUP, device_commands.FIGHTER_GROUP, {class_type.BTN}, _("Group"))
+
+elements.PNT_KP_VEDUS_VEDOM =
+{
+    class = {class_type.TUMB, class_type.TUMB},
+    hint = _("KP/VEDUS/VEDOM"),
+    device = device,
+    action = {
+		device_commands.KP_VEDUS_VEDOM,
+		device_commands.KP_VEDUS_VEDOM
+	},
+    arg = {
+        ANIMATION_ARGS.ROT_KP_VEDUS_VEDOM,
+        ANIMATION_ARGS.ROT_KP_VEDUS_VEDOM
+    },
+    arg_value = {0, 1},
+    arg_lim = {
+        {0, 0.1 * 2},
+        {0, 0.1 * 2},
+    },
+    updatable = true,
+    use_OBB = true,
+    cycle = true,
+	animated = {true, true},
+	animation_speed = {16, 16},
+}
+
+elements.PNT_PARA2_PARA1_GD_OTKL =
+{
+    class = {class_type.TUMB, class_type.TUMB},
+    hint = _("PARA2/PARA1/GD OTKL"),
+    device = device,
+    action = {
+		device_commands.PARA2_PARA1_GD_OTKL,
+		device_commands.PARA2_PARA1_GD_OTKL
+	},
+    arg = {
+        ANIMATION_ARGS.ROT_PARA2_PARA1_GD_OTKL,
+        ANIMATION_ARGS.ROT_PARA2_PARA1_GD_OTKL
+    },
+    arg_value = {0, 0.1},
+    arg_lim = {
+        {-1, 0.1 * 3},
+        {-1, 0.1 * 3},
+    },
+    updatable = true,
+    use_OBB = true,
+    cycle = false,
+	animated = {true, true},
+	animation_speed = {16, 16},
+}

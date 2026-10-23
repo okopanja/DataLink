@@ -523,6 +523,10 @@ function handle_datalink_commands(command, value)
 		print_message_to_user("DataLink: received command FIGHTER_04 with value "..tostring(value))
 	elseif command == device_commands.FIGHTER_GROUP then
 		print_message_to_user("DataLink: received command FIGHTER_GROUP with value "..tostring(value))
+	elseif command == device_commands.KP_VEDUS_VEDOM then
+		print_message_to_user("DataLink: received command KP_VEDUS_VEDOM with value "..tostring(value))
+	elseif command == device_commands.PARA2_PARA1_GD_OTKL then
+		print_message_to_user("DataLink: received command PARA2_PARA1_GD_OTKL with value "..tostring(value))
 	end
 end
 
