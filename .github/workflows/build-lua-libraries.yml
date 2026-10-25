@@ -146,7 +146,7 @@ jobs:
             Write-Host 'C:\lua does not exist.'
           }
 
-      - name: Stage Lua libraries
+      - name: Prepare Lua libraries
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
