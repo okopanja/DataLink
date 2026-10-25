@@ -28,9 +28,9 @@ jobs:
         run: tree.com 'C:\' /A
 
       - name: Set up MSVC
-        uses: ilammy/msvc-dev-cmd@v1
+        uses: TheMrMilchmann/setup-msvc-dev@v4
         with:
-          arch: amd64
+          arch: x64
 
       - name: Build Lua 5.1.5
         shell: pwsh
