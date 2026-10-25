@@ -113,6 +113,17 @@ jobs:
             Pop-Location
           }
 
+      - name: Display C:\lua tree on failure
+        if: failure()
+        shell: pwsh
+        run: |
+          if (Test-Path 'C:\lua') {
+            tree.com 'C:\lua' /F
+          }
+          else {
+            Write-Host 'C:\lua does not exist.'
+          }
+
       - name: Stage library DLLs
         shell: pwsh
         run: |
