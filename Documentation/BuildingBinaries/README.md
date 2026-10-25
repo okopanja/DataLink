@@ -26,4 +26,4 @@ copy luasec-1.3.2-2.rockspec c:\lua\luasec
 c:\lua\5.1.5\x86_64\src\luarocks.exe --lua-version=5.1 make luasec-1.3.2-2.rockspec OPENSSL_DIR="c:\Program Files\OpenSSL Library\openssl-4.0" --force
 ```
 
-The GitHub Actions build artifact includes the LuaSocket and LuaSec Lua modules under `ssl/lua`, their native DLLs under `ssl/dll`, and the CA bundle under `ssl/certs`.
+The GitHub Actions build artifact includes the LuaSocket and LuaSec Lua modules under `ssl/lua`, their native DLLs under `ssl/dll`, and the CA bundle under `ssl/certs`. The tagged release workflow downloads this artifact before packaging and includes these files in the release ZIP.

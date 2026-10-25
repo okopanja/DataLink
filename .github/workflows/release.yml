@@ -4,8 +4,12 @@ on:
     tags:
       - 'v*'
 jobs:
+  build-lua-libraries:
+    uses: ./.github/workflows/build-lua-libraries.yml
+
   publish:
     runs-on: ubuntu-latest 
+    needs: build-lua-libraries
     permissions: 
       contents: write
       packages: write
@@ -14,8 +18,13 @@ jobs:
         with:
           lfs: true
           path: source
-      - name: Prepare versions for EXE file 
-        uses: actions/github-script@v6
+      - name: Download Lua library artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: lua-libraries-windows-x64
+          path: build/lua-libraries
+      - name: Prepare versions for ZIP file 
+        uses: actions/github-script@v9
         id: set_version
         with:
           script: |
@@ -33,6 +42,7 @@ jobs:
           cp -r source/Cockpit DataLink/
           cp -r source/Options DataLink/
           cp -r source/Scripts DataLink/
+          cp -R build/lua-libraries/ssl/. DataLink/Scripts/Hooks/External/ssl/
           cp -r source/Theme DataLink/
           cp -R source/Documentation DataLink/
           cp source/README.md DataLink/

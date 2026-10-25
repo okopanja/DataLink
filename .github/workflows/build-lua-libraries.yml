@@ -1,15 +1,18 @@
 name: Build Lua libraries
 
 on:
+  workflow_call:
   workflow_dispatch:
   push:
     paths:
       - '.github/workflows/build-lua-libraries.yml'
       - 'Documentation/BuildingBinaries/**'
+      - 'Scripts/Hooks/External/ssl/certs/**'
   pull_request:
     paths:
       - '.github/workflows/build-lua-libraries.yml'
       - 'Documentation/BuildingBinaries/**'
+      - 'Scripts/Hooks/External/ssl/certs/**'
 
 permissions:
   contents: read
