@@ -192,6 +192,14 @@ jobs:
             Copy-Item $source $destination -Force
           }
 
+          $certificateBundle = 'Scripts\Hooks\External\ssl\certs\ca-certificates.crt'
+          if (-not (Test-Path $certificateBundle)) {
+            throw "Expected CA certificate bundle was not found: $certificateBundle"
+          }
+          $certificateDestination = Join-Path $outputRoot 'certs\ca-certificates.crt'
+          New-Item -ItemType Directory -Force -Path (Split-Path $certificateDestination) | Out-Null
+          Copy-Item $certificateBundle $certificateDestination -Force
+
       - name: Upload Lua libraries
         uses: actions/upload-artifact@v7
         with:
