@@ -62,14 +62,14 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $installer = Join-Path $env:RUNNER_TEMP 'OpenSSL-x64-VS-4.0.1.msi'
-          Invoke-WebRequest -Uri 'https://github.com/openssl/installer/releases/download/testing_release/OpenSSL-x64-VS-4.0.1.msi' -OutFile $installer
+          $installer = Join-Path $env:RUNNER_TEMP 'OpenSSL-x64-VS-4.1.0.msi'
+          Invoke-WebRequest -Uri 'https://github.com/openssl/installer/releases/download/publish/4.1.0-1/OpenSSL-x64-VS-4.1.0.msi' -OutFile $installer
           $arguments = @('/i', $installer, '/qn', '/norestart', 'INSTALL_SDK=1', 'INSTALL_APPS=0', 'ADJUSTSYSTEMPATHENV=0')
           $process = Start-Process -FilePath 'msiexec.exe' -ArgumentList $arguments -Wait -PassThru
           if ($process.ExitCode -notin @(0, 3010)) {
             throw "OpenSSL installation failed with exit code $($process.ExitCode)."
           }
-          $opensslRoot = 'C:\Program Files\OpenSSL Library\openssl-4.0'
+          $opensslRoot = 'C:\Program Files\OpenSSL Library\openssl-4.1'
           foreach ($file in @('include\openssl\ssl.h', 'lib\libssl_static.lib', 'lib\libcrypto_static.lib')) {
             if (-not (Test-Path (Join-Path $opensslRoot $file))) {
               throw "OpenSSL installation did not provide $file under $opensslRoot."
