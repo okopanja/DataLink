@@ -25,10 +25,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
-      # - name: Set up MSVC
-      #   uses: TheMrMilchmann/setup-msvc-dev@v4
-      #   with:
-      #     arch: x64
+
+      - name: Set up MSVC
+        uses: TheMrMilchmann/setup-msvc-dev@v4
+        with:
+          arch: x64
 
       - name: Build Lua 5.1.5
         shell: pwsh
