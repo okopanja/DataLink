@@ -77,10 +77,13 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $archive = Join-Path $env:RUNNER_TEMP 'luarocks.zip'
-          $installRoot = Join-Path $env:RUNNER_TEMP 'luarocks'
+          $luaBin = 'C:\lua\5.1.5\x86_64\src'
           Invoke-WebRequest -Uri 'https://luarocks.github.io/luarocks/releases/luarocks-3.13.0-windows-64.zip' -OutFile $archive
           Expand-Archive -Path $archive -DestinationPath $env:RUNNER_TEMP -Force
-          Move-Item (Join-Path $env:RUNNER_TEMP 'luarocks-3.13.0-windows-64') $installRoot
+          Copy-Item (Join-Path $env:RUNNER_TEMP 'luarocks-3.13.0-windows-64\*.exe') $luaBin -Force
+          if (-not (Test-Path (Join-Path $luaBin 'luarocks.exe'))) {
+            throw "LuaRocks was not installed in $luaBin."
+          }
           $configRoot = Join-Path $env:APPDATA 'luarocks'
           New-Item -ItemType Directory -Force -Path $configRoot | Out-Null
           Copy-Item 'Documentation/BuildingBinaries/config-5.1.lua' (Join-Path $configRoot 'config-5.1.lua') -Force
@@ -89,7 +92,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $luaRocks = Join-Path $env:RUNNER_TEMP 'luarocks\luarocks.exe'
+          $luaRocks = 'C:\lua\5.1.5\x86_64\src\luarocks.exe'
           $rocksTree = Join-Path $env:RUNNER_TEMP 'rocks'
           $opensslRoot = 'C:\Program Files\OpenSSL Library\openssl-4.0'
           & $luaRocks --lua-version=5.1 "--tree=$rocksTree" install luasocket 3.1.0-1
