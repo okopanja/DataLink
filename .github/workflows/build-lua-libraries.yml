@@ -6,12 +6,10 @@ on:
     paths:
       - '.github/workflows/build-lua-libraries.yml'
       - 'Documentation/BuildingBinaries/**'
-      - 'Scripts/Hooks/External/ssl/**'
   pull_request:
     paths:
       - '.github/workflows/build-lua-libraries.yml'
       - 'Documentation/BuildingBinaries/**'
-      - 'Scripts/Hooks/External/ssl/**'
 
 permissions:
   contents: read
