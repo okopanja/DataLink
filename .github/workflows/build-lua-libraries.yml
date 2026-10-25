@@ -15,6 +15,7 @@ permissions:
   contents: read
 
 env:
+  LUA_VERSION: '5.1.5'
   OPENSSL_RELEASE_TAG: 'publish/4.1.0-1'
 
 jobs:
@@ -29,19 +30,21 @@ jobs:
         with:
           arch: x64
 
-      - name: Build Lua 5.1.5
+      - name: Build Lua
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $luaRoot = 'C:\lua\5.1.5\x86_64'
-          $luaArchive = Join-Path $env:RUNNER_TEMP 'lua-5.1.5.tar.gz'
+          $luaRoot = "C:\lua\$env:LUA_VERSION\x86_64"
+          $luaArchiveName = "lua-$env:LUA_VERSION.tar.gz"
+          $luaArchive = Join-Path $env:RUNNER_TEMP $luaArchiveName
+          $luaSourceRoot = Join-Path $env:RUNNER_TEMP "lua-$env:LUA_VERSION"
           New-Item -ItemType Directory -Force -Path $luaRoot | Out-Null
-          Invoke-WebRequest -Uri 'https://www.lua.org/ftp/lua-5.1.5.tar.gz' -OutFile $luaArchive
+          Invoke-WebRequest -Uri "https://www.lua.org/ftp/$luaArchiveName" -OutFile $luaArchive
           tar.exe -xzf $luaArchive -C $env:RUNNER_TEMP
           if ($LASTEXITCODE -ne 0) {
             throw "Lua source extraction failed with exit code $LASTEXITCODE."
           }
-          Copy-Item (Join-Path $env:RUNNER_TEMP 'lua-5.1.5\*') $luaRoot -Recurse -Force
+          Copy-Item (Join-Path $luaSourceRoot '*') $luaRoot -Recurse -Force
           Copy-Item 'Documentation/BuildingBinaries/luavs-dcs.bat' (Join-Path $luaRoot 'etc\lua-dcs.bat') -Force
           $buildCommand = 'cd /d "{0}" && etc\lua-dcs.bat' -f $luaRoot
           & cmd.exe /d /c $buildCommand
@@ -87,8 +90,9 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          $luaRocksVersion = ($env:LUA_VERSION.Split('.')[0..1] -join '.')
           $archive = Join-Path $env:RUNNER_TEMP 'luarocks.zip'
-          $luaBin = 'C:\lua\5.1.5\x86_64\src'
+          $luaBin = "C:\lua\$env:LUA_VERSION\x86_64\src"
           Invoke-WebRequest -Uri 'https://luarocks.github.io/luarocks/releases/luarocks-3.13.0-windows-64.zip' -OutFile $archive
           Expand-Archive -Path $archive -DestinationPath $env:RUNNER_TEMP -Force
           Copy-Item (Join-Path $env:RUNNER_TEMP 'luarocks-3.13.0-windows-64\*.exe') $luaBin -Force
@@ -97,7 +101,8 @@ jobs:
           }
           $configRoot = Join-Path $env:APPDATA 'luarocks'
           New-Item -ItemType Directory -Force -Path $configRoot | Out-Null
-          Copy-Item 'Documentation/BuildingBinaries/config-5.1.lua' (Join-Path $configRoot 'config-5.1.lua') -Force
+          $configFile = "config-$luaRocksVersion.lua"
+          Copy-Item "Documentation/BuildingBinaries/$configFile" (Join-Path $configRoot $configFile) -Force
 
       - name: Build LuaSocket and LuaSec
         shell: pwsh
@@ -105,10 +110,11 @@ jobs:
           OPENSSL_INSTALL_DIR: ${{ steps.install_openssl.outputs.install_dir }}
         run: |
           $ErrorActionPreference = 'Stop'
-          $luaRocks = 'C:\lua\5.1.5\x86_64\src\luarocks.exe'
+          $luaRocksVersion = ($env:LUA_VERSION.Split('.')[0..1] -join '.')
+          $luaRocks = "C:\lua\$env:LUA_VERSION\x86_64\src\luarocks.exe"
           $rocksTree = Join-Path $env:RUNNER_TEMP 'rocks'
           $opensslRoot = $env:OPENSSL_INSTALL_DIR
-          & $luaRocks --lua-version=5.1 "--tree=$rocksTree" install luasocket 3.1.0-1
+          & $luaRocks "--lua-version=$luaRocksVersion" "--tree=$rocksTree" install luasocket 3.1.0-1
           if ($LASTEXITCODE -ne 0) {
             throw "LuaSocket build failed with exit code $LASTEXITCODE."
           }
@@ -120,7 +126,7 @@ jobs:
           Copy-Item 'Documentation/BuildingBinaries/luasec-1.3.2-2.rockspec' $luasecRoot -Force
           Push-Location $luasecRoot
           try {
-            & $luaRocks --lua-version=5.1 "--tree=$rocksTree" make 'luasec-1.3.2-2.rockspec' "OPENSSL_DIR=$opensslRoot" --force
+            & $luaRocks "--lua-version=$luaRocksVersion" "--tree=$rocksTree" make 'luasec-1.3.2-2.rockspec' "OPENSSL_DIR=$opensslRoot" --force
             if ($LASTEXITCODE -ne 0) {
               throw "LuaSec build failed with exit code $LASTEXITCODE."
             }
@@ -140,28 +146,53 @@ jobs:
             Write-Host 'C:\lua does not exist.'
           }
 
-      - name: Stage library DLLs
+      - name: Stage Lua libraries
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $rocksRoot = Join-Path $env:RUNNER_TEMP 'rocks\lib\lua\5.1'
-          $outputRoot = Join-Path $env:GITHUB_WORKSPACE 'build\lua-libraries\ssl\dll'
-          $libraries = @{
+          $luaRocksVersion = ($env:LUA_VERSION.Split('.')[0..1] -join '.')
+          $rocksRoot = Join-Path $env:RUNNER_TEMP "rocks\lib\lua\$luaRocksVersion"
+          $luaRoot = Join-Path $env:RUNNER_TEMP "rocks\share\lua\$luaRocksVersion"
+          $outputRoot = Join-Path $env:GITHUB_WORKSPACE 'build\lua-libraries\ssl'
+          $dlls = @{
             'mime\core.dll' = 'mime\core.dll'
             'socket\core.dll' = 'socket\core.dll'
             'ssl.dll' = 'ssl.dll'
           }
-          foreach ($library in $libraries.GetEnumerator()) {
+          foreach ($library in $dlls.GetEnumerator()) {
             $source = Join-Path $rocksRoot $library.Key
             if (-not (Test-Path $source)) {
               throw "Expected library DLL was not produced: $source"
             }
-            $destination = Join-Path $outputRoot $library.Value
+            $destination = Join-Path $outputRoot "dll\$($library.Value)"
             New-Item -ItemType Directory -Force -Path (Split-Path $destination) | Out-Null
             Copy-Item $source $destination -Force
           }
 
-      - name: Upload Lua library DLLs
+          $luaModules = @(
+            'ltn12.lua',
+            'mime.lua',
+            'socket.lua',
+            'socket\ftp.lua',
+            'socket\headers.lua',
+            'socket\http.lua',
+            'socket\smtp.lua',
+            'socket\tp.lua',
+            'socket\url.lua',
+            'ssl.lua',
+            'ssl\https.lua'
+          )
+          foreach ($module in $luaModules) {
+            $source = Join-Path $luaRoot $module
+            if (-not (Test-Path $source)) {
+              throw "Expected Lua module was not installed: $source"
+            }
+            $destination = Join-Path $outputRoot "lua\$module"
+            New-Item -ItemType Directory -Force -Path (Split-Path $destination) | Out-Null
+            Copy-Item $source $destination -Force
+          }
+
+      - name: Upload Lua libraries
         uses: actions/upload-artifact@v7
         with:
           name: lua-libraries-windows-x64
