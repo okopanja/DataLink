@@ -98,7 +98,7 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $luaRocks = 'C:\lua\5.1.5\x86_64\src\luarocks.exe'
           $rocksTree = Join-Path $env:RUNNER_TEMP 'rocks'
-          $opensslRoot = 'C:\Program Files\OpenSSL Library\openssl-4.0'
+          $opensslRoot = 'C:\Program Files\OpenSSL Library\openssl-4.1'
           & $luaRocks --lua-version=5.1 "--tree=$rocksTree" install luasocket 3.1.0-1
           if ($LASTEXITCODE -ne 0) {
             throw "LuaSocket build failed with exit code $LASTEXITCODE."
