@@ -16,6 +16,9 @@ on:
 permissions:
   contents: read
 
+env:
+  OPENSSL_RELEASE_TAG: 'publish/4.1.0-1'
+
 jobs:
   build:
     runs-on: windows-latest
@@ -59,20 +62,30 @@ jobs:
           Copy-Item (Join-Path $luaRoot 'src\lua.lib') (Join-Path $luaRoot 'src\lua51.lib') -Force
 
       - name: Install OpenSSL
+        id: install_openssl
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $installer = Join-Path $env:RUNNER_TEMP 'OpenSSL-x64-VS-4.1.0.msi'
-          Invoke-WebRequest -Uri 'https://github.com/openssl/installer/releases/download/publish/4.1.0-1/OpenSSL-x64-VS-4.1.0.msi' -OutFile $installer
+          if ($env:OPENSSL_RELEASE_TAG -notmatch '^publish/(?<version>\d+\.\d+\.\d+)-\d+$') {
+            throw "Unexpected OpenSSL release tag format: $env:OPENSSL_RELEASE_TAG"
+          }
+          $opensslVersion = $Matches.version
+          $opensslInstallVersion = $opensslVersion -replace '\.\d+$', ''
+          $opensslInstallDir = "C:\Program Files\OpenSSL Library\openssl-$opensslInstallVersion"
+          "version=$opensslVersion" >> $env:GITHUB_OUTPUT
+          "install_dir=$opensslInstallDir" >> $env:GITHUB_OUTPUT
+          $installerName = "OpenSSL-x64-VS-$opensslVersion.msi"
+          $installer = Join-Path $env:RUNNER_TEMP $installerName
+          $downloadUrl = "https://github.com/openssl/installer/releases/download/$env:OPENSSL_RELEASE_TAG/$installerName"
+          Invoke-WebRequest -Uri $downloadUrl -OutFile $installer
           $arguments = @('/i', $installer, '/qn', '/norestart', 'INSTALL_SDK=1', 'INSTALL_APPS=0', 'ADJUSTSYSTEMPATHENV=0')
           $process = Start-Process -FilePath 'msiexec.exe' -ArgumentList $arguments -Wait -PassThru
           if ($process.ExitCode -notin @(0, 3010)) {
             throw "OpenSSL installation failed with exit code $($process.ExitCode)."
           }
-          $opensslRoot = 'C:\Program Files\OpenSSL Library\openssl-4.1'
           foreach ($file in @('include\openssl\ssl.h', 'lib\libssl_static.lib', 'lib\libcrypto_static.lib')) {
-            if (-not (Test-Path (Join-Path $opensslRoot $file))) {
-              throw "OpenSSL installation did not provide $file under $opensslRoot."
+            if (-not (Test-Path (Join-Path $opensslInstallDir $file))) {
+              throw "OpenSSL installation did not provide $file under $opensslInstallDir."
             }
           }
 
@@ -94,11 +107,13 @@ jobs:
 
       - name: Build LuaSocket and LuaSec
         shell: pwsh
+        env:
+          OPENSSL_INSTALL_DIR: ${{ steps.install_openssl.outputs.install_dir }}
         run: |
           $ErrorActionPreference = 'Stop'
           $luaRocks = 'C:\lua\5.1.5\x86_64\src\luarocks.exe'
           $rocksTree = Join-Path $env:RUNNER_TEMP 'rocks'
-          $opensslRoot = 'C:\Program Files\OpenSSL Library\openssl-4.1'
+          $opensslRoot = $env:OPENSSL_INSTALL_DIR
           & $luaRocks --lua-version=5.1 "--tree=$rocksTree" install luasocket 3.1.0-1
           if ($LASTEXITCODE -ne 0) {
             throw "LuaSocket build failed with exit code $LASTEXITCODE."
