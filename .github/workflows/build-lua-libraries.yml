@@ -23,6 +23,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
+      - name: Display C:\ tree
+        shell: pwsh
+        run: tree.com 'C:\' /A
+
       - name: Set up MSVC
         uses: ilammy/msvc-dev-cmd@v1
         with:
