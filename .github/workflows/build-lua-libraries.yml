@@ -23,11 +23,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Set up MSVC
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: amd64
-
       - name: Build Lua 5.1.5
         shell: pwsh
         run: |
@@ -42,7 +37,20 @@ jobs:
           }
           Copy-Item (Join-Path $env:RUNNER_TEMP 'lua-5.1.5\*') $luaRoot -Recurse -Force
           Copy-Item 'Documentation/BuildingBinaries/luavs-dcs.bat' (Join-Path $luaRoot 'etc\lua-dcs.bat') -Force
-          $buildCommand = 'cd /d "{0}" && etc\lua-dcs.bat' -f $luaRoot
+          $programFilesX86 = [Environment]::GetEnvironmentVariable('ProgramFiles(x86)')
+          $vswhere = Join-Path $programFilesX86 'Microsoft Visual Studio\Installer\vswhere.exe'
+          if (-not (Test-Path $vswhere)) {
+            throw "Could not find Visual Studio discovery tool: $vswhere"
+          }
+          $vsInstallPath = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($vsInstallPath)) {
+            throw 'Could not find a Visual Studio installation with the x64 C++ build tools.'
+          }
+          $vsDevCmd = Join-Path $vsInstallPath 'Common7\Tools\VsDevCmd.bat'
+          if (-not (Test-Path $vsDevCmd)) {
+            throw "Visual Studio developer command script was not found: $vsDevCmd"
+          }
+          $buildCommand = 'call "{0}" -arch=amd64 && cd /d "{1}" && etc\lua-dcs.bat' -f $vsDevCmd, $luaRoot
           & cmd.exe /d /c $buildCommand
           if ($LASTEXITCODE -ne 0) {
             throw "Lua build failed with exit code $LASTEXITCODE."
