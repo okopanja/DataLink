@@ -1,7 +1,5 @@
-@rem Script to build Lua under "Visual Studio .NET Command Prompt".
-@rem Do not run from this directory; run it from the toplevel: etc\luavs.bat .
-@rem It creates lua.dll, lua.lib, lua.exe, and luac.exe in src.
-@rem (contributed by David Manura and Mike Pall)
+@rem Build Lua under a Visual Studio developer command prompt.
+@rem Run this script from the Lua source root; it creates Lua binaries in src.
 
 @setlocal
 @set MYCOMPILE=cl /nologo /MD /O2 /W3 /c /D_CRT_SECURE_NO_DEPRECATE
