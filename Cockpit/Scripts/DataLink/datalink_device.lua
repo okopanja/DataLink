@@ -124,6 +124,7 @@ local last_seq  = -1
 local new_contacts = {} -- contacts being received
 local received_contacts  = {}   -- current picture: list of {brg, rng, alt, spd, hdg, iff, target_donor, target_attacker, target_number}
 local last_update_time = 0
+local kp_vedus_vedom_position = 0
 
 local toggle_visibility_handle = get_param_handle(CommonParameterNames.DATALINK_TOGGLE_VISIBILITY)
 toggle_visibility_handle:set(0.0)
@@ -524,7 +525,12 @@ function handle_datalink_commands(command, value)
 	elseif command == device_commands.FIGHTER_GROUP then
 		print_message_to_user("DataLink: received command FIGHTER_GROUP with value "..tostring(value))
 	elseif command == device_commands.KP_VEDUS_VEDOM then
-		print_message_to_user("DataLink: received command KP_VEDUS_VEDOM with value "..tostring(value))
+		local position = math.floor(value * 10 + 0.5)
+		local position_name = KP_VEDUS_VEDOM_POSITIONS[position + 1]
+		if position_name then
+			kp_vedus_vedom_position = position
+			print_message_to_user("DataLink: KP/VEDUS/VEDOM selected "..position_name)
+		end
 	elseif command == device_commands.PARA2_PARA1_GD_OTKL then
 		print_message_to_user("DataLink: received command PARA2_PARA1_GD_OTKL with value "..tostring(value))
 	end
