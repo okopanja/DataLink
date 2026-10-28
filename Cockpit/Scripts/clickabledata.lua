@@ -1,6 +1,7 @@
 -- dofile(LockOn_Options.script_path.."clickable_defs.lua") 
 dofile(LockOn_Options.script_path.."device_commands.lua")
 dofile(LockOn_Options.script_path.."devices.lua")
+dofile(LockOn_Options.script_path.."sounds.lua")
 
 local gettext = require("i_18n")
 _ = gettext.translate
@@ -60,6 +61,7 @@ elements.PNT_KP_VEDUS_VEDOM =
     updatable = true,
     use_OBB = true,
     cycle = false,
+    sound = {{ROTARY_TURNED, ROTARY_TURNED}},
 	animated = {true, true},
 	animation_speed = {16, 16},
 }
