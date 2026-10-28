@@ -52,14 +52,14 @@ elements.PNT_KP_VEDUS_VEDOM =
         ANIMATION_ARGS.ROT_KP_VEDUS_VEDOM,
         ANIMATION_ARGS.ROT_KP_VEDUS_VEDOM
     },
-    arg_value = {0, 0.1},
+    arg_value = {-0.1, 0.1},
     arg_lim = {
         {0, 0.1 * 2},
         {0, 0.1 * 2},
     },
     updatable = true,
     use_OBB = true,
-    cycle = true,
+    cycle = false,
 	animated = {true, true},
 	animation_speed = {16, 16},
 }
