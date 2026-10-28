@@ -5,4 +5,7 @@ local function counter()
 	return count
 end
 
-ROTARY_TURNED = counter()
+SOUNDS_IDENTIFIERS = {
+	ROTARY_TURNED = counter()
+}
+

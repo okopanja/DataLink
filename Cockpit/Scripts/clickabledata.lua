@@ -61,7 +61,7 @@ elements.PNT_KP_VEDUS_VEDOM =
     updatable = true,
     use_OBB = true,
     cycle = false,
-    sound = {{ROTARY_TURNED, ROTARY_TURNED}},
+    sound = {{SOUNDS_IDENTIFIERS.ROTARY_TURNED, SOUNDS_IDENTIFIERS.ROTARY_TURNED}},
 	animated = {true, true},
 	animation_speed = {16, 16},
 }
@@ -79,14 +79,15 @@ elements.PNT_PARA2_PARA1_GD_OTKL =
         ANIMATION_ARGS.ROT_PARA2_PARA1_GD_OTKL,
         ANIMATION_ARGS.ROT_PARA2_PARA1_GD_OTKL
     },
-    arg_value = {0, 0.1},
+    arg_value = {-0.1, 0.1},
     arg_lim = {
-        {-1, 0.1 * 3},
-        {-1, 0.1 * 3},
+        {-0.1, 0.1},
+        {-0.1, 0.1},
     },
     updatable = true,
     use_OBB = true,
     cycle = false,
+    sound = {{SOUNDS_IDENTIFIERS.ROTARY_TURNED, SOUNDS_IDENTIFIERS.ROTARY_TURNED}},
 	animated = {true, true},
 	animation_speed = {16, 16},
 }
