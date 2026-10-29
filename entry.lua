@@ -33,6 +33,7 @@ declare_plugin("DataLink", {
 local path = current_mod_path..'/Cockpit/Scripts/'
 
 mount_vfs_model_path(current_mod_path.."/Cockpit/Shape")
+mount_vfs_sound_path(current_mod_path.."/Sounds")
 
 --  Each entry enables the plugin unconditionally for that aircraft type.
 --  Add more types here as needed.
