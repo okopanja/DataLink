@@ -44,7 +44,7 @@ elements.PNT_KP_VEDUS_VEDOM =
 {
     class = {class_type.TUMB, class_type.TUMB},
     hint = _("KP/VEDUS/VEDOM"),
-    device = device + 256,
+    device = device,
     action = {
 		device_commands.KP_VEDUS_VEDOM,
 		device_commands.KP_VEDUS_VEDOM
