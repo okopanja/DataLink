@@ -79,10 +79,10 @@ elements.PNT_PARA2_PARA1_GD_OTKL =
         ANIMATION_ARGS.ROT_PARA2_PARA1_GD_OTKL,
         ANIMATION_ARGS.ROT_PARA2_PARA1_GD_OTKL
     },
-    arg_value = {-0.1, 0.1},
+    arg_value = {-1, 1},
     arg_lim = {
-        {-0.1, 0.1},
-        {-0.1, 0.1},
+        {-1, 1},
+        {-1, 1},
     },
     updatable = true,
     use_OBB = true,
