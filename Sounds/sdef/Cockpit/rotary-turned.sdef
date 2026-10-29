@@ -1,4 +1,5 @@
 wave = "Effects/Cockpit/rotary-turned"
 inner_radius = 1
 outer_radius = 10
+position = {-1, 0, 1}
 gain = 1

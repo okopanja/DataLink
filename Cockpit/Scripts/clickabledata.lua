@@ -53,10 +53,10 @@ elements.PNT_KP_VEDUS_VEDOM =
         ANIMATION_ARGS.ROT_KP_VEDUS_VEDOM,
         ANIMATION_ARGS.ROT_KP_VEDUS_VEDOM
     },
-    arg_value = {-0.1, 0.1},
+    arg_value = {-1, 1},
     arg_lim = {
-        {0, 0.1 * 2},
-        {0, 0.1 * 2},
+        {-1, 1},
+        {-1, 1},
     },
     updatable = true,
     use_OBB = true,
