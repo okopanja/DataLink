@@ -34,7 +34,7 @@ if device_commands == nil then
     -- Rotary switches
     device_commands.KP_VEDUS_VEDOM = counter()
     device_commands.PARA2_PARA1_GD_OTKL = counter()
-
+    device_commands.KP_VEDUS_VEDOM_2 = counter()
     -- conclude the device commands range
     data_link_command_last = count    
 end

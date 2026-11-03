@@ -44,7 +44,7 @@ elements.PNT_KP_VEDUS_VEDOM =
 {
     class = {class_type.TUMB, class_type.TUMB},
     hint = _("KP/VEDUS/VEDOM"),
-    device = device - 256,
+    device = device,
     action = {
 		device_commands.KP_VEDUS_VEDOM,
 		device_commands.KP_VEDUS_VEDOM
@@ -52,6 +52,32 @@ elements.PNT_KP_VEDUS_VEDOM =
     arg = {
         ANIMATION_ARGS.ROT_KP_VEDUS_VEDOM,
         ANIMATION_ARGS.ROT_KP_VEDUS_VEDOM
+    },
+    arg_value = {-1, 1},
+    arg_lim = {
+        {-1, 1},
+        {-1, 1},
+    },
+    updatable = true,
+    use_OBB = true,
+    cycle = false,
+    sound = {{SOUNDS_IDENTIFIERS.ROTARY_TURNED, SOUNDS_IDENTIFIERS.ROTARY_TURNED}},
+	animated = {true, true},
+	animation_speed = {16, 16},
+}
+
+elements.PNT_KP_VEDUS_VEDOM_2 =
+{
+    class = {class_type.TUMB, class_type.TUMB},
+    hint = _("KP/VEDUS/VEDOM"),
+    device = device,
+    action = {
+		device_commands.KP_VEDUS_VEDOM_2,
+		device_commands.KP_VEDUS_VEDOM_2
+	},
+    arg = {
+        ANIMATION_ARGS.ROT_KP_VEDUS_VEDOM_2,
+        ANIMATION_ARGS.ROT_KP_VEDUS_VEDOM_2
     },
     arg_value = {-1, 1},
     arg_lim = {
