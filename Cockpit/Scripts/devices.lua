@@ -10,7 +10,7 @@ if get_param_handle("NS430"):get() == "enabled" then
 	-- Therefore we need to start our plugin's device numbering from 256 to avoid collision with NS430, which means DataLink device addres space will be [512-767]
 	start_device_number = 512
 end
-start_device_number = 0
+-- start_device_number = 0
 local count = start_device_number
 local function counter()
 	count = count + 1
