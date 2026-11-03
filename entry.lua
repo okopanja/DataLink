@@ -26,8 +26,11 @@ declare_plugin("DataLink", {
 				CLSID		= "{DataLink options}"
 			},
 		},
-
-}
+	InputProfiles =
+		{
+			["DataLink"]     = current_mod_path .. '/Input',
+		},		
+	}
 )
 
 local path = current_mod_path..'/Cockpit/Scripts/'
