@@ -525,14 +525,17 @@ function handle_datalink_commands(command, value)
 	elseif command == device_commands.FIGHTER_GROUP then
 		print_message_to_user("DataLink: received command FIGHTER_GROUP with value "..tostring(value))
 	elseif command == device_commands.KP_VEDUS_VEDOM then
-		local position = math.floor(value * 10 + 0.5)
-		local position_name = KP_VEDUS_VEDOM_POSITIONS[position + 1]
-		if position_name then
-			kp_vedus_vedom_position = position
-			print_message_to_user("DataLink: KP/VEDUS/VEDOM selected "..position_name)
-		end
+		-- local position = math.floor(value * 10 + 0.5)
+		-- local position_name = KP_VEDUS_VEDOM_POSITIONS[position + 1]
+		-- if position_name then
+		-- 	kp_vedus_vedom_position = position
+		-- 	print_message_to_user("DataLink: KP/VEDUS/VEDOM selected "..position_name)
+		-- end
+		print_message_to_user("DataLink: received command KP_VEDUS_VEDOM with value "..tostring(value))	
 	elseif command == device_commands.PARA2_PARA1_GD_OTKL then
 		print_message_to_user("DataLink: received command PARA2_PARA1_GD_OTKL with value "..tostring(value))
+	elseif command == device_commands.KP_VEDUS_VEDOM_2 then
+		print_message_to_user("DataLink: received command KP_VEDUS_VEDOM_2 with value "..tostring(value))
 	end
 end
 
