@@ -35,13 +35,15 @@ if device_commands == nil then
     device_commands.KP_VEDUS_VEDOM = counter()
     device_commands.PARA2_PARA1_GD_OTKL = counter()
     device_commands.KP_VEDUS_VEDOM_2 = counter()
+
+    -- Keys are strictly inputs for keyboard/joystick/mouse
+    Keys = {}
+    Keys.KP_VEDUS_VEDOM_CW = counter()
+    Keys.KP_VEDUS_VEDOM_CCW = counter()
+    Keys.PARA2_PARA1_GD_OTKL_CW = counter()
+    Keys.PARA2_PARA1_GD_OTKL_CCW = counter()
     -- conclude the device commands range
     data_link_command_last = count
 
-    Keys = {}
-    Keys.KP_VEDUS_VEDOM_CW = counter(),
-    Keys.KP_VEDUS_VEDOM_CCW = counter(),
-    Keys.PARA2_PARA1_GD_OTKL_CW = counter(),
-    Keys.PARA2_PARA1_GD_OTKL_CCW = counter(),    
 end
 

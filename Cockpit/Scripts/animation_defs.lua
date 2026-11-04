@@ -88,4 +88,26 @@ LIGHT_ANIMATION_PARAMS = {
     LIGHT_FIGHTER_GROUP = "LIGHT_FIGHTER_GROUP",
 }
 
-KP_VEDUS_VEDOM_POSITIONS = {"KP", "VEDUS", "VEDOM"}
+-- define numeric values for position
+KP_VEDUS_VEDOM_POSITIONS = {
+    ["KP"] = 0, 
+    ["VEDUS"] = 1,
+    ["VEDOM"] = 2
+}
+
+-- define numeric values for position
+PARA2_PARA1_GD_OTKL_POSITIONS = {
+    ["PARA2"] = 0, 
+    ["PARA1"] = 1,
+    ["GD"] = 2,
+    ["OTKL"] = 3
+}
+
+function lookup_enum_name(enum_table, value)
+    for key, val in pairs(enum_table) do
+        if val == value then
+            return key
+        end
+    end
+    return nil -- Return nil if the value is not found in the table
+end
