@@ -64,7 +64,7 @@ return {
         },
         {
             down = device_commands.PARA2_PARA1_GD_OTKL,
-            value_down = PARA2_PARA1_GD_OTKL_POSITIONS.PARA2,
+            value_down = PARA2_PARA1_GD_OTKL_POSITIONS.PARA2 / 10,
             cockpit_device_id = devices.DATALINK,
             name = _("DataLink Para2/Para1/GD/Otkl Selector - PARA2"),
             category = {
@@ -73,7 +73,7 @@ return {
         },
         {
             down = device_commands.PARA2_PARA1_GD_OTKL,
-            value_down = PARA2_PARA1_GD_OTKL_POSITIONS.PARA1,
+            value_down = PARA2_PARA1_GD_OTKL_POSITIONS.PARA1 / 10,
             cockpit_device_id = devices.DATALINK,
             name = _("DataLink Para2/Para1/GD/Otkl Selector - PARA1"),
             category = {
@@ -82,7 +82,7 @@ return {
         },
         {
             down = device_commands.PARA2_PARA1_GD_OTKL,
-            value_down = PARA2_PARA1_GD_OTKL_POSITIONS.GD,
+            value_down = PARA2_PARA1_GD_OTKL_POSITIONS.GD / 10,
             cockpit_device_id = devices.DATALINK,
             name = _("DataLink Para2/Para1/GD/Otkl Selector - GD"),
             category = {
@@ -91,7 +91,7 @@ return {
         },
         {
             down = device_commands.PARA2_PARA1_GD_OTKL,
-            value_down = PARA2_PARA1_GD_OTKL_POSITIONS.OTKL,
+            value_down = PARA2_PARA1_GD_OTKL_POSITIONS.OTKL / 10,
             cockpit_device_id = devices.DATALINK,
             name = _("DataLink Para2/Para1/GD/Otkl Selector - OTKL"),
             category = {

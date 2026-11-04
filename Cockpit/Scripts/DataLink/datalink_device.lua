@@ -73,6 +73,7 @@ local sound_button_pressed = nil
 local sound_button_released = nil
 -- Inital value
 local kp_vedus_vedom_position = KP_VEDUS_VEDOM_POSITIONS.KP
+local para2_para1_gd_otkl_position = PARA2_PARA1_GD_OTKL_POSITIONS.PARA2
 
 print_message_to_user("DataLink debug: "..tostring(DEBUG))
 
@@ -113,7 +114,7 @@ function post_initialize()
 	sound_button_released = sound_host:create_sound("Cockpit/button-released")
 
 	dev:performClickableAction(device_commands.KP_VEDUS_VEDOM,  kp_vedus_vedom_position / 10, true)
-	dev:performClickableAction(device_commands.PARA2_PARA1_GD_OTKL, PARA2_PARA1_GD_OTKL_POSITIONS.PARA2, true)
+	dev:performClickableAction(device_commands.PARA2_PARA1_GD_OTKL, para2_para1_gd_otkl_position / 10, true)
 	dev:performClickableAction(device_commands.KP_VEDUS_VEDOM_2, kp_vedus_vedom_position / 10, true)
 
 	if DEBUG then
@@ -130,7 +131,6 @@ local last_seq  = -1
 local new_contacts = {} -- contacts being received
 local received_contacts  = {}   -- current picture: list of {brg, rng, alt, spd, hdg, iff, target_donor, target_attacker, target_number}
 local last_update_time = 0
-local kp_vedus_vedom_position = 0
 
 local toggle_visibility_handle = get_param_handle(CommonParameterNames.DATALINK_TOGGLE_VISIBILITY)
 toggle_visibility_handle:set(0.0)
@@ -534,12 +534,25 @@ function handle_datalink_commands(command, value)
 	elseif command == device_commands.FIGHTER_GROUP then
 		print_message_to_user("DataLink: received command FIGHTER_GROUP with value "..tostring(value))
 	elseif command == device_commands.KP_VEDUS_VEDOM then
-		local position_name = lookup_enum_name(KP_VEDUS_VEDOM_POSITIONS, math.floor(value * 10 + 0.5))
+		kp_vedus_vedom_position = math.max(
+			KP_VEDUS_VEDOM_POSITIONS.KP,
+			math.min(math.floor(value * 10 + 0.5), KP_VEDUS_VEDOM_POSITIONS.VEDOM)
+		)
+		local position_name = lookup_enum_name(KP_VEDUS_VEDOM_POSITIONS, kp_vedus_vedom_position)
 		print_message_to_user("DataLink: received command KP_VEDUS_VEDOM, set to "..position_name.." with value "..tostring(value))
 	elseif command == device_commands.PARA2_PARA1_GD_OTKL then
-		print_message_to_user("DataLink: received command PARA2_PARA1_GD_OTKL with value "..tostring(value))
+		para2_para1_gd_otkl_position = math.max(
+			PARA2_PARA1_GD_OTKL_POSITIONS.PARA2,
+			math.min(math.floor(value * 10 + 0.5), PARA2_PARA1_GD_OTKL_POSITIONS.OTKL)
+		)
+		local position_name = lookup_enum_name(PARA2_PARA1_GD_OTKL_POSITIONS, para2_para1_gd_otkl_position)
+		print_message_to_user("DataLink: received command PARA2_PARA1_GD_OTKL, set to "..position_name.." with value "..tostring(value))
 	elseif command == device_commands.KP_VEDUS_VEDOM_2 then
-		local position_name = lookup_enum_name(KP_VEDUS_VEDOM_POSITIONS, math.floor(value * 10 + 0.5))
+		kp_vedus_vedom_position = math.max(
+			KP_VEDUS_VEDOM_POSITIONS.KP,
+			math.min(math.floor(value * 10 + 0.5), KP_VEDUS_VEDOM_POSITIONS.VEDOM)
+		)
+		local position_name = lookup_enum_name(KP_VEDUS_VEDOM_POSITIONS, kp_vedus_vedom_position)
 		print_message_to_user("DataLink: received command KP_VEDUS_VEDOM_2, set to "..position_name.." with value "..tostring(value))
 	elseif command == Keys.KP_VEDUS_VEDOM_CW then
 		print_message_to_user("DataLink: received command KP_VEDUS_VEDOM_CW with value "..tostring(value))
@@ -553,8 +566,26 @@ function handle_datalink_commands(command, value)
 		dev:performClickableAction(device_commands.KP_VEDUS_VEDOM_2, kp_vedus_vedom_position / 10, true)
 	elseif command == Keys.PARA2_PARA1_GD_OTKL_CW then
 		print_message_to_user("DataLink: received command PARA2_PARA1_GD_OTKL_CW with value "..tostring(value))
+		para2_para1_gd_otkl_position = math.min(
+			para2_para1_gd_otkl_position + 1,
+			PARA2_PARA1_GD_OTKL_POSITIONS.OTKL
+		)
+		dev:performClickableAction(
+			device_commands.PARA2_PARA1_GD_OTKL,
+			para2_para1_gd_otkl_position / 10,
+			false
+		)
 	elseif command == Keys.PARA2_PARA1_GD_OTKL_CCW then
 		print_message_to_user("DataLink: received command PARA2_PARA1_GD_OTKL_CCW with value "..tostring(value))
+		para2_para1_gd_otkl_position = math.max(
+			para2_para1_gd_otkl_position - 1,
+			PARA2_PARA1_GD_OTKL_POSITIONS.PARA2
+		)
+		dev:performClickableAction(
+			device_commands.PARA2_PARA1_GD_OTKL,
+			para2_para1_gd_otkl_position / 10,
+			false
+		)
 	end
 end
 
