@@ -72,7 +72,7 @@ local sound_host = nil
 local sound_button_pressed = nil
 local sound_button_released = nil
 -- Inital value
-local kp_vedus_vedom_position = KP_VEDUS_VEDOM_POSITIONS.KP
+local kp_vedus_vedom_position = KP_VEDUS_VEDOM_POSITIONS.VEDOM
 local para2_para1_gd_otkl_position = PARA2_PARA1_GD_OTKL_POSITIONS.PARA2
 
 print_message_to_user("DataLink debug: "..tostring(DEBUG))
@@ -116,7 +116,7 @@ function post_initialize()
 	dev:performClickableAction(device_commands.KP_VEDUS_VEDOM,  kp_vedus_vedom_position / 10, true)
 	dev:performClickableAction(device_commands.PARA2_PARA1_GD_OTKL, para2_para1_gd_otkl_position / 10, true)
 	dev:performClickableAction(device_commands.KP_VEDUS_VEDOM_2, kp_vedus_vedom_position / 10, true)
-
+	log.info("DataLink: post_initialize complete. Initial positions: KP_VEDUS_VEDOM="..tostring(kp_vedus_vedom_position)..", PARA2_PARA1_GD_OTKL="..tostring(para2_para1_gd_otkl_position))
 	if DEBUG then
 		if DEBUG_DUMMY_TARGETS then
 			show_dummy_targets()
@@ -534,12 +534,16 @@ function handle_datalink_commands(command, value)
 	elseif command == device_commands.FIGHTER_GROUP then
 		print_message_to_user("DataLink: received command FIGHTER_GROUP with value "..tostring(value))
 	elseif command == device_commands.KP_VEDUS_VEDOM then
+		log.info("DataLink: received command KP_VEDUS_VEDOM with value "..tostring(value))		
 		kp_vedus_vedom_position = math.max(
 			KP_VEDUS_VEDOM_POSITIONS.KP,
 			math.min(math.floor(value * 10 + 0.5), KP_VEDUS_VEDOM_POSITIONS.VEDOM)
 		)
+		log.info("DataLink: KP_VEDUS_VEDOM position set to "..tostring(kp_vedus_vedom_position))
 		local position_name = lookup_enum_name(KP_VEDUS_VEDOM_POSITIONS, kp_vedus_vedom_position)
+		log.info("DataLink: KP_VEDUS_VEDOM position name: "..position_name)
 		print_message_to_user("DataLink: received command KP_VEDUS_VEDOM, set to "..position_name.." with value "..tostring(value))
+		
 	elseif command == device_commands.PARA2_PARA1_GD_OTKL then
 		para2_para1_gd_otkl_position = math.max(
 			PARA2_PARA1_GD_OTKL_POSITIONS.PARA2,
@@ -548,22 +552,29 @@ function handle_datalink_commands(command, value)
 		local position_name = lookup_enum_name(PARA2_PARA1_GD_OTKL_POSITIONS, para2_para1_gd_otkl_position)
 		print_message_to_user("DataLink: received command PARA2_PARA1_GD_OTKL, set to "..position_name.." with value "..tostring(value))
 	elseif command == device_commands.KP_VEDUS_VEDOM_2 then
+		log.info("DataLink: received command KP_VEDUS_VEDOM_2 with value "..tostring(value))
 		kp_vedus_vedom_position = math.max(
 			KP_VEDUS_VEDOM_POSITIONS.KP,
 			math.min(math.floor(value * 10 + 0.5), KP_VEDUS_VEDOM_POSITIONS.VEDOM)
 		)
+		log.info("DataLink: KP_VEDUS_VEDOM_2 position set to "..tostring(kp_vedus_vedom_position))
 		local position_name = lookup_enum_name(KP_VEDUS_VEDOM_POSITIONS, kp_vedus_vedom_position)
+		log.info("DataLink: KP_VEDUS_VEDOM_2 position name: "..position_name)
 		print_message_to_user("DataLink: received command KP_VEDUS_VEDOM_2, set to "..position_name.." with value "..tostring(value))
 	elseif command == Keys.KP_VEDUS_VEDOM_CW then
 		print_message_to_user("DataLink: received command KP_VEDUS_VEDOM_CW with value "..tostring(value))
+		log.info("DataLink: KP_VEDUS_VEDOM position before CW command: "..tostring(kp_vedus_vedom_position))
 		kp_vedus_vedom_position = math.min(kp_vedus_vedom_position + 1, KP_VEDUS_VEDOM_POSITIONS.VEDOM)
 		dev:performClickableAction(device_commands.KP_VEDUS_VEDOM, kp_vedus_vedom_position / 10, false)
 		dev:performClickableAction(device_commands.KP_VEDUS_VEDOM_2, kp_vedus_vedom_position / 10, false)
+		log.info("DataLink: KP_VEDUS_VEDOM position after CW command: "..tostring(kp_vedus_vedom_position))
 	elseif command == Keys.KP_VEDUS_VEDOM_CCW then
 		print_message_to_user("DataLink: received command KP_VEDUS_VEDOM_CCW with value "..tostring(value))
+		log.info("DataLink: KP_VEDUS_VEDOM position before CCW command: "..tostring(kp_vedus_vedom_position))
 		kp_vedus_vedom_position = math.max(kp_vedus_vedom_position - 1, KP_VEDUS_VEDOM_POSITIONS.KP)
 		dev:performClickableAction(device_commands.KP_VEDUS_VEDOM, kp_vedus_vedom_position / 10, true)
 		dev:performClickableAction(device_commands.KP_VEDUS_VEDOM_2, kp_vedus_vedom_position / 10, true)
+		log.info("DataLink: KP_VEDUS_VEDOM position after CCW command: "..tostring(kp_vedus_vedom_position))
 	elseif command == Keys.PARA2_PARA1_GD_OTKL_CW then
 		print_message_to_user("DataLink: received command PARA2_PARA1_GD_OTKL_CW with value "..tostring(value))
 		para2_para1_gd_otkl_position = math.min(

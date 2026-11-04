@@ -100,6 +100,6 @@ return {
         },
         -- End: PARA2_PARA1_GD_OTKL
     },
-    axisCommands = {
-    }
+    -- axisCommands = {
+    -- }
 }
