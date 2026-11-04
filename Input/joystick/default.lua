@@ -1,8 +1,8 @@
 dofile(current_mod_path..[[Cockpit/Scripts/devices.lua]])
-dofile()
+dofile(current_mod_path..[[Cockpit/Scripts/device_commands.lua]])
 
 return {
-    keyCommands = {    
+    keyCommands = {
     },
     axisCommands = {        
     }
