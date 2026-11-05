@@ -1,6 +1,6 @@
-dofile(current_mod_path..[[Cockpit/Scripts/devices.lua]])
-dofile(current_mod_path..[[Cockpit/Scripts/device_commands.lua]])
-dofile(current_mod_path..[[Cockpit/Scripts/animation_defs.lua]])
+dofile(folder..[[../../Cockpit/Scripts/devices.lua]])
+dofile(folder..[[../../Cockpit/Scripts/device_commands.lua]])
+dofile(folder..[[../../Cockpit/Scripts/animation_defs.lua]])
 
 return {
     keyCommands = {
